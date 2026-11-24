@@ -2,7 +2,7 @@ var answers = ["No", "Yes"];
 var answers2 = ["Yes", "No"];
 var answers3 = ["No", "720p", "1080p"];
 var answers4 = ["Default", "Yes", "No"];
-var answers5 = ["60", "45", "30", "0"];
+var answers5 = ["60", "75", "90", "120", "144", "165", "200", "240", "45", "30", "0"];
 var answers6 = ["Default", "Low", "Med", "High", "Extra"];
 var answers7 = ["Zombies", "Multiplayer"];
 var answers8 = ["Default", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
@@ -11,6 +11,8 @@ var answers11 = ["-", "1", "1.1", "1.2", "1.3", "1.4", "1.5"];
 var answers12 = ["Default", "Yes"];
 var answers13 = ["1", "2", "3", "4"];
 var answers14 = ["Default", "Easy", "Normal", "Hard", "Fu"];
+var answers15 = ["Off", "On"];
+var answers16 = ["Disabled", "Enabled"];
 Game.AddOption("Select preferred game mode", "", "mode", answers7);
 Game.AddOption("Choose your preferred graphic settings", "Default will use the previous or default settings", "Graphics", answers6);
 Game.AddOption("Select the number of players (only for Zombies)", "", "Players", answers13);
@@ -21,6 +23,9 @@ Game.AddOption("Select the bot skill level", "Default will use the previous or d
 Game.AddOption("For LAN and only for Guest PC, select the last digits of the host IP", "", "lan", answers10);
 Game.AddOption("Enable music only in the first instance?", "", "Mus", answers2);
 Game.AddOption("Select the FPS Cap the game will use", "", "FPS", answers5);
+Game.AddOption("VSync", "", "VSync", answers15);
+Game.AddOption("Gamepad Vibration", "", "Gamepad Vibration", answers15);
+Game.AddOption("Draw FPS", "", "cg_drawfps", answers16);
 //Game.AddOption("Swap shoulder and trigger buttons (useful for Playstation controllers)", "Default will use the previous or default settings", "pscontrollers", answers4);
 Game.AddOption("Select your preferred FOV scale", "Select the hyphen to load default settings", "FOV", answers11);
 Game.AddOption("Would you like to unlock all (only for Multiplayer)", "Default will not make any changes and keep the previous selected settings", "Unlock", answers12);
@@ -460,6 +465,31 @@ Game.ExecutableName = "plutonium-bootstrapper-win32.exe";
 
 var mode = Context.Options["mode"];
 var Mod = Context.Options["Mod"];
+var FPS = Context.Options["FPS"];
+if (!FPS) {
+  FPS = "60";
+}
+var VSync = Context.Options["VSync"];
+if (!VSync) {
+  VSync = Context.Options["vsync"];
+}
+var vsyncVal = (VSync == "On" || VSync == "Yes" || VSync == "1") ? "1" : "0";
+
+var Vibration = Context.Options["Gamepad Vibration"];
+if (!Vibration) {
+  Vibration = Context.Options["Vibration"];
+}
+var rumbleVal = (Vibration == "On" || Vibration == "Yes" || Vibration == "1") ? "1" : "0";
+
+var DrawFPS = Context.Options["cg_drawfps"];
+if (!DrawFPS) {
+  DrawFPS = Context.Options["Draw FPS"];
+}
+if (!DrawFPS) {
+  DrawFPS = Context.Options["DrawFPS"];
+}
+var isDrawFPS = (DrawFPS == "Enabled" || DrawFPS == "On" || DrawFPS == "Yes" || DrawFPS == "1" || DrawFPS == "Simple");
+var drawfpsVal = isDrawFPS ? "Simple" : "Off";
 if (mode == "Zombies") {
 
 Context.RunAdditionalFiles([Context.ScriptFolder + "\\F10Overlay.bat"], false, 10);
@@ -522,7 +552,7 @@ Context.ReplaceLinesInTextFile(txtPath, dict);
 var Players = Context.Options["Players"];
 
 var Bat = Context.GetFolder(Nucleus.Folder.InstancedGameFolder) + "\\Plutonium\\launcher.bat";
-var lines = ['CALL "' + Context.GetFolder(Nucleus.Folder.InstancedGameFolder) + '\\Plutonium\\winject32.exe" d3d11.dll -s "bin\\plutonium-bootstrapper-win32.exe" t5sp "%~dp0.." -name "' + Context.Nickname + '" -nocurses -lan +set sp_minplayers "' + Players + '" -offline'];
+var lines = ['CALL "' + Context.GetFolder(Nucleus.Folder.InstancedGameFolder) + '\\Plutonium\\winject32.exe" d3d11.dll -s "bin\\plutonium-bootstrapper-win32.exe" t5sp "%~dp0.." -name "' + Context.Nickname + '" -nocurses -lan +set sp_minplayers "' + Players + '" -offline +set com_maxfps "' + FPS + '" +set r_vsync "' + vsyncVal + '" +set gpad_rumble "' + rumbleVal + '" +set cg_drawfps "' + drawfpsVal + '"'];
 Context.WriteTextFile(Bat, lines);
 
 Context.RunAdditionalFiles(["all|" + Context.GetFolder(Nucleus.Folder.InstancedGameFolder) + "\\Plutonium\\launcher.bat"], false, 0);
@@ -554,7 +584,7 @@ Context.WriteTextFile(txtPath, dict);
       Context.FindLineNumberInTextFile(txtPath, "seta r_aaSamples", Nucleus.SearchType.StartsWith) + '|seta r_aaSamples "0"',
       Context.FindLineNumberInTextFile(txtPath, "seta sm_enable", Nucleus.SearchType.StartsWith) + '|seta sm_enable "0"',
       Context.FindLineNumberInTextFile(txtPath, "seta ragdoll_enable", Nucleus.SearchType.StartsWith) + '|seta ragdoll_enable "0"',
-      Context.FindLineNumberInTextFile(txtPath, "seta r_vsync", Nucleus.SearchType.StartsWith) + '|seta r_vsync "1"',
+      Context.FindLineNumberInTextFile(txtPath, "seta r_vsync", Nucleus.SearchType.StartsWith) + '|seta r_vsync "' + vsyncVal + '"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip", Nucleus.SearchType.StartsWith) + '|seta r_picmip "3"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip_bump", Nucleus.SearchType.StartsWith) + '|seta r_picmip_bump "3"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip_manual", Nucleus.SearchType.StartsWith) + '|seta r_picmip_manual "1"',
@@ -574,7 +604,7 @@ Context.WriteTextFile(txtPath, dict);
       Context.FindLineNumberInTextFile(txtPath, "seta r_aaSamples", Nucleus.SearchType.StartsWith) + '|seta r_aaSamples "0"',
       Context.FindLineNumberInTextFile(txtPath, "seta sm_enable", Nucleus.SearchType.StartsWith) + '|seta sm_enable "0"',
       Context.FindLineNumberInTextFile(txtPath, "seta ragdoll_enable", Nucleus.SearchType.StartsWith) + '|seta ragdoll_enable "0"',
-      Context.FindLineNumberInTextFile(txtPath, "seta r_vsync", Nucleus.SearchType.StartsWith) + '|seta r_vsync "1"',
+      Context.FindLineNumberInTextFile(txtPath, "seta r_vsync", Nucleus.SearchType.StartsWith) + '|seta r_vsync "' + vsyncVal + '"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip", Nucleus.SearchType.StartsWith) + '|seta r_picmip "1"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip_bump", Nucleus.SearchType.StartsWith) + '|seta r_picmip_bump "1"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip_manual", Nucleus.SearchType.StartsWith) + '|seta r_picmip_manual "1"',
@@ -594,7 +624,7 @@ Context.WriteTextFile(txtPath, dict);
       Context.FindLineNumberInTextFile(txtPath, "seta r_aaSamples", Nucleus.SearchType.StartsWith) + '|seta r_aaSamples "1"',
       Context.FindLineNumberInTextFile(txtPath, "seta sm_enable", Nucleus.SearchType.StartsWith) + '|seta sm_enable "1"',
       Context.FindLineNumberInTextFile(txtPath, "seta ragdoll_enable", Nucleus.SearchType.StartsWith) + '|seta ragdoll_enable "1"',
-      Context.FindLineNumberInTextFile(txtPath, "seta r_vsync", Nucleus.SearchType.StartsWith) + '|seta r_vsync "1"',
+      Context.FindLineNumberInTextFile(txtPath, "seta r_vsync", Nucleus.SearchType.StartsWith) + '|seta r_vsync "' + vsyncVal + '"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip", Nucleus.SearchType.StartsWith) + '|seta r_picmip "1"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip_bump", Nucleus.SearchType.StartsWith) + '|seta r_picmip_bump "1"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip_manual", Nucleus.SearchType.StartsWith) + '|seta r_picmip_manual "1"',
@@ -614,7 +644,7 @@ Context.WriteTextFile(txtPath, dict);
       Context.FindLineNumberInTextFile(txtPath, "seta r_aaSamples", Nucleus.SearchType.StartsWith) + '|seta r_aaSamples "4"',
       Context.FindLineNumberInTextFile(txtPath, "seta sm_enable", Nucleus.SearchType.StartsWith) + '|seta sm_enable "1"',
       Context.FindLineNumberInTextFile(txtPath, "seta ragdoll_enable", Nucleus.SearchType.StartsWith) + '|seta ragdoll_enable "1"',
-      Context.FindLineNumberInTextFile(txtPath, "seta r_vsync", Nucleus.SearchType.StartsWith) + '|seta r_vsync "1"',
+      Context.FindLineNumberInTextFile(txtPath, "seta r_vsync", Nucleus.SearchType.StartsWith) + '|seta r_vsync "' + vsyncVal + '"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip", Nucleus.SearchType.StartsWith) + '|seta r_picmip "0"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip_bump", Nucleus.SearchType.StartsWith) + '|seta r_picmip_bump "0"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip_manual", Nucleus.SearchType.StartsWith) + '|seta r_picmip_manual "1"',
@@ -647,7 +677,9 @@ Context.FindLineNumberInTextFile(txtPath, "seta com_maxfps", Nucleus.SearchType.
 Context.FindLineNumberInTextFile(txtPath, 'seta r_mode', Nucleus.SearchType.StartsWith) + '|seta r_mode "' + Context.Width + "x" + Context.Height + '"',
 Context.FindLineNumberInTextFile(txtPath, 'seta r_customMode', Nucleus.SearchType.StartsWith) + '|seta r_customMode "' + Context.Width + "x" + Context.Height + '"',
 Context.FindLineNumberInTextFile(txtPath, 'seta r_displayMode', Nucleus.SearchType.StartsWith) + '|seta fullscreen "0"',
-Context.FindLineNumberInTextFile(txtPath, 'seta r_vsync', Nucleus.SearchType.StartsWith) + '|seta r_vsync "1"',
+Context.FindLineNumberInTextFile(txtPath, 'seta r_vsync', Nucleus.SearchType.StartsWith) + '|seta r_vsync "' + vsyncVal + '"',
+Context.FindLineNumberInTextFile(txtPath, 'seta gpad_rumble', Nucleus.SearchType.StartsWith) + '|seta gpad_rumble "' + rumbleVal + '"',
+Context.FindLineNumberInTextFile(txtPath, 'seta cg_drawFPS', Nucleus.SearchType.StartsWith) + '|seta cg_drawFPS "' + drawfpsVal + '"',
 Context.FindLineNumberInTextFile(txtPath, 'seta r_aspectRatio', Nucleus.SearchType.StartsWith) + '|seta r_aspectRatio "auto"',
 Context.FindLineNumberInTextFile(txtPath, 'seta vid_xpos', Nucleus.SearchType.StartsWith) + '|seta vid_xpos "' + Context.PosX + '"',
 Context.FindLineNumberInTextFile(txtPath, 'seta vid_ypos', Nucleus.SearchType.StartsWith) + '|seta vid_ypos "' + Context.PosY + '"',
@@ -699,6 +731,10 @@ var dict = [
 Context.FindLineNumberInTextFile(txtPath, 'seta com_first_time_pc', Nucleus.SearchType.StartsWith) + '|seta com_first_time_pc "0"',
 Context.FindLineNumberInTextFile(txtPath, 'seta sd_xa2_device_guid', Nucleus.SearchType.StartsWith) + '|seta sd_xa2_device_guid ""',
 Context.FindLineNumberInTextFile(txtPath, 'seta gpad_enabled', Nucleus.SearchType.StartsWith) + '|seta gpad_enabled "1"',
+Context.FindLineNumberInTextFile(txtPath, 'seta com_maxfps', Nucleus.SearchType.StartsWith) + '|seta com_maxfps "' + FPS + '"',
+Context.FindLineNumberInTextFile(txtPath, 'seta r_vsync', Nucleus.SearchType.StartsWith) + '|seta r_vsync "' + vsyncVal + '"',
+Context.FindLineNumberInTextFile(txtPath, 'seta gpad_rumble', Nucleus.SearchType.StartsWith) + '|seta gpad_rumble "' + rumbleVal + '"',
+Context.FindLineNumberInTextFile(txtPath, 'seta cg_drawFPS', Nucleus.SearchType.StartsWith) + '|seta cg_drawFPS "' + drawfpsVal + '"',
 Context.FindLineNumberInTextFile(txtPath, 'seta r_fullscreen', Nucleus.SearchType.StartsWith) + '|seta r_fullscreen "0"',
 Context.FindLineNumberInTextFile(txtPath, 'seta r_customMode', Nucleus.SearchType.StartsWith) + '|seta r_customMode "' + Context.Width + 'x' + Context.Height + '"',
 Context.FindLineNumberInTextFile(txtPath, 'seta r_mode', Nucleus.SearchType.StartsWith) + '|seta r_mode "' + Context.Width + 'x' + Context.Height + '"',
@@ -780,7 +816,7 @@ Context.ReplaceLinesInTextFile(txtPath, dict);
 } 
 
 var Bat = Context.GetFolder(Nucleus.Folder.InstancedGameFolder) + "\\Plutonium\\launcher.bat";
-var lines = ['CALL "' + Context.GetFolder(Nucleus.Folder.InstancedGameFolder) + '\\Plutonium\\winject32.exe" d3d11.dll -s "bin\\plutonium-bootstrapper-win32.exe" t5mp "%~dp0.." -name "' + Context.Nickname + '" -nocurses -lan -offline +set fs_game mods/mp_bots'];
+var lines = ['CALL "' + Context.GetFolder(Nucleus.Folder.InstancedGameFolder) + '\\Plutonium\\winject32.exe" d3d11.dll -s "bin\\plutonium-bootstrapper-win32.exe" t5mp "%~dp0.." -name "' + Context.Nickname + '" -nocurses -lan -offline +set fs_game mods/mp_bots +set com_maxfps "' + FPS + '" +set r_vsync "' + vsyncVal + '" +set gpad_rumble "' + rumbleVal + '" +set cg_drawfps "' + drawfpsVal + '"'];
 Context.WriteTextFile(Bat, lines);
 
 Context.RunAdditionalFiles(["all|" + Context.GetFolder(Nucleus.Folder.InstancedGameFolder) + "\\Plutonium\\launcher.bat"], false, 0);
@@ -871,7 +907,7 @@ Context.WriteTextFile(txtPath, dict);
       Context.FindLineNumberInTextFile(txtPath, "seta r_aaSamples", Nucleus.SearchType.StartsWith) + '|seta r_aaSamples "0"',
       Context.FindLineNumberInTextFile(txtPath, "seta sm_enable", Nucleus.SearchType.StartsWith) + '|seta sm_enable "0"',
       Context.FindLineNumberInTextFile(txtPath, "seta ragdoll_enable", Nucleus.SearchType.StartsWith) + '|seta ragdoll_enable "0"',
-      Context.FindLineNumberInTextFile(txtPath, "seta r_vsync", Nucleus.SearchType.StartsWith) + '|seta r_vsync "1"',
+      Context.FindLineNumberInTextFile(txtPath, "seta r_vsync", Nucleus.SearchType.StartsWith) + '|seta r_vsync "' + vsyncVal + '"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip", Nucleus.SearchType.StartsWith) + '|seta r_picmip "3"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip_bump", Nucleus.SearchType.StartsWith) + '|seta r_picmip_bump "3"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip_manual", Nucleus.SearchType.StartsWith) + '|seta r_picmip_manual "1"',
@@ -889,7 +925,7 @@ Context.WriteTextFile(txtPath, dict);
       Context.FindLineNumberInTextFile(txtPath, "seta r_aaSamples", Nucleus.SearchType.StartsWith) + '|seta r_aaSamples "0"',
       Context.FindLineNumberInTextFile(txtPath, "seta sm_enable", Nucleus.SearchType.StartsWith) + '|seta sm_enable "0"',
       Context.FindLineNumberInTextFile(txtPath, "seta ragdoll_enable", Nucleus.SearchType.StartsWith) + '|seta ragdoll_enable "0"',
-      Context.FindLineNumberInTextFile(txtPath, "seta r_vsync", Nucleus.SearchType.StartsWith) + '|seta r_vsync "1"',
+      Context.FindLineNumberInTextFile(txtPath, "seta r_vsync", Nucleus.SearchType.StartsWith) + '|seta r_vsync "' + vsyncVal + '"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip", Nucleus.SearchType.StartsWith) + '|seta r_picmip "3"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip_bump", Nucleus.SearchType.StartsWith) + '|seta r_picmip_bump "3"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip_manual", Nucleus.SearchType.StartsWith) + '|seta r_picmip_manual "1"',
@@ -909,7 +945,7 @@ Context.WriteTextFile(txtPath, dict);
       Context.FindLineNumberInTextFile(txtPath, "seta r_aaSamples", Nucleus.SearchType.StartsWith) + '|seta r_aaSamples "0"',
       Context.FindLineNumberInTextFile(txtPath, "seta sm_enable", Nucleus.SearchType.StartsWith) + '|seta sm_enable "0"',
       Context.FindLineNumberInTextFile(txtPath, "seta ragdoll_enable", Nucleus.SearchType.StartsWith) + '|seta ragdoll_enable "0"',
-      Context.FindLineNumberInTextFile(txtPath, "seta r_vsync", Nucleus.SearchType.StartsWith) + '|seta r_vsync "1"',
+      Context.FindLineNumberInTextFile(txtPath, "seta r_vsync", Nucleus.SearchType.StartsWith) + '|seta r_vsync "' + vsyncVal + '"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip", Nucleus.SearchType.StartsWith) + '|seta r_picmip "1"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip_bump", Nucleus.SearchType.StartsWith) + '|seta r_picmip_bump "1"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip_manual", Nucleus.SearchType.StartsWith) + '|seta r_picmip_manual "1"',
@@ -927,7 +963,7 @@ Context.WriteTextFile(txtPath, dict);
       Context.FindLineNumberInTextFile(txtPath, "seta r_aaSamples", Nucleus.SearchType.StartsWith) + '|seta r_aaSamples "0"',
       Context.FindLineNumberInTextFile(txtPath, "seta sm_enable", Nucleus.SearchType.StartsWith) + '|seta sm_enable "0"',
       Context.FindLineNumberInTextFile(txtPath, "seta ragdoll_enable", Nucleus.SearchType.StartsWith) + '|seta ragdoll_enable "0"',
-      Context.FindLineNumberInTextFile(txtPath, "seta r_vsync", Nucleus.SearchType.StartsWith) + '|seta r_vsync "1"',
+      Context.FindLineNumberInTextFile(txtPath, "seta r_vsync", Nucleus.SearchType.StartsWith) + '|seta r_vsync "' + vsyncVal + '"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip", Nucleus.SearchType.StartsWith) + '|seta r_picmip "1"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip_bump", Nucleus.SearchType.StartsWith) + '|seta r_picmip_bump "1"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip_manual", Nucleus.SearchType.StartsWith) + '|seta r_picmip_manual "1"',
@@ -947,7 +983,7 @@ Context.WriteTextFile(txtPath, dict);
       Context.FindLineNumberInTextFile(txtPath, "seta r_aaSamples", Nucleus.SearchType.StartsWith) + '|seta r_aaSamples "1"',
       Context.FindLineNumberInTextFile(txtPath, "seta sm_enable", Nucleus.SearchType.StartsWith) + '|seta sm_enable "1"',
       Context.FindLineNumberInTextFile(txtPath, "seta ragdoll_enable", Nucleus.SearchType.StartsWith) + '|seta ragdoll_enable "1"',
-      Context.FindLineNumberInTextFile(txtPath, "seta r_vsync", Nucleus.SearchType.StartsWith) + '|seta r_vsync "1"',
+      Context.FindLineNumberInTextFile(txtPath, "seta r_vsync", Nucleus.SearchType.StartsWith) + '|seta r_vsync "' + vsyncVal + '"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip", Nucleus.SearchType.StartsWith) + '|seta r_picmip "1"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip_bump", Nucleus.SearchType.StartsWith) + '|seta r_picmip_bump "1"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip_manual", Nucleus.SearchType.StartsWith) + '|seta r_picmip_manual "1"',
@@ -965,7 +1001,7 @@ Context.WriteTextFile(txtPath, dict);
       Context.FindLineNumberInTextFile(txtPath, "seta r_aaSamples", Nucleus.SearchType.StartsWith) + '|seta r_aaSamples "1"',
       Context.FindLineNumberInTextFile(txtPath, "seta sm_enable", Nucleus.SearchType.StartsWith) + '|seta sm_enable "1"',
       Context.FindLineNumberInTextFile(txtPath, "seta ragdoll_enable", Nucleus.SearchType.StartsWith) + '|seta ragdoll_enable "1"',
-      Context.FindLineNumberInTextFile(txtPath, "seta r_vsync", Nucleus.SearchType.StartsWith) + '|seta r_vsync "1"',
+      Context.FindLineNumberInTextFile(txtPath, "seta r_vsync", Nucleus.SearchType.StartsWith) + '|seta r_vsync "' + vsyncVal + '"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip", Nucleus.SearchType.StartsWith) + '|seta r_picmip "1"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip_bump", Nucleus.SearchType.StartsWith) + '|seta r_picmip_bump "1"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip_manual", Nucleus.SearchType.StartsWith) + '|seta r_picmip_manual "1"',
@@ -985,7 +1021,7 @@ Context.WriteTextFile(txtPath, dict);
       Context.FindLineNumberInTextFile(txtPath, "seta r_aaSamples", Nucleus.SearchType.StartsWith) + '|seta r_aaSamples "4"',
       Context.FindLineNumberInTextFile(txtPath, "seta sm_enable", Nucleus.SearchType.StartsWith) + '|seta sm_enable "1"',
       Context.FindLineNumberInTextFile(txtPath, "seta ragdoll_enable", Nucleus.SearchType.StartsWith) + '|seta ragdoll_enable "1"',
-      Context.FindLineNumberInTextFile(txtPath, "seta r_vsync", Nucleus.SearchType.StartsWith) + '|seta r_vsync "1"',
+      Context.FindLineNumberInTextFile(txtPath, "seta r_vsync", Nucleus.SearchType.StartsWith) + '|seta r_vsync "' + vsyncVal + '"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip", Nucleus.SearchType.StartsWith) + '|seta r_picmip "0"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip_bump", Nucleus.SearchType.StartsWith) + '|seta r_picmip_bump "0"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip_manual", Nucleus.SearchType.StartsWith) + '|seta r_picmip_manual "1"',
@@ -1003,7 +1039,7 @@ Context.WriteTextFile(txtPath, dict);
       Context.FindLineNumberInTextFile(txtPath, "seta r_aaSamples", Nucleus.SearchType.StartsWith) + '|seta r_aaSamples "4"',
       Context.FindLineNumberInTextFile(txtPath, "seta sm_enable", Nucleus.SearchType.StartsWith) + '|seta sm_enable "1"',
       Context.FindLineNumberInTextFile(txtPath, "seta ragdoll_enable", Nucleus.SearchType.StartsWith) + '|seta ragdoll_enable "1"',
-      Context.FindLineNumberInTextFile(txtPath, "seta r_vsync", Nucleus.SearchType.StartsWith) + '|seta r_vsync "1"',
+      Context.FindLineNumberInTextFile(txtPath, "seta r_vsync", Nucleus.SearchType.StartsWith) + '|seta r_vsync "' + vsyncVal + '"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip", Nucleus.SearchType.StartsWith) + '|seta r_picmip "0"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip_bump", Nucleus.SearchType.StartsWith) + '|seta r_picmip_bump "0"',
       Context.FindLineNumberInTextFile(txtPath, "seta r_picmip_manual", Nucleus.SearchType.StartsWith) + '|seta r_picmip_manual "1"',
@@ -1045,7 +1081,9 @@ Context.FindLineNumberInTextFile(txtPath, "seta com_maxfps", Nucleus.SearchType.
 Context.FindLineNumberInTextFile(txtPath, 'seta r_mode', Nucleus.SearchType.StartsWith) + '|seta r_mode "' + Context.Width + "x" + Context.Height + '"',
 Context.FindLineNumberInTextFile(txtPath, 'seta r_customMode', Nucleus.SearchType.StartsWith) + '|seta r_customMode "' + Context.Width + "x" + Context.Height + '"',
 Context.FindLineNumberInTextFile(txtPath, 'seta r_displayMode', Nucleus.SearchType.StartsWith) + '|seta fullscreen "0"',
-Context.FindLineNumberInTextFile(txtPath, 'seta r_vsync', Nucleus.SearchType.StartsWith) + '|seta r_vsync "1"',
+Context.FindLineNumberInTextFile(txtPath, 'seta r_vsync', Nucleus.SearchType.StartsWith) + '|seta r_vsync "' + vsyncVal + '"',
+Context.FindLineNumberInTextFile(txtPath, 'seta gpad_rumble', Nucleus.SearchType.StartsWith) + '|seta gpad_rumble "' + rumbleVal + '"',
+Context.FindLineNumberInTextFile(txtPath, 'seta cg_drawFPS', Nucleus.SearchType.StartsWith) + '|seta cg_drawFPS "' + drawfpsVal + '"',
 Context.FindLineNumberInTextFile(txtPath, 'seta r_aspectRatio', Nucleus.SearchType.StartsWith) + '|seta r_aspectRatio "auto"',
 Context.FindLineNumberInTextFile(txtPath, 'seta vid_ypos', Nucleus.SearchType.StartsWith) + '|seta vid_ypos "0"',
 ];
