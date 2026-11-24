@@ -230,9 +230,10 @@ Game.Play = function() {
   Game.LockInputToggleKey = 0x23;
 
 
-Context.RunAdditionalFiles([Context.ScriptFolder + "\\start.bat"], false, 10);
-Context.RunAdditionalFiles([Context.ScriptFolder + "\\F4Swap.bat"], false, 10);
-Context.RunAdditionalFiles([Context.ScriptFolder + "\\F3Restart.bat"], false, 10);
+var automationFolder = Context.ScriptFolder + "\\automation";
+Context.RunAdditionalFiles([automationFolder + "\\startup\\name-and-hide-player-consoles.bat"], false, 10);
+Context.RunAdditionalFiles([automationFolder + "\\hotkeys\\F4-swap-bumpers-and-triggers.bat"], false, 10);
+Context.RunAdditionalFiles([automationFolder + "\\hotkeys\\F3-restart-match.bat"], false, 10);
 
 var plutoniumSource = System.IO.Path.Combine(Game.Folder, "Plutonium");
 var plutoniumPath = System.IO.Path.Combine(Context.GetFolder(Nucleus.Folder.InstancedGameFolder), "Plutonium");
@@ -286,9 +287,9 @@ var plutoniumRevision = JSON.parse(System.IO.File.ReadAllText(revisionFile)).rev
 var instanceSeeds = [
   ["mods\\mp_bots\\mod.ff", "storage\\t5\\mods\\mp_bots\\mod.ff"],
   ["mods\\mp_bots\\mp_bots.iwd", "storage\\t5\\mods\\mp_bots\\mp_bots.iwd"],
-  ["Config files\\config.cfg", "storage\\t5\\players\\config.cfg"],
-  ["Config files\\config_mp.cfg", "storage\\t5\\players\\config_mp.cfg"],
-  ["Config files\\config_mp.cfg", "storage\\t5\\players\\mods\\mp_bots\\config_mp.cfg"],
+  ["game-config-defaults\\config.cfg", "storage\\t5\\players\\config.cfg"],
+  ["game-config-defaults\\config_mp.cfg", "storage\\t5\\players\\config_mp.cfg"],
+  ["game-config-defaults\\config_mp.cfg", "storage\\t5\\players\\mods\\mp_bots\\config_mp.cfg"],
 ];
 for (var i = 0; i < instanceSeeds.length; i++) {
   var seed = instanceSeeds[i];
@@ -383,9 +384,17 @@ function setPlayerConfig(path, options) {
   }
   Context.WriteTextFile(path, lines);
 }
+var lan = Context.Options["lan"];
+if (lan == "-") {
+  var hostLauncher = mode == "Zombies" ? "F2-host-zombies-start-match.bat" : "F2-host-multiplayer-connect-local-players.bat";
+  Context.RunAdditionalFiles([automationFolder + "\\lan\\" + hostLauncher], false, 10);
+} else if (Context.PlayerID == 0 && /^\d{1,3}$/.test(String(lan))) {
+  Context.StartProcess(automationFolder + "\\lan\\F2-guest-connect-to-lan-host.bat", "192.168.1." + lan, false);
+}
+
 if (mode == "Zombies") {
 
-Context.RunAdditionalFiles([Context.ScriptFolder + "\\F10Overlay.bat"], false, 10);
+Context.RunAdditionalFiles([automationFolder + "\\hotkeys\\F10-toggle-plutonium-overlay.bat"], false, 10);
 
 Game.Hook.ForceFocusWindowName = "Plutonium T5 Co-Op (r" + plutoniumRevision + ") (LAN)";
 
@@ -396,22 +405,6 @@ Context.StartArguments = "t5sp" + commonArgs + ' +set sp_minplayers "' + Players
   " +set zombiefive_discovered 1 +set zombietron_discovered 1 +set mis_01_unlock " + misUnlockVal +
   inputArgs + audioArgs + performanceArgs;
 
-
-var lan = Context.Options["lan"];
-if (lan == "-") {
-
-Context.RunAdditionalFiles([Context.ScriptFolder + "\\F2Host.bat"], false, 10);
-
-}
-
-if (lan >= 0) {
-Context.RunAdditionalFiles([Context.ScriptFolder + "\\F2Guest.bat"], false, 10);
-
-var txtPath = Game.Folder + '\\Local IP.txt';
-var dict = ['192.168.1.' + lan + '      ',];
-Context.WriteTextFile(txtPath, dict);
-
-}
 
   var FPS = Context.Options["FPS"];
   var Graphics = Context.Options["Graphics"];
@@ -557,7 +550,7 @@ if (Unlock == "Yes") {
   var modPlayersPath = System.IO.Path.Combine(playersPath, "mods\\mp_bots");
   var statFiles = ["globalstats", "mpstats", "mpstatsBasicTraining"];
   for (var i = 0; i < statFiles.length; i++) {
-    var statSource = System.IO.Path.Combine(Game.Folder, "Unlockall Files\\" + statFiles[i]);
+    var statSource = System.IO.Path.Combine(Game.Folder, "multiplayer-unlock-all-stats\\" + statFiles[i]);
     System.IO.File.Copy(statSource, System.IO.Path.Combine(modPlayersPath, statFiles[i]), true);
     System.IO.File.Copy(statSource, System.IO.Path.Combine(playersPath, statFiles[i]), true);
   }
@@ -627,22 +620,6 @@ var dict = [
 Context.FindLineNumberInTextFile(txtPath, "seta bot_difficulty", Nucleus.SearchType.StartsWith) + "|seta bot_difficulty " + Skill + "",
 ];
 Context.ReplaceLinesInTextFile(txtPath, dict);
-}
-
-var lan = Context.Options["lan"];
-if (lan == "-") {
-
-Context.RunAdditionalFiles([Context.ScriptFolder + "\\F2HostMP.bat"], false, 10);
-
-}
-
-if (lan >= 0) {
-Context.RunAdditionalFiles([Context.ScriptFolder + "\\F2Guest.bat"], false, 10);
-
-var txtPath = Game.Folder + '\\Local IP.txt';
-var dict = ['192.168.1.' + lan + '      ',];
-Context.WriteTextFile(txtPath, dict);
-
 }
 
   var FPS = Context.Options["FPS"];

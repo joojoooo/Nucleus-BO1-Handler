@@ -1,2 +1,2 @@
 @ECHO OFF
-START "" /B AutoIt3.exe F3Restart.au3
+START "" /B "%~dp0..\AutoIt3.exe" "%~dp0F3-restart-match.au3"

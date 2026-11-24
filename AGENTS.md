@@ -9,7 +9,11 @@
 - Keep controller window activation to one `WM_ACTIVATE` after setup. Repeating
   it clears held buttons. Combined keyboard/mouse uses foreground input.
   Individual raw devices use input locking, toggled with End.
-- Run `node --check "Call of Duty Black Ops.js"` and use the
-  [T5 test tools](tools/t5/README.md) for startup, held input, and audio.
-  Test both Zombies and Multiplayer for launch changes, and both dual-controller
-  and mixed layouts for input changes.
+- Choose checks based on what the change can affect. Use targeted static checks
+  when they are sufficient, such as `node --check "Call of Duty Black Ops.js"`
+  after handler edits and path checks after file moves. Use the relevant
+  [T5 test tools](dev_tools/t5/README.md) for runtime behavior changes. Test
+  both Zombies and Multiplayer for launch changes, both dual-controller and
+  mixed layouts for input changes, and audio when audio behavior changes.
+  Run the full suite only when the change has broad impact or targeted checks
+  would leave important behavior unverified.

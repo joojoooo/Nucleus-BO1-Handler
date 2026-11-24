@@ -1,2 +1,2 @@
 @ECHO OFF
-START "" /B AutoIt3.exe F4Swap.au3
+START "" /B "%~dp0..\AutoIt3.exe" "%~dp0F4-swap-bumpers-and-triggers.au3"

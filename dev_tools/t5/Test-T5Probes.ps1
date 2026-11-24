@@ -35,7 +35,7 @@ function Test-Bootstrapper {
     $players = Join-Path $plutonium 'storage\t5\players'
     Copy-Item -LiteralPath "$bundle\Plutonium" -Destination $instance -Recurse
     New-Item -ItemType Directory -Path $players -Force | Out-Null
-    Copy-Item -LiteralPath "$bundle\Config files\config.cfg","$bundle\Config files\config_mp.cfg" -Destination $players
+    Copy-Item -LiteralPath "$bundle\game-config-defaults\config.cfg","$bundle\game-config-defaults\config_mp.cfg" -Destination $players
 
     $program = New-Object Diagnostics.ProcessStartInfo
     $program.FileName = Join-Path $instance $runtimePath
@@ -89,7 +89,7 @@ function Wait-PadReport($Label, $State) {
 }
 
 function Invoke-DesktopProbe($Action, $Id, [string[]]$Arguments, [switch]$Async) {
-    $params = '/ErrorStdOut "{0}" {1} {2}' -f "$PSScriptRoot\DesktopProbe.au3",$Action,$Id
+    $params = '/ErrorStdOut "{0}" {1} {2}' -f "$PSScriptRoot\probes\game-window-probe.au3",$Action,$Id
     foreach ($argument in $Arguments) { $params += ' "' + $argument + '"' }
     $probe = Start-Process -FilePath $autoIt -ArgumentList $params -WindowStyle Hidden -PassThru
     if ($Async) { return $probe }

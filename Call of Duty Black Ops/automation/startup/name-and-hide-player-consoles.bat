@@ -1,2 +1,2 @@
 @ECHO OFF
-START "" /B AutoIt3.exe start.au3
+START "" /B "%~dp0..\AutoIt3.exe" "%~dp0name-and-hide-player-consoles.au3"

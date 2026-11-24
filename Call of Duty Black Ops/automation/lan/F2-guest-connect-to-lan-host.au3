@@ -1,4 +1,9 @@
 #NoTrayIcon
+
+If $CmdLine[0] <> 1 Then Exit 2
+Local $hostAddress = $CmdLine[1]
+If Not StringRegExp($hostAddress, "^\d{1,3}(\.\d{1,3}){3}$") Then Exit 2
+
 HotKeySet("{F2}", "_Continue")
 
 Global $binFlag = False
@@ -13,39 +18,28 @@ While True
     Sleep(50)
 
     If $binFlag = True Then
-        ; === Original structure preserved ===
-        $File = "Local IP.txt"
-        ClipPut(FileRead($File))
-        ControlSend("HOST", "", 0, "connect ")
-        ControlSend("HOST", "", 0, ClipGet())
+        ControlSend("HOST", "", 0, "connect " & $hostAddress, 1)
         Sleep(1000)
         ControlSend("HOST", "", 0, "{ENTER}", 0)
-        ControlSend("P2", "", 0, "connect ")
-        ControlSend("P2", "", 0, ClipGet())
+        ControlSend("P2", "", 0, "connect " & $hostAddress, 1)
         Sleep(1000)
         ControlSend("P2", "", 0, "{ENTER}", 0)
-        ControlSend("P3", "", 0, "connect ")
-        ControlSend("P3", "", 0, ClipGet())
+        ControlSend("P3", "", 0, "connect " & $hostAddress, 1)
         Sleep(1000)
         ControlSend("P3", "", 0, "{ENTER}", 0)
-        ControlSend("P4", "", 0, "connect ")
-        ControlSend("P4", "", 0, ClipGet())
+        ControlSend("P4", "", 0, "connect " & $hostAddress, 1)
         Sleep(1000)
         ControlSend("P4", "", 0, "{ENTER}", 0)
-        ControlSend("P5", "", 0, "connect ")
-        ControlSend("P5", "", 0, ClipGet())
+        ControlSend("P5", "", 0, "connect " & $hostAddress, 1)
         Sleep(1000)
         ControlSend("P5", "", 0, "{ENTER}", 0)
-        ControlSend("P6", "", 0, "connect ")
-        ControlSend("P6", "", 0, ClipGet())
+        ControlSend("P6", "", 0, "connect " & $hostAddress, 1)
         Sleep(1000)
         ControlSend("P6", "", 0, "{ENTER}", 0)
-        ControlSend("P7", "", 0, "connect ")
-        ControlSend("P7", "", 0, ClipGet())
+        ControlSend("P7", "", 0, "connect " & $hostAddress, 1)
         Sleep(1000)
         ControlSend("P7", "", 0, "{ENTER}", 0)
-        ControlSend("P8", "", 0, "connect ")
-        ControlSend("P8", "", 0, ClipGet())
+        ControlSend("P8", "", 0, "connect " & $hostAddress, 1)
         Sleep(1000)
         ControlSend("P8", "", 0, "{ENTER}", 0)
         Sleep(50)

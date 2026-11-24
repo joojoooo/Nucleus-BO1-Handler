@@ -1,2 +1,2 @@
 @ECHO OFF
-START "" /B AutoIt3.exe F2Guest.au3
+START "" /B "%~dp0..\AutoIt3.exe" "%~dp0F2-guest-connect-to-lan-host.au3" "%~1"
