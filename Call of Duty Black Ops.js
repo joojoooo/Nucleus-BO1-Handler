@@ -1,4 +1,4 @@
-// Options shown in Nucleus. Keep the keys and choice order for saved profiles.
+// Options shown in Nucleus. Keep existing keys and choice values for saved profiles.
 var noYes = ["No", "Yes"];
 var offOn = ["Off", "On"];
 var botCounts = ["Default", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
@@ -7,22 +7,35 @@ for (var suffix = 0; suffix <= 200; suffix++) {
   lanHostSuffixes.push(String(suffix));
 }
 
-Game.AddOption("Select preferred game mode", "", "mode", ["Zombies", "Multiplayer"]);
-Game.AddOption("Choose your preferred graphic settings", "Default will use the previous or default settings", "Graphics", ["Default", "Low", "Med", "High", "Extra"]);
-Game.AddOption("Select the number of players (only for Zombies)", "", "Players", ["1", "2", "3", "4"]);
-Game.AddOption("Would you like to use mods (only for Zombies)", "", "mods", noYes);
-Game.AddOption("Select the number of friendly bots", "Default will use the previous or default settings", "Friendly_Bots", botCounts);
-Game.AddOption("Select the number of enemy bots", "Default will use the previous or default settings", "Enemy_Bots", botCounts);
-Game.AddOption("Select the bot skill level", "Default will use the previous or default settings. Fu stands for Veteran.", "Skill", ["Default", "Easy", "Normal", "Hard", "Fu"]);
-Game.AddOption("For LAN and only for Guest PC, select the last digits of the host IP", "", "lan", lanHostSuffixes);
-Game.AddOption("Play audio only from the first instance?", "Select No to hear every instance.", "Mus", ["Yes", "No"]);
-Game.AddOption("Select the FPS Cap the game will use", "", "FPS", ["60", "75", "90", "120", "144", "165", "200", "240", "45", "30", "0"]);
-Game.AddOption("VSync", "", "VSync", offOn);
-Game.AddOption("Gamepad Vibration", "", "Gamepad Vibration", offOn);
-Game.AddOption("Draw FPS", "", "cg_drawfps", ["Disabled", "Enabled"]);
-Game.AddOption("Select your preferred FOV scale", "Select the hyphen to load default settings", "FOV", ["-", "1", "1.1", "1.2", "1.3", "1.4", "1.5"]);
-Game.AddOption("Would you like to unlock all (only for Multiplayer)", "Default will not make any changes and keep the previous selected settings", "Unlock", ["Default", "Yes"]);
-Game.AddOption("Unlock Nazi Zombies", "Unlocks Nazi Zombies and campaign completion rewards. Default is No.", "UnlockNaziZombies", noYes);
+// Nucleus renders options in order. These single-choice rows serve as headings.
+function addOptionHeading(title, key) {
+  Game.AddOption("──── " + title + " ────", "", key, ["───"]);
+}
+
+Game.AddOption("Game Mode", "Play Zombies with up to 4 players or Multiplayer with up to 8.", "mode", ["Zombies", "Multiplayer"]);
+
+addOptionHeading("VIDEO", "heading_video");
+Game.AddOption("Graphics Preset", "Default keeps your current graphics settings. Med also keeps them in Multiplayer.", "Graphics", ["Default", "Low", "Med", "High", "Extra"]);
+Game.AddOption("FPS Limit", "Set the maximum frame rate. Choose 0 for no limit.", "FPS", ["60", "30", "90", "120", "144", "240", "0"]);
+Game.AddOption("FPS Counter", "Show the current frame rate in game.", "cg_drawfps", ["Disabled", "Enabled"]);
+Game.AddOption("VSync", "Sync the frame rate with your display to reduce screen tearing.", "VSync", offOn);
+Game.AddOption("Field of View", "Higher values widen your view. Choose - to keep the current setting.", "FOV", ["-", "1", "1.1", "1.2", "1.3", "1.4", "1.5"]);
+
+addOptionHeading("ZOMBIES", "heading_zombies");
+Game.AddOption("Zombies Players", "Auto uses your Nucleus layout. For a LAN match, the host can select the total across both PCs.", "Players", ["Auto", "1", "2", "3", "4"]);
+Game.AddOption("Zombies Mods", "Enable custom mods for Zombies.", "mods", noYes);
+Game.AddOption("Nazi Zombies", "Unlock Nazi Zombies and campaign completion rewards in Zombies mode.", "UnlockNaziZombies", noYes);
+
+addOptionHeading("MULTIPLAYER", "heading_multiplayer");
+Game.AddOption("Friendly Bots", "Set the number of allied bots in Combat Training. Default keeps the current count.", "Friendly_Bots", botCounts);
+Game.AddOption("Enemy Bots", "Set the number of opposing bots in Combat Training. Default keeps the current count.", "Enemy_Bots", botCounts);
+Game.AddOption("Bot Difficulty", "Set bot difficulty in Combat Training. Fu means Veteran. Default keeps the current difficulty.", "Skill", ["Default", "Easy", "Normal", "Hard", "Fu"]);
+Game.AddOption("Multiplayer Unlocks", "Unlock all Multiplayer progression rewards. Default keeps your current progress.", "Unlock", ["Default", "Yes"]);
+
+addOptionHeading("OTHER", "heading_other");
+Game.AddOption("Controller Vibration", "Enable gamepad vibration during play.", "Gamepad Vibration", offOn);
+Game.AddOption("Player 1 Audio", "Choose Yes to hear only Player 1 or No to hear all players.", "Mus", ["Yes", "No"]);
+Game.AddOption("LAN Host IP", "On the guest PC, choose the final number of the host's 192.168.1.x address. Use - on the host or when playing on one PC.", "lan", lanHostSuffixes);
 
 // Game registration
 Game.SteamID = "42700";
@@ -31,13 +44,12 @@ Game.GameName = "Call of Duty Black Ops";
 Game.MaxPlayersOneMonitor = 8;
 Game.MaxPlayers = 8;
 Game.Description =
-  "For Zombies (up to 4 players), before launching your instances, select the number of players under Nucleus options, then launch your instances and have the first player setup an online private match. Once ready press F2 or ONLY from the map selection screen, press SELECT+X on the first player's gamepad to launch the match and to automatically connect all instances. Press F3 or SELECT+Y on the first player's gamepad to quickly restart match.\n\n" +
-  "For a controller and mouse/keyboard, assign the combined keyboard/mouse icon to one window. If you assign individual raw-input devices, press End to release the input lock.\n\n" +
-  "To play with mods (only for Zombies), place your mods in the mods folder located under NucleusCo-op/handlers/Call of Duty Black Ops/mods. Select Yes under the mod option in Nucleus and launch your instances. When prompted, load the custom Zombie mod in the current instance, then press OK.\n\n" +
-  "For Multiplayer (up to 8 players), launch your instances, have the first player host and start a combat training match, and then press F2 or SELECT+X on the host's gamepad to have all the other instances connect automatically. To quickly restart match, press F3 or SELECT+Y on the first player's gamepad.\n\n" +
-  "To swap bumper/trigger buttons (useful for playstation gamepads) press F4 or SELECT+A on the first player's gamepad only once all the instances have finished positioning/resizing or once you're in the match.\n\n" +
-  "To play over LAN, ONLY the guest PC will need to select the last 1-3 digits of the Host PC's IP address in the launch options, then once all the instances have finished positionin/resizing, press F2 or press the SELECT+X buttons simultaneously on the first player's gamepad to connect all the guest instances to the host PC.\n\n" +
-  "Enjoy this amazing CoD title (the best one in my humble opinion) in all of its glory with friends and family!";
+  "For Zombies, have Player 1 open an online Private Match, then press F2 to start it and connect the other players. Use Select + X on Player 1's controller from the map selection screen only.\n\n" +
+  "For Multiplayer, have Player 1 start a Combat Training match, then press F2 or Select + X on Player 1's controller to connect the other players.\n\n" +
+  "On a guest PC, set LAN Host IP before launch. Once the host match is running and the guest windows are in place, press F2 or Select + X on the guest PC to join.\n\n" +
+  "Restart with F3 or Select + Y. Swap bumpers and triggers with F4 or Select + A after the windows are in place. Use Player 1's controller for these shortcuts.\n\n" +
+  "When mixing controllers with keyboard and mouse, assign the combined keyboard/mouse icon to one player. Press End to unlock input if you assigned the keyboard and mouse separately.\n\n" +
+  "For custom Zombies mods, place them in NucleusCo-op/handlers/Call of Duty Black Ops/mods and set Zombies Mods to Yes. When prompted, load the mod in the current game window, then click OK.";
 
 // Instanced files and bootstrapper launch
 var bootstrapperExe = "plutonium-bootstrapper-win32.exe";
@@ -425,7 +437,7 @@ function configureZombies(instance, options, settings, automationFolder) {
     ui_showdlcmaps: "1",
     ui_browserhidedlc: "0",
   };
-  var modeArgs = ' +set sp_minplayers "' + options["Players"] + '"' +
+  var modeArgs = ' +set sp_minplayers "' + zombiesPlayerCount(options["Players"]) + '"' +
     " +set ui_showDLCMaps 1 +set ui_browserHideDlc 0 +set ui_sp_unlock " + zombiesDvars.ui_sp_unlock +
     " +set zombiefive_discovered 1 +set zombietron_discovered 1 +set mis_01_unlock " + zombiesDvars.mis_01_unlock;
   setLaunchArguments("t5sp", modeArgs, instance, settings);
@@ -436,6 +448,15 @@ function configureZombies(instance, options, settings, automationFolder) {
   useNativeBorderlessWindows();
   applyBaseConfigOptions(configPath, options["FPS"], settings);
   setPlayerConfig(configPath, settings, zombiesDvars);
+}
+
+function zombiesPlayerCount(selection) {
+  if (/^[1-4]$/.test(String(selection))) {
+    return Number(selection);
+  }
+
+  var layoutPlayers = Context.NumberOfPlayers;
+  return layoutPlayers > 0 ? Math.min(layoutPlayers, 4) : 2;
 }
 
 function configureMultiplayer(instance, options, settings) {

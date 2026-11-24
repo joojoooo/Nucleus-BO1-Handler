@@ -71,7 +71,7 @@ static class T5Integration
         profile.Options["FOV"] = "-";
         profile.Options["Mus"] = Environment.GetEnvironmentVariable("T5_FIXTURE_AUDIO") ?? "Yes";
         profile.Options["FPS"] = "60";
-        profile.Options["Players"] = "1";
+        profile.Options["Players"] = "Auto";
         profile.Options["Unlock"] = "Default";
         profile.Options["UnlockNaziZombies"] = "No";
         profile.Options["VSync"] = "Off";
