@@ -13,6 +13,9 @@ main()
 		// always coop
 		replaceFunc( getFunction( "maps/_utility", "is_coop" ), ::alwaysTrue, -1 );
 		
+		// allow cg_mature in onlinegame
+		replaceFunc( getFunction( "common_scripts/utility", "is_mature" ), ::is_mature_stub, -1 );
+		
 		if ( isDedicated() )
 		{
 			// host is not players[0] on dedi
@@ -25,11 +28,19 @@ main()
 			replaceFunc( getFunction( "maps/_load_common", "all_players_connected" ), ::all_players_connected, -1 );
 		}
 		
-		if ( getDvarInt( "zombiemode" ) )
+		if ( getDvarInt( "zombietron" ) )
+		{
+			// fix hotjoining on doa
+			replaceFunc( getFunction( "maps/_zombietron_main", "update_next_arena" ), ::update_next_arena );
+			replaceFunc( getFunction( "maps/_zombietron_main", "player_reset_score" ), ::player_reset_score );
+			replaceFunc( getFunction( "maps/_zombietron_pickups", "extra_life_spawner" ), ::extra_life_spawner );
+		}
+		else if ( getDvarInt( "zombiemode" ) )
 		{
 			// make sure quickrevive is coop
 			replaceFunc( getFunction( "maps/_zombiemode_perks", "vending_trigger_think" ), ::vending_trigger_think, -1 );
 			replaceFunc( getFunction( "maps/_zombiemode_perks", "turn_revive_on" ), ::turn_revive_on, -1 );
+			replaceFunc( getFunction( "maps/_zombiemode_perks", "give_perk" ), ::give_perk, -1 );
 			replaceFunc( getFunction( "maps/_zombiemode_score", "team_score_init" ), ::team_score_init, -1 );
 			
 			// cotd ee is coop
@@ -44,8 +55,29 @@ main()
 				replaceFunc( getFunction( "maps/zombie_cod5_prototype", "pistol_rank_setup" ), ::pistol_rank_setup, -1 );
 				replaceFunc( getFunction( "maps/zombie_cod5_prototype", "check_solo_game" ), ::check_solo_game, -1 );
 			}
+			
+			if ( isDedicated() )
+			{
+				// fix box error/leak on dedis
+				replaceFunc( getFunction( "maps/_zombiemode_weapons", "decide_hide_show_hint" ), ::decide_hide_show_hint, -1 );
+			}
 		}
 	}
+}
+
+decide_hide_show_hint( endon_notify )
+{
+	self notify( "decide_hide_show_hint_leak_fix" );
+	self endon( "decide_hide_show_hint_leak_fix" );
+	
+	func = getFunction( "maps/_zombiemode_weapons", "decide_hide_show_hint" );
+	disableDetourOnce( func );
+	self [[func]]( endon_notify );
+}
+
+is_mature_stub()
+{
+	return GetDvarInt( #"cg_mature" );
 }
 
 getHostDedi()
@@ -67,8 +99,18 @@ isZombieMode()
 	return ( isDefined( level.is_zombie_level ) && level.is_zombie_level );
 }
 
+isZombietronMode()
+{
+	return ( isDefined( level.zombietron_mode ) && level.zombietron_mode );
+}
+
 shouldEnableWater()
 {
+	if ( isZombietronMode() )
+	{
+		return true;
+	}
+	
 	if ( level.script == "zombie_coast" || level.script == "zombie_cod5_sumpf" || level.script == "zombie_cosmodrome" || level.script == "zombie_moon" || level.script == "zombie_temple" )
 	{
 		return true;
@@ -84,9 +126,9 @@ init()
 		return;
 	}
 	
-	PreCacheString( &"PLUTONIUM_UI_MP_CONNECTED" );
+	PreCacheString( &"PLUTONIUM_MP_CONNECTED" );
 	
-	if ( getDvarInt( "onlinegame" ) )
+	if ( level.onlinegame )
 	{
 		// prevent randomized solo players
 		setDvar( "zombiefive_norandomchar", 1 );
@@ -95,42 +137,93 @@ init()
 	// do prints, handle hotjoining and leavers
 	level thread onPlayerConnect();
 	
-	if ( isZombieMode() )
+	if ( level.onlinegame )
 	{
-		// make late joiners into spectators
-		thread other_players_spectate();
-		
-		// fix spawning
-		thread endOfRoundSpectatorRespawnWatch();
-		
-		// fix water on dedi
-		if ( isDedicated() )
+		if ( isZombieMode() )
 		{
-			if ( shouldEnableWater() )
+			// make late joiners into spectators
+			thread other_players_spectate();
+			
+			// fix spawning
+			if ( !isZombietronMode() )
 			{
-				setDvar( "phys_buoyancy", true );
+				thread endOfRoundSpectatorRespawnWatch();
+			}
+			
+			// fix water on dedi
+			if ( isDedicated() )
+			{
+				setDvar( "playerPushAmount", 1 );
+				
+				if ( shouldEnableWater() )
+				{
+					setDvar( "phys_buoyancy", true );
+				}
+			}
+		}
+		
+		// lets be the last to setup func ptrs
+		for ( i = 0; i < 10; i++ )
+		{
+			waittillframeend;
+		}
+		
+		if ( isZombieMode() && !isZombietronMode() )
+		{
+			// make dead players into spectators
+			level.oldOverridePlayerKilled = level.overridePlayerKilled;
+			level.overridePlayerKilled = ::playerKilledOverride;
+			
+			// setup this callback
+			if ( level.spawnSpectator == GetFunction( "maps/_callbackglobal", "spawnspectator" ) )
+			{
+				level.spawnSpectator = ::spawn_spectator;
+			}
+			
+			// fix moon model hot joining
+			if ( level.script == "zombie_moon" )
+			{
+				level.zombiemode_give_player_model_override_old = level.zombiemode_give_player_model_override;
+				level.zombiemode_give_player_model_override = ::zombiemode_give_player_model_override_func;
 			}
 		}
 	}
-	
-	// lets be the last to setup func ptrs
-	for ( i = 0; i < 10; i++ )
+}
+
+zombiemode_give_player_model_override_func( entity_num )
+{
+	if ( level.ever_been_on_the_moon && !IsDefined( self.zm_random_char ) )
 	{
-		waittillframeend;
-	}
-	
-	if ( isZombieMode() )
-	{
-		// make dead players into spectators
-		level.oldOverridePlayerKilled = level.overridePlayerKilled;
-		level.overridePlayerKilled = ::playerKilledOverride;
+		nums = [];
+		nums[0] = 0;
+		nums[1] = 1;
+		nums[2] = 2;
+		nums[3] = 3;
+		players = get_players();
 		
-		// setup this callback
-		if ( level.spawnSpectator == GetFunction( "maps/_callbackglobal", "spawnspectator" ) )
+		for ( i = 0; i < players.size; i++ )
 		{
-			level.spawnSpectator = ::spawn_spectator;
+			if ( players[i] == self )
+			{
+				continue;
+			}
+			
+			nums = array_remove( nums, players[i].zm_random_char );
+		}
+		
+		// prio richt
+		if ( is_in_array( nums, 3 ) )
+		{
+			self.zm_random_char = 3;
+		}
+		else
+		{
+			assert( nums.size >= 1 );
+			self.zm_random_char = nums[0];
 		}
 	}
+	
+	self [[ level.zombiemode_give_player_model_override_old ]]( entity_num );
 }
 
 other_players_spectate()
@@ -219,7 +312,7 @@ update_spawn_points()
 		side1 = north_structs;
 		side2 = south_structs;
 		
-		if ( randomint( 100 ) > 50 )
+		if ( players.size && isdefined( players[ 0 ].spawn_side ) && players[ 0 ].spawn_side == "south_spawn" )
 		{
 			side1 = south_structs;
 			side2 = north_structs;
@@ -243,23 +336,50 @@ update_spawn_points()
 	}
 }
 
+onDisconnect()
+{
+	lpselfnum = self getentitynumber();
+	lpguid = self getguid();
+	name = self.playername;
+	
+	self waittill( "disconnect" );
+	
+	logprint( "Q;" + lpguid + ";" + lpselfnum + ";" + name + "\n" );
+}
+
 onPlayerConnect()
 {
 	for ( ;; )
 	{
 		level waittill( "connected", player );
 		
-		if ( isZombieMode() && flag( "all_players_spawned" ) )
+		if ( isZombieMode() && !isZombietronMode() && flag( "all_players_spawned" ) )
 		{
 			player thread update_spawn_points();
 		}
 		
 		if ( level.script != "frontend" )
 		{
-			iprintln( &"PLUTONIUM_UI_MP_CONNECTED", player.playername );
+			iprintln( &"PLUTONIUM_MP_CONNECTED", player.playername );
+		}
+
+		player thread onDisconnect();
+		player thread onConnect();
+	}
+}
+
+saveFate()
+{
+	self waittill( "disconnect" );
+	
+	if ( isdefined( self.fate ) )
+	{
+		if ( !isdefined( level.fate_cache ) )
+		{
+			level.fate_cache = [];
 		}
 		
-		player thread onConnect();
+		level.fate_cache[ self.entity_num + "" ] = self.fate;
 	}
 }
 
@@ -267,9 +387,14 @@ onConnect()
 {
 	self endon( "disconnect" );
 	
+	if ( isZombietronMode() )
+	{
+		self thread saveFate();
+	}
+	
 	logprint( "J;" + self getguid() + ";" + self getentitynumber() + ";" + self.playername + "\n" );
 	
-	if ( isZombieMode() && flag( "all_players_spawned" ) )
+	if ( isZombieMode() && !isZombietronMode() && flag( "all_players_spawned" ) )
 	{
 		// init all the stuff that was missed
 		self setClientDvars( "ammoCounterHide", "0", "miniscoreboardhide", "0" );
@@ -342,7 +467,6 @@ onConnect()
 		{
 			self._padded = false;
 			self.lander = false;
-			self VisionSetNaked( "zombie_moonHanger18", 0.5 );
 			self thread [[ getFunction( "maps/zombie_moon_utility", "check_for_grenade_throw" ) ]]();
 			self thread [[ getFunction( "maps/zombie_moon_gravity", "player_throw_grenade" ) ]]();
 			self thread [[ getFunction( "maps/zombie_moon_gravity", "low_gravity_watch" ) ]]();
@@ -392,32 +516,132 @@ onConnect()
 			
 			if ( level.script == "zombie_theater" )
 			{
-				setclientsysstate( "box_indicator", [[ getFunction( "maps/zombie_theater_magic_box", "get_location_from_chest_index" ) ]]( level.chest_index ) );
+				setclientsysstate( "box_indicator", [[ getFunction( "maps/zombie_theater_magic_box", "get_location_from_chest_index" ) ]]( level.chest_index ), self );
 			}
 			
 			if ( level.script == "zombie_cosmodrome" )
 			{
-				setclientsysstate( "box_indicator", [[ getFunction( "maps/zombie_cosmodrome_magic_box", "get_location_from_chest_index" ) ]]( level.chest_index ) );
+				setclientsysstate( "box_indicator", [[ getFunction( "maps/zombie_cosmodrome_magic_box", "get_location_from_chest_index" ) ]]( level.chest_index ), self );
 			}
 			
 			if ( level.script == "zombie_pentagon" )
 			{
-				setclientsysstate( "box_indicator", [[ getFunction( "maps/zombie_pentagon_magic_box", "get_location_from_chest_index" ) ]]( level.chest_index ) );
+				setclientsysstate( "box_indicator", [[ getFunction( "maps/zombie_pentagon_magic_box", "get_location_from_chest_index" ) ]]( level.chest_index ), self );
 			}
 		}
 		else
 		{
 			if ( level.script == "zombie_cosmodrome" )
 			{
-				setclientsysstate( "box_indicator", level._cosmodrome_no_power );
+				setclientsysstate( "box_indicator", level._cosmodrome_no_power, self );
 			}
 			
 			if ( level.script == "zombie_pentagon" )
 			{
-				setclientsysstate( "box_indicator", level._pentagon_no_power );
+				setclientsysstate( "box_indicator", level._pentagon_no_power, self );
 			}
 		}
 	}
+}
+
+delay_give_back_fate( time )
+{
+	self endon( "disconnect" );
+	
+	wait time;
+	
+	if ( isdefined( level.fate_cache ) && isdefined( level.fate_cache[ self.entity_num + "" ] ) )
+	{
+		switch ( level.fate_cache[ self.entity_num + "" ] )
+		{
+			case "fortune":
+				self [[ getFunction( "maps/_zombietron_fate", "fortune_fate" ) ]]();
+				break;
+				
+			case "firepower":
+				self [[ getFunction( "maps/_zombietron_fate", "firepower_fate" ) ]]();
+				break;
+				
+			case "friendship":
+				self [[ getFunction( "maps/_zombietron_fate", "friendship_fate" ) ]]();
+				break;
+				
+			case "furious_feet":
+				self [[ getFunction( "maps/_zombietron_fate", "furious_feet_fate" ) ]]();
+				
+				if ( self.boosters < 3 )
+				{
+					self.boosters = 3;
+					self [[ getFunction( "maps/_zombietron_score", "update_hud" ) ]]();
+				}
+				
+				break;
+		}
+	}
+}
+
+delay_reapply_fx_light( time )
+{
+	self endon( "disconnect" );
+	
+	wait time;
+	
+	players = get_players();
+	
+	for ( i = 0; i < players.size; i++ )
+	{
+		if ( players[ i ] != self && isdefined( players[ i ].light_playFX ) )
+		{
+			PlayFxOnTag( level._effect[ players[ i ].light_playFX ], players[ i ], "tag_origin" );
+		}
+	}
+}
+
+player_reset_score()
+{
+	self.score = 0;
+	
+	// scripts wait 1, so flag for all_players_spawned will already be set...
+	if ( !isdefined( self.lives ) || self.lives != 0 )
+	{
+		self.lives = 3;
+		self.bombs = 1;
+		self.boosters = 2;
+	}
+	else
+	{
+		// hotjoined
+		self thread delay_give_back_fate( 1 );
+		self thread delay_reapply_fx_light( 1 );
+	}
+	
+	self [[ getFunction( "maps/_zombietron_score", "update_multiplier_bar" ) ]]( 0 );
+	self [[ getFunction( "maps/_zombietron_score", "update_hud" ) ]]();
+}
+
+spawn_the_spectators_doa()
+{
+	players = get_players();
+	
+	for ( i = 0; i < players.size; i++ )
+	{
+		if ( players[i].sessionstate == "spectator" )
+		{
+			players[i].lives = 0;
+			players[i].bombs = 0;
+			players[i].boosters = 0;
+			players[i] thread [[ level.spawnPlayer ]]();
+		}
+	}
+}
+
+update_next_arena()
+{
+	spawn_the_spectators_doa();
+	
+	func = getFunction( "maps/_zombietron_main", "update_next_arena" );
+	disableDetourOnce( func );
+	self [[ func ]]();
 }
 
 all_players_connected()
@@ -549,10 +773,10 @@ vending_trigger_think()
 			cheat = false;
 			
 			/#
-				if ( GetDvarInt( #"zombie_cheat" ) >= 5 )
-				{
-					cheat = true;
-				}
+			if ( GetDvarInt( #"zombie_cheat" ) >= 5 )
+			{
+				cheat = true;
+			}
 			#/
 			
 			if ( cheat != true )
@@ -705,5 +929,126 @@ team_score_init()
 		
 		//MM (3/10/10)	Disable team points
 		//	pool.hud = create_team_hud( pool.score, pool );
+	}
+}
+
+give_perk( perk, bought )
+{
+	self SetPerk( perk );
+	self.num_perks++;
+	
+	if ( is_true( bought ) )
+	{
+		//AUDIO: Ayers - Sending Perk Name over to audio common script to play VOX
+		self thread [[ getFunction( "maps/_zombiemode_audio", "perk_vox" ) ]]( perk );
+		self setblur( 4, 0.1 );
+		wait( 0.1 );
+		self setblur( 0, 0.1 );
+		//earthquake (0.4, 0.2, self.origin, 100);
+		
+		self notify( "perk_bought", perk );
+	}
+	
+	if ( perk == "specialty_armorvest" )
+	{
+		self.preMaxHealth = self.maxhealth;
+		self SetMaxHealth( level.zombie_vars["zombie_perk_juggernaut_health"] );
+	}
+	else if ( perk == "specialty_armorvest_upgrade" )
+	{
+		self.preMaxHealth = self.maxhealth;
+		self SetMaxHealth( level.zombie_vars["zombie_perk_juggernaut_health_upgrade"] );
+	}
+	
+	// WW (02-03-11): Deadshot csc call
+	if ( perk == "specialty_deadshot" )
+	{
+		self SetClientFlag( level._ZOMBIE_PLAYER_FLAG_DEADSHOT_PERK );
+	}
+	else if ( perk == "specialty_deadshot_upgrade" )
+	{
+		self SetClientFlag( level._ZOMBIE_PLAYER_FLAG_DEADSHOT_PERK );
+	}
+	
+	self [[ getFunction( "maps/_zombiemode_perks", "perk_hud_create" ) ]]( perk );
+	
+	//stat tracking
+	self.stats["perks"]++;
+	
+	self thread [[ getFunction( "maps/_zombiemode_perks", "perk_think" ) ]]( perk );
+}
+
+extra_life_spawner()
+{
+	while ( 1 )
+	{
+		waittime = RandomFloatRange( level.zombie_vars["min_extra_life_spawn_time"], level.zombie_vars["max_extra_life_spawn_time"] );
+		
+		while ( waittime > 0 )
+		{
+			while ( !flag( "round_is_active" ) )
+			{
+				wait 5;
+			}
+			
+			wait 5;
+			waittime -= 5;
+		}
+		
+		// extra wait if you have a lot of lives
+		players = get_players();
+		lives = 0;
+		
+		for ( i = 0; i < players.size; i++ )
+		{
+			if ( isdefined( players[i].lives ) )
+			{
+				lives += players[i].lives;
+			}
+		}
+		
+		waittime = lives * 10;
+		
+		while ( waittime > 0 )
+		{
+			while ( !flag( "round_is_active" ) )
+			{
+				wait 5;
+			}
+			
+			wait 5;
+			waittime -= 5;
+		}
+		
+		if ( flag( "all_players_dead" ) )
+		{
+			continue;
+		}
+		
+		spawn_point = [[ getFunction( "maps/_zombietron_pickups", "get_random_pickup_location" ) ]]();
+		
+		if ( isDefined( spawn_point ) )
+		{
+			type = "extra_life";
+			
+			origin = spawn_point.origin;
+			
+			pickup = Spawn( "script_model", origin );
+			pickup.script_noteworthy = "a_pickup_item";
+			
+			yaw = RandomInt( 360 );
+			pickup.angles = ( 0, yaw, 0 );
+			pickup SetModel( level.extra_life_model );
+			
+			trigger = spawn( "trigger_radius", origin, 0, 30, 128 );
+			
+			pickup setclientflag( level._ZT_SCRIPTMOVER_CF_POWERUP );
+			pickup.type = type;
+			pickup thread [[ getFunction( "maps/_zombietron_pickups", "wait_for_pickup" ) ]]( type, trigger );
+			pickup thread [[ getFunction( "maps/_zombietron_pickups", "powerup_timeout" ) ]]( trigger );
+			pickup thread [[ getFunction( "maps/_zombietron_pickups", "powerup_wobble" ) ]]( trigger );
+			
+			pickup.trigger = trigger;
+		}
 	}
 }

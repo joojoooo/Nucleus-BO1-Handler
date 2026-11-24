@@ -1,6 +1,5 @@
 #NoTrayIcon
 
-Global $targetTitle = "Plutonium T5 Co-Op (r4839)"
 HotKeySet("{F10}", "SendF10ToMatchingWindows")
 HotKeySet("!{F11}", "SendF10ToMatchingWindows")
 
@@ -9,16 +8,11 @@ While True
 WEnd
 
 Func SendF10ToMatchingWindows()
-    Local $winList = WinList()
+    Local $winList = WinList("[REGEXPTITLE:^Plutonium T5 Co-Op \(r[0-9]+\) \(LAN\)$]")
     For $i = 1 To $winList[0][0]
-        ; Only proceed if window is visible and active
-        If BitAND(WinGetState($winList[$i][1]), 2) Then
-            ; Match exact title (for partial match use StringInStr)
-            If $winList[$i][0] = $targetTitle Then
-                ControlSend($winList[$i][1], "", "", "{F10}")
-            EndIf
+        Local $window = $winList[$i][1]
+        If BitAND(WinGetState($window), 2) Then
+            ControlSend($window, "", "", "{F10}")
         EndIf
     Next
-Sleep(500)
-ControlSend("", "", "", "text", 0)
 EndFunc
