@@ -1,0 +1,3 @@
+# Keep the exact extracted bytes in every checkout.
+* -text whitespace=cr-at-eol
+tahcep -diff

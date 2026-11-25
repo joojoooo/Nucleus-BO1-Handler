@@ -1,32 +1,16 @@
-"""Inspect unsigned Black Ops PC fastfiles containing only inline rawfiles.
-
-Format reference: https://github.com/eithan1231/open-fastfile/tree/b746ad7aaec77e0e97a99af4055d8151a6f4ecaa/scripts/cod/t5
-"""
+"""Inspect unsigned Black Ops PC fastfiles containing only inline rawfiles."""
 
 import argparse
 import hashlib
 from pathlib import Path
-import re
 import struct
 import zlib
 
-
-HEADER = b"IWffu100" + struct.pack("<I", 0x1D9)
-XFILE_SIZE = 36
-ASSET_LIST = struct.Struct("<4I")
-ASSET = struct.Struct("<2I")
-RAWFILE = struct.Struct("<3I")
-SCRIPT = struct.Struct("<2I")
-INLINE = 0xFFFFFFFF
-RAWFILE_TYPE = 36
-MAX_INPUT = 128 * 1024 * 1024
-MAX_ZONE = 128 * 1024 * 1024
-MAX_EXTRACTED = 256 * 1024 * 1024
-SCRIPT_SUFFIXES = (".gsc", ".csc")
-SAFE_COMPONENT = re.compile(r"[A-Za-z0-9_-][A-Za-z0-9_.-]*")
-DEVICE_NAMES = {"CON", "PRN", "AUX", "NUL"} | {
-    f"{prefix}{number}" for prefix in ("COM", "LPT") for number in range(10)
-}
+from fastfile_format import (
+    ASSET, ASSET_LIST, HEADER, INLINE, MANIFEST, MAX_EXTRACTED, MAX_INPUT,
+    MAX_NAME, MAX_ZONE, RAWFILE, RAWFILE_TYPE, SCRIPT, SCRIPT_SUFFIXES, XFILE,
+    rawfile_path,
+)
 
 
 def inflate(data, limit):
@@ -38,18 +22,10 @@ def inflate(data, limit):
 
 
 def rawfile_name(zone, start):
-    end = zone.find(b"\0", start, start + 1024)
+    end = zone.find(b"\0", start, start + MAX_NAME)
     if end == -1:
         raise ValueError("missing rawfile name terminator")
-    name = zone[start:end].decode("ascii").replace("\\", "/")
-    for part in name.split("/"):
-        if (
-            not SAFE_COMPONENT.fullmatch(part)
-            or part.endswith(".")
-            or part.split(".")[0].upper() in DEVICE_NAMES
-        ):
-            raise ValueError(f"unsafe rawfile name {name!r}")
-    return name, end + 1
+    return zone[start:end].decode("ascii"), end + 1
 
 
 def parse_fastfile(fastfile):
@@ -61,13 +37,13 @@ def parse_fastfile(fastfile):
     zone, padding = inflate(data[len(HEADER):], MAX_ZONE)
     if padding.strip(b"\0"):
         raise ValueError("unexpected data after the zone stream")
-    if struct.unpack_from("<I", zone)[0] + XFILE_SIZE != len(zone):
+    if XFILE.unpack_from(zone)[0] + XFILE.size != len(zone):
         raise ValueError("zone size does not match its header")
 
-    strings, string_pointer, count, asset_pointer = ASSET_LIST.unpack_from(zone, XFILE_SIZE)
+    strings, string_pointer, count, asset_pointer = ASSET_LIST.unpack_from(zone, XFILE.size)
     if strings or string_pointer or asset_pointer != INLINE or not count:
         raise ValueError("expected an inline asset table without script strings")
-    table_start = XFILE_SIZE + ASSET_LIST.size
+    table_start = XFILE.size + ASSET_LIST.size
     offset = table_start + count * ASSET.size
     if offset > len(zone):
         raise ValueError("truncated asset table")
@@ -76,13 +52,15 @@ def parse_fastfile(fastfile):
             raise ValueError("only fastfiles containing inline rawfile assets are supported")
 
     rawfiles = {}
+    trailers = {}
     names = set()
     budget = MAX_EXTRACTED
     for _ in range(count):
         name_pointer, length, data_pointer = RAWFILE.unpack_from(zone, offset)
         if name_pointer != INLINE or data_pointer != INLINE:
             raise ValueError("only inline rawfile names and buffers are supported")
-        name, start = rawfile_name(zone, offset + RAWFILE.size)
+        serialized_name, start = rawfile_name(zone, offset + RAWFILE.size)
+        name = rawfile_path(serialized_name)
         if name.lower() in names:
             raise ValueError(f"duplicate rawfile name {name!r}")
         names.add(name.lower())
@@ -92,6 +70,7 @@ def parse_fastfile(fastfile):
         if end >= len(zone):
             raise ValueError(f"truncated rawfile {name!r}")
         payload = zone[start:end]
+        trailers[serialized_name] = zone[end]
         offset = end + 1
         if name.lower().endswith(SCRIPT_SUFFIXES):
             inflated_size, deflated_size = SCRIPT.unpack_from(payload)
@@ -108,19 +87,22 @@ def parse_fastfile(fastfile):
 
     if offset != len(zone):
         raise ValueError("unparsed data remains in the zone")
-    return hashlib.sha256(data).hexdigest(), rawfiles
+    return hashlib.sha256(data).hexdigest(), rawfiles, trailers
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("fastfile", type=Path)
     parser.add_argument("--out", type=Path, help="extract rawfiles to a new directory")
+    parser.add_argument("--manifest", action="store_true", help="save asset order and trailing bytes for packing")
     parser.add_argument("--compare", type=Path, help="compare embedded GSC and CSC with a source directory")
     args = parser.parse_args()
+    if args.manifest and not args.out:
+        parser.error("--manifest requires --out")
     try:
         if args.compare and not args.compare.is_dir():
             raise ValueError("comparison source must be an existing directory")
-        digest, rawfiles = parse_fastfile(args.fastfile)
+        digest, rawfiles, trailers = parse_fastfile(args.fastfile)
         if args.out:
             args.out.mkdir(parents=True)
         print(f"SHA-256 {digest}")
@@ -141,6 +123,11 @@ def main():
                         status = "exact" if source.read(len(payload) + 1) == payload else "different"
                 mismatches += status != "exact"
             print(f"{len(payload):>9}  {hashlib.sha256(payload).hexdigest()}  {name}  {status}")
+        if args.manifest:
+            with (args.out / MANIFEST).open("x", encoding="ascii", newline="\n") as manifest:
+                manifest.write("# Trailing byte (hex) and serialized asset name, in archive order\n")
+                for name, trailer in trailers.items():
+                    manifest.write(f"{trailer:02x} {name}\n")
         print(f"{len(rawfiles)} rawfiles")
         return int(mismatches != 0)
     except (OSError, ValueError, struct.error, zlib.error) as error:
