@@ -127,24 +127,50 @@ function Save-GameView($Name) {
     }
 }
 
-function Test-MenuInput {
-    Save-GameView 'menu-before'
-    $firstPad = if ($Layout -eq 'Mixed') { 1 } else { 0 }
-    foreach ($pad in $firstPad..1) {
-        $label = Send-PadReport $pad DPAD_DOWN 0.45
-        Wait-PadReport $label up
-        Start-Sleep -Milliseconds 650
-        Save-GameView "menu-pad-$pad"
+function Test-ZombiesFrontendLoaded {
+    foreach ($player in 0,1) {
+        $console = Join-Path $profileRoot "Instance$player\Plutonium\console.log"
+        $log = Get-Item -LiteralPath $console -ErrorAction SilentlyContinue
+        if (!$log -or $log.LastWriteTimeUtc -lt $testStarted -or
+            !(Select-String -LiteralPath $console -SimpleMatch 'CL_InitCGame:' -Quiet)) {
+            return $false
+        }
     }
-    if ($Layout -eq 'Mixed') {
+    return $true
+}
+
+function Test-MenuInput {
+    if ($Mode -eq 'Zombies') {
+        foreach ($pad in $controllerPlayers) {
+            $label = Send-PadReport $pad A 0.3
+            Wait-PadReport $label up
+        }
+        Start-Sleep -Milliseconds 800
+    }
+    Save-GameView 'menu-before'
+    foreach ($pad in $controllerPlayers) {
+        foreach ($control in 'LS_DOWN','DPAD_DOWN') {
+            $label = Send-PadReport $pad $control 0.45
+            Wait-PadReport $label up
+            Start-Sleep -Milliseconds 450
+            Save-GameView "menu-$control-$pad"
+        }
+    }
+    if ($keyboardPlayer -ge 0) {
+        foreach ($control in 'B','BACK') {
+            $label = Send-PadReport $controllerPlayers[0] $control 0.4
+            Wait-PadReport $label up
+            Save-GameView "menu-$control"
+        }
         $bounds = [Windows.Forms.Screen]::PrimaryScreen.Bounds
-        Invoke-DesktopProbe click $gameIds[0] @(
+        Invoke-DesktopProbe click $gameIds[$keyboardPlayer] @(
             ($bounds.X + [int]($bounds.Width * 0.5)),
-            ($bounds.Y + [int]($bounds.Height * 0.36))
+            ($bounds.Y + [int]($bounds.Height * (0.36 + $keyboardPlayer * 0.5)))
         )
         Start-Sleep -Milliseconds 650
         Save-GameView 'menu-mouse'
-        Invoke-DesktopProbe key $gameIds[0] @('{DOWN}')
+        Invoke-DesktopProbe click-window $gameIds[$controllerPlayers[0]]
+        Invoke-DesktopProbe key $gameIds[$keyboardPlayer] @('{DOWN}')
         Start-Sleep -Milliseconds 650
         Save-GameView 'menu-keyboard'
     }
@@ -179,14 +205,16 @@ function Start-TestMap {
 function Test-HeldX {
     Start-TestMap
     foreach ($player in 0,1) { Send-GameCommands $player @('bind BUTTON_X +scores') }
+    $foregroundPlayer = if ($keyboardPlayer -ge 0) { $keyboardPlayer } else { 1 }
+    Invoke-DesktopProbe activate $gameIds[1 - $foregroundPlayer]
+    Invoke-DesktopProbe activate $gameIds[$foregroundPlayer]
     Save-GameView 'hold-before'
-    $players = if ($Layout -eq 'Mixed') { '1' } else { '0,1' }
-    $label = Send-PadReport $players X 3.4
+    $label = Send-PadReport ($controllerPlayers -join ',') X 3.4
     Wait-PadReport $label down
     Start-Sleep -Milliseconds 1350
     Save-GameView 'hold-down'
-    if ($Layout -eq 'Mixed') {
-        $keyboard = Invoke-DesktopProbe tab-hold $gameIds[0] -Async
+    if ($keyboardPlayer -ge 0) {
+        $keyboard = Invoke-DesktopProbe tab-hold $gameIds[$keyboardPlayer] -Async
         Start-Sleep -Milliseconds 600
         Save-GameView 'hold-both'
         $keyboard.WaitForExit()
@@ -198,6 +226,16 @@ function Test-HeldX {
     Wait-PadReport $label up
     Start-Sleep -Milliseconds 400
     Save-GameView 'hold-up'
+    foreach ($pad in $controllerPlayers) {
+        $label = Send-PadReport $pad RS_RIGHT 0.4
+        Wait-PadReport $label up
+        Save-GameView "stick-look-$pad"
+    }
+    if ($keyboardPlayer -ge 0) {
+        Invoke-DesktopProbe mouse-look $gameIds[$keyboardPlayer]
+        Start-Sleep -Milliseconds 300
+        Save-GameView 'mouse-look'
+    }
 }
 
 function Test-InstanceAudio {

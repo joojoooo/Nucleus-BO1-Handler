@@ -14,15 +14,17 @@ $game = 'D:\SteamLibrary\steamapps\common\Call of Duty Black Ops'
 .\dev_tools\t5\Test-T5.ps1 -GameRoot $game -Check Menu -Layout Mixed
 .\dev_tools\t5\Test-T5.ps1 -GameRoot $game -Check HoldX
 .\dev_tools\t5\Test-T5.ps1 -GameRoot $game -Check HoldX -Layout Mixed
+.\dev_tools\t5\Test-T5.ps1 -GameRoot $game -Check Input -Layout MixedControllerFirst
 .\dev_tools\t5\Test-T5.ps1 -GameRoot $game -Check Audio -Audio First -Layout Mixed
 ```
 
 - Set `-NucleusRoot` if Nucleus is outside the repo's parent directory.
 - `-ControllerSlots` takes zero-based OpenXInput slots for existing controllers.
-  Mixed layout uses the second slot and gives the first window the combined
-  keyboard/mouse. Omit the slots to use virtual pads. Virtual pads require
-  Python with `vgamepad` and an existing ViGEmBus installation. `-Python` can
-  point to the executable in a virtual environment.
+  `Mixed` gives the first window the combined keyboard/mouse and uses the second
+  controller slot. `MixedControllerFirst` gives the first window the first slot
+  and the second window the combined keyboard/mouse. Omit the slots to use
+  virtual pads, which require Python with `vgamepad` and an existing ViGEmBus
+  installation. `-Python` can point to the executable in a virtual environment.
 - Pass `-RetainedRun <previous-run-folder>` to copy that run's player runtime
   into a fresh fixture and exercise migration. `-BuildOnly` stages the fixture
   and compiles the C# tools for inspection.
@@ -33,8 +35,9 @@ $game = 'D:\SteamLibrary\steamapps\common\Call of Duty Black Ops'
 | --- | --- |
 | `Startup` | Two responsive game windows remain alive after setup. See `fixture.out.log`, `nucleus\debug-log.txt`, and the per-instance Plutonium console logs. |
 | `Bootstrapper` | One responsive game window from the bundled runtime, launched directly to isolate Plutonium startup from Nucleus setup. |
-| `Menu` | The screenshots show each controller advancing its assigned game. Mixed mode also captures mouse and keyboard input. |
-| `HoldX` | The probe temporarily binds X to the Zombies scoreboard. It should be visible during the hold and hidden after release. In mixed mode, `hold-both.png` should show both scoreboards. |
+| `Menu` | The screenshots show how each game responds to the D-pad and the left stick. Mixed layouts also check controller isolation and keyboard focus after clicking the controller window. |
+| `HoldX` | The probe switches focus between windows before holding X to show the Zombies scoreboard. The scoreboards should stay visible through the hold and disappear on release. In mixed layouts, `hold-both.png` should show both scoreboards while the keyboard window has focus. |
+| `Input` | Runs `Menu` and `HoldX` in Zombies, including right-stick and mouse look. On a concurrent launch it presses A before setup finishes if both frontends are ready. `menu-after-setup.png` should show both title prompts. |
 | `Audio` | Compare the per-process WASAPI peaks in `audio-peaks.txt`. Use `-Audio All` to exercise the all-instance option. |
 
 The screenshot probes use the primary display. The Zombies map-ready check

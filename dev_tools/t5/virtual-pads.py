@@ -36,6 +36,10 @@ def main():
                 pad.left_trigger(value=255)
             elif button == "RT":
                 pad.right_trigger(value=255)
+            elif button == "LS_DOWN":
+                pad.left_joystick(x_value=0, y_value=-32768)
+            elif button == "RS_RIGHT":
+                pad.right_joystick(x_value=32767, y_value=0)
             else:
                 pad.press_button(button=getattr(vg.XUSB_BUTTON, "XUSB_GAMEPAD_" + button))
             pad.update()

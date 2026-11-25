@@ -59,6 +59,12 @@ static class T5Integration
         userGame.InitializeDefault(game, gamePath);
         GameProfile.Game = game;
         GameProfile.GameInfo = userGame;
+        // Exercise the Nucleus setting where Custom is selected but all players use Default.
+        GameProfile.AudioCustomSettings = true;
+        GameProfile.AudioInstances = new Dictionary<string, string> {
+            { "AudioInstance1", "Default" },
+            { "AudioInstance2", "Default" },
+        };
         var profile = new GameProfile();
         Console.WriteLine("Creating profile state");
         OverrideField(profile, "options", new Dictionary<string, object>());
@@ -84,7 +90,7 @@ static class T5Integration
         GameProfile.UseSplitDiv = false;
         GameProfile.EnableWindowsMerger = false;
         GameProfile.UseNicknames = true;
-        bool mixed = layout == "Mixed";
+        int keyboardPlayer = layout == "Mixed" ? 0 : layout == "MixedControllerFirst" ? 1 : -1;
         string[] padIds = slots.Split(',');
         var bounds = Screen.PrimaryScreen.Bounds;
         var owner = new UserScreen(bounds);
@@ -98,10 +104,10 @@ static class T5Integration
                 MonitorBounds = new Rectangle(bounds.X, bounds.Y + i * bounds.Height / 2, bounds.Width, bounds.Height / 2),
                 Owner = owner,
                 Display = display,
-                GamepadId = mixed && i == 0 ? 99 : int.Parse(padIds[i]),
-                IsKeyboardPlayer = mixed && i == 0,
-                IsXInput = !mixed || i != 0,
-                IsController = !mixed || i != 0,
+                GamepadId = i == keyboardPlayer ? 99 : int.Parse(padIds[i]),
+                IsKeyboardPlayer = i == keyboardPlayer,
+                IsXInput = i != keyboardPlayer,
+                IsController = i != keyboardPlayer,
             });
         }
         Console.WriteLine("Creating OSD");
@@ -126,6 +132,8 @@ static class T5Integration
         Console.WriteLine("Play returned: " + playResult + ", foreground window " + GetForegroundWindow());
         if (!String.IsNullOrEmpty(playResult))
             throw new InvalidOperationException(playResult);
+        if (grabDelay == 0 && !game.ProcessChangesAtEnd)
+            throw new InvalidOperationException("Expected concurrent launch with default audio devices.");
 
         var ids = new List<string>();
         foreach (var player in profile.DevicesList)

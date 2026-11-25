@@ -77,7 +77,8 @@ for (var playerIndex = 0; playerIndex < Game.MaxPlayers; playerIndex++) {
 Game.CMDOptions = launchCommands;
 Game.PromptBetweenInstances = false;
 Game.ProcessChangesAtEnd = false;
-Game.PauseBetweenProcessGrab = 20;
+var sequentialGrabDelay = 20;
+Game.PauseBetweenProcessGrab = sequentialGrabDelay;
 Game.PauseBetweenStarts = 0;
 Game.KillProcessesOnClose = ['connect', 'cmd', 'AutoIt3', 'JoyToKey'];
 
@@ -88,7 +89,7 @@ Game.HookFocus = false;
 Game.ResetWindows = true;
 Game.SetWindowHookStart = false;
 Game.PreventWindowDeactivation = false;
-Game.KeyboardPlayerSkipPreventWindowDeactivate = false;
+Game.KeyboardPlayerSkipPreventWindowDeactivate = true;
 Game.SetForegroundWindowElsewhere = false;
 Game.NotTopMost = false;
 Game.SetTopMostAtEnd = true;
@@ -113,19 +114,43 @@ Game.Hook.CustomDllEnabled = false;
 Game.Hook.UseAlpha8CustomDll = false;
 Game.InjectHookXinput = false;
 
+var nucleusCoop = importNamespace("Nucleus.Gaming.Coop");
+var protoInputLauncher = importNamespace("Nucleus.Gaming.Coop.ProtoInput").ProtoInputLauncher;
+var parallelSetup;
+
 // Nucleus runs Play once for each player.
 Game.Play = function() {
-  var usesController = configurePlayerInput();
   var automationFolder = Context.ScriptFolder + "\\automation";
-  Context.RunAdditionalFiles([automationFolder + "\\startup\\name-and-hide-player-consoles.bat"], false, 10);
+  var options = Context.Options;
+  var mode = options["mode"];
+  if (Context.PlayerID == 0) {
+    Game.LockInputAtStart = false;
+    for (var i = 0; i < PlayerList.Count; i++) {
+      if (usesRawInput(PlayerList[i])) {
+        Game.LockInputAtStart = true;
+        break;
+      }
+    }
+    // Keep controller input active across real focus changes. Combined keyboard
+    // input follows Windows focus, and raw devices use ProtoInput's input lock.
+    Game.PreventWindowDeactivation = PlayerList.Count > 1 && !Game.LockInputAtStart;
+    parallelSetup = canLaunchTogether(mode, options) ? {
+      nucleusFolder: Context.NucleusFolder,
+      executables: [],
+    } : null;
+    Game.ProcessChangesAtEnd = parallelSetup !== null;
+    Game.PromptBetweenInstances = false;
+  }
+  var usesController = configurePlayerInput(Player);
+  if (!parallelSetup) {
+    Context.RunAdditionalFiles([automationFolder + "\\startup\\name-and-hide-player-consoles.bat"], false, 10);
+  }
   Context.RunAdditionalFiles([automationFolder + "\\hotkeys\\F4-swap-bumpers-and-triggers.bat"], false, 10);
   Context.RunAdditionalFiles([automationFolder + "\\hotkeys\\F3-restart-match.bat"], false, 10);
 
   var instance = preparePlutoniumInstance();
   Game.ExecutableName = bootstrapperExe;
 
-  var options = Context.Options;
-  var mode = options["mode"];
   var settings = readLaunchSettings(options, usesController);
   queueLanAutomation(automationFolder, mode, options["lan"]);
 
@@ -136,10 +161,18 @@ Game.Play = function() {
   }
 
   applySavedControllerLayout(instance, options["pscontrollers"]);
+  var executable = instance.plutoniumPath + "\\bin\\" + bootstrapperExe;
+  if (parallelSetup) {
+    parallelSetup.executables.push(executable.toLowerCase());
+    System.IO.File.Delete(inputStartupFile(executable, "ready"));
+    System.IO.File.Delete(inputStartupFile(executable, "window"));
+    Context.StartProcess(automationFolder + "\\AutoIt3.exe",
+      '"' + automationFolder + '\\startup\\defer-game-window-input.au3" "' + executable + '" ' + (Context.PlayerID + 1), false);
+  }
   Context.EditRegKey(
     "HKEY_CURRENT_USER",
     "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Layers",
-    instance.plutoniumPath + "\\bin\\" + bootstrapperExe,
+    executable,
     "HIGHDPIAWARE",
     Nucleus.RegType.String
   );
@@ -149,26 +182,77 @@ Game.Play = function() {
   }
 };
 
+function canLaunchTogether(mode, options) {
+  // These layouts need the normal launch path for mod prompts, input locking,
+  // or Nucleus's per-player audio and processor settings.
+  var profile = nucleusCoop.GameProfile;
+  if (PlayerList.Count < 2 || Game.PauseBetweenProcessGrab != sequentialGrabDelay || Game.LockInputAtStart ||
+      (mode == "Zombies" && options["mods"] == "Yes")) {
+    return false;
+  }
+  if (profile.AudioCustomSettings) {
+    for (var i = 0; i < PlayerList.Count; i++) {
+      var audioKey = "AudioInstance" + (i + 1);
+      if (profile.AudioInstances.ContainsKey(audioKey) && profile.AudioInstances[audioKey] != "Default") {
+        return false;
+      }
+    }
+  }
+  for (var i = 0; i < profile.ProfilePlayersList.Count; i++) {
+    var player = profile.ProfilePlayersList[i];
+    if ((player.PriorityClass && player.PriorityClass != "Normal") ||
+        (player.IdealProcessor && player.IdealProcessor != "*") || player.Affinity) {
+      return false;
+    }
+  }
+  return true;
+}
+
 // Window focus and input
 function usesRawInput(player) {
   return player.IsRawKeyboard || player.IsRawMouse;
 }
 
+function usesControllerInput(player) {
+  return !player.IsKeyboardPlayer && !usesRawInput(player);
+}
+
 var windowApi = importNamespace("Nucleus.Gaming.Windows.Interop");
 var windowMessages = importNamespace("Win32");
+var gameWindows = importNamespace("Nucleus.Gaming.Tools.GlobalWindowMethods").GlobalWindowMethods;
 Game.OnFinishedSetup = function() {
+  if (parallelSetup) {
+    finishParallelSetup();
+  }
   var controllerWindows = [];
+  var keyboardWindow = null;
   for (var i = 0; i < PlayerList.Count; i++) {
     var player = PlayerList[i];
+    if (!usesControllerInput(player) && player.ProtoInputInstanceHandle) {
+      // The frontend still reads buttons even with gpad_enabled set to 0.
+      var inputHandle = player.ProtoInputInstanceHandle;
+      ProtoInput.SetControllerIndex(inputHandle, 0, 0, 0, 0);
+      ProtoInput.InstallHook(inputHandle, ProtoInput.Values.XinputHookID);
+    }
     if (usesRawInput(player)) {
       continue;
     }
-    var windowHandle = player.ProcessData.HWnd.NativePtr;
+    var windowHandle = parallelSetup ? restoreInputWindow(player, i) : player.ProcessData.HWnd.NativePtr;
     if (player.IsKeyboardPlayer) {
-      windowApi.User32Interop.SetForegroundWindow(windowHandle);
+      keyboardWindow = windowHandle;
     } else {
       controllerWindows.push(windowHandle);
     }
+  }
+
+  if (keyboardWindow !== null) {
+    // Only the combined keyboard/mouse window needs real mouse activation.
+    for (var i = 0; i < controllerWindows.length; i++) {
+      var controllerWindow = controllerWindows[i];
+      var style = windowApi.User32Interop.GetWindowLong(controllerWindow, -20); // GWL_EXSTYLE
+      windowApi.User32Interop.SetWindowLong(controllerWindow, -20, style | 0x08000000); // WS_EX_NOACTIVATE
+    }
+    windowApi.User32Interop.SetForegroundWindow(keyboardWindow);
   }
 
   if (controllerWindows.length > 0) {
@@ -179,6 +263,47 @@ Game.OnFinishedSetup = function() {
     }
   }
 };
+
+function inputStartupFile(executable, name) {
+  return System.IO.Path.GetDirectoryName(executable) + "\\nucleus-input-" + name;
+}
+
+function restoreInputWindow(player, index) {
+  var executable = parallelSetup.executables[index];
+  System.IO.File.WriteAllText(inputStartupFile(executable, "ready"), "");
+  var windowFile = inputStartupFile(executable, "window");
+  if (!System.IO.File.Exists(windowFile)) {
+    return gameWindows.WaitForProcWindowHandleNotZero(player.ProcessData.Process);
+  }
+  // A minimized game can leave the console as the process's reported main window.
+  var handle = new System.IntPtr(Number(System.IO.File.ReadAllText(windowFile)));
+  gameWindows.EnableWindow(handle, true);
+  gameWindows.ShowWindow(handle, 9); // SW_RESTORE
+  var bounds = player.MonitorBounds;
+  windowApi.User32Interop.SetWindowPos(handle, System.IntPtr.Zero, bounds.X, bounds.Y, 0, 0, 0x0015);
+  return handle;
+}
+
+function finishParallelSetup() {
+  // Nucleus pairs the CMD launches by process start time. Check the executable
+  // paths before assigning input or naming any consoles.
+  var pids = [];
+  for (var i = 0; i < PlayerList.Count; i++) {
+    var process = PlayerList[i].ProcessData.Process;
+    if (process.MainModule.FileName.toLowerCase() != parallelSetup.executables[i]) {
+      throw new Error("Nucleus attached the wrong Plutonium process for player " + (i + 1));
+    }
+    pids.push(process.Id);
+  }
+
+  // ProcessChangesAtEnd handles window setup, but skips runtime ProtoInput.
+  for (var i = 0; i < PlayerList.Count; i++) {
+    var player = PlayerList[i];
+    configurePlayerInput(player);
+    protoInputLauncher.InjectRuntime(true, false, false, pids[i], parallelSetup.nucleusFolder,
+      i + 1, Game, player, -1, -1, player.GamepadId + 1, 0, 0, 0);
+  }
+}
 
 Game.ProtoInput.OnInputLocked = function() {
   for (var i = 0; i < PlayerList.Count; i++) {
@@ -232,7 +357,7 @@ Game.ProtoInput.OnInputUnlocked = function() {
   }
 };
 
-function configurePlayerInput() {
+function configurePlayerInput(player) {
   // Disable legacy Nucleus input hooks. ProtoInput handles input below.
   Game.HookSetCursorPos = false;
   Game.HookGetCursorPos = false;
@@ -250,15 +375,8 @@ function configurePlayerInput() {
   Game.ForwardRawKeyboardInput = false;
   Game.ForwardRawMouseInput = false;
   Game.DrawFakeMouseCursor = false;
-  var rawInput = usesRawInput(Player);
-  var usesController = !Player.IsKeyboardPlayer && !rawInput;
-  Game.LockInputAtStart = false;
-  for (var i = 0; i < PlayerList.Count; i++) {
-    if (usesRawInput(PlayerList[i])) {
-      Game.LockInputAtStart = true;
-      break;
-    }
-  }
+  var rawInput = usesRawInput(player);
+  var usesController = usesControllerInput(player);
 
   // Controllers get a focus loop without repeated WM_ACTIVATE messages.
   Game.ProtoInput.FocusHooks = usesController;
@@ -393,6 +511,7 @@ function readLaunchSettings(options, usesController) {
     rumble: optionIsOn(rumble) ? "1" : "0",
     drawFps: (optionIsOn(drawFps) || drawFps == "Enabled" || drawFps == "Simple") ? "Simple" : "Off",
     gamepad: usesController ? "1" : "0",
+    mouse: usesController ? "0" : "1",
     muteAudio: Context.PlayerID > 0 && options["Mus"] != "No",
   };
 }
@@ -411,8 +530,11 @@ function setLaunchArguments(gameType, modeArgs, instance, settings) {
   var nickname = Context.Nickname.replace(/["\r\n]/g, "").replace(/%/g, "%%");
   var gamePath = System.IO.Path.GetDirectoryName(instance.plutoniumPath).replace(/%/g, "%%");
   var audioArgs = settings.muteAudio ? " +set snd_menu_master 0" : "";
+  // Keep player 1 on the default LAN port when instances bind out of order.
+  var portArgs = parallelSetup ? " +set net_port " + (28960 + Context.PlayerID) : "";
   Context.StartArguments = gameType + ' "' + gamePath + '" -name "' + nickname + '" -nocurses -lan -offline' +
-    modeArgs + " +set gpad_enabled " + settings.gamepad + audioArgs +
+    modeArgs + portArgs + " +set com_startupIntroPlayed 1 +set com_introPlayed 1" +
+    " +set gpad_enabled " + settings.gamepad + " +set in_mouse " + settings.mouse + audioArgs +
     ' +set com_maxfps "' + settings.fps + '" +set r_vsync "' + settings.vsync +
     '" +set gpad_rumble "' + settings.rumble + '" +set cg_drawfps "' + settings.drawFps + '"';
 }
@@ -421,7 +543,8 @@ function useNativeBorderlessWindows() {
   Game.DontResize = true;
   Game.DontRemoveBorders = true;
   Game.DontReposition = false;
-  Game.ResetWindows = true;
+  // Parallel setup positions the renderer when it restores the window.
+  Game.ResetWindows = !parallelSetup || nucleusCoop.GameProfile.EnableWindowsMerger;
 }
 
 function configureZombies(instance, options, settings, automationFolder) {
@@ -486,8 +609,6 @@ function configureMultiplayer(instance, options, settings) {
     " +set playlist_excludeDlc 0 +set playlist_excludeDlc2 0 +set playlist_excludeDlc3 0 +set playlist_excludeDlc4 0";
   setLaunchArguments("t5mp", modeArgs, instance, settings);
 
-  Game.PromptBetweenInstances = false;
-  Game.ProcessChangesAtEnd = false;
   Game.PromptProcessChangesAtEnd = false;
 
   var configPaths = [instance.multiplayerConfig, instance.botConfig];
@@ -614,6 +735,7 @@ function setPlayerConfig(path, settings, modeDvars) {
     vid_xpos: Context.PosX,
     vid_ypos: Context.PosY,
     gpad_enabled: settings.gamepad,
+    in_mouse: settings.mouse,
     snd_menu_music: settings.muteAudio ? "0" : "1",
     snd_menu_voice: settings.muteAudio ? "0" : "1",
   };

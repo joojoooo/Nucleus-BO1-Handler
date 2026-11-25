@@ -3,8 +3,8 @@ param(
     [Parameter(Mandatory)][string]$GameRoot,
     [string]$NucleusRoot = (Join-Path $PSScriptRoot '..\..\..'),
     [ValidateSet('Zombies','Multiplayer')][string]$Mode = 'Zombies',
-    [ValidateSet('Dual','Mixed')][string]$Layout = 'Dual',
-    [ValidateSet('Startup','Bootstrapper','Menu','HoldX','Audio','Manual')][string]$Check = 'Startup',
+    [ValidateSet('Dual','Mixed','MixedControllerFirst')][string]$Layout = 'Dual',
+    [ValidateSet('Startup','Bootstrapper','Menu','HoldX','Input','Audio','Manual')][string]$Check = 'Startup',
     [ValidateSet('First','All')][string]$Audio = 'First',
     [ValidatePattern('^\d+,\d+$')][string]$ControllerSlots,
     [string]$RetainedRun,
@@ -22,10 +22,10 @@ $handler = 'Call of Duty Black Ops'
 $bootstrapper = 'plutonium-bootstrapper-win32.exe'
 $runtimePath = 'Plutonium\bin\' + $bootstrapper
 
-if ($Check -in 'HoldX','Audio' -and $Mode -ne 'Zombies') {
+if ($Check -in 'HoldX','Input','Audio' -and $Mode -ne 'Zombies') {
     throw "The $Check probe loads a Zombies map. Use -Mode Zombies."
 }
-if ($ControllerSlots -and $Check -in 'Menu','HoldX') {
+if ($ControllerSlots -and $Check -in 'Menu','HoldX','Input') {
     throw "The $Check probe requires virtual controllers. Omit -ControllerSlots."
 }
 if ($RetainedRun -and $Check -eq 'Bootstrapper') {
@@ -95,6 +95,8 @@ if ($LASTEXITCODE) { throw 'XInput probe compilation failed.' }
 if ($BuildOnly) { return }
 
 . "$PSScriptRoot\Test-T5Probes.ps1"
+$keyboardPlayer = switch ($Layout) { 'Mixed' { 0 } 'MixedControllerFirst' { 1 } default { -1 } }
+$controllerPlayers = @(0,1 | Where-Object { $_ -ne $keyboardPlayer })
 $padProcess = $null
 $integration = $null
 $originalAudio = $env:T5_FIXTURE_AUDIO
@@ -126,10 +128,22 @@ try {
     }
 
     $env:T5_FIXTURE_AUDIO = if ($Audio -eq 'First') { 'Yes' } else { 'No' }
+    if ($Check -eq 'Input') {
+        Add-Type @'
+using System;
+using System.Runtime.InteropServices;
+public static class T5WindowState {
+    [DllImport("user32.dll")] public static extern bool IsWindowEnabled(IntPtr window);
+    [DllImport("user32.dll")] public static extern bool IsIconic(IntPtr window);
+}
+'@
+    }
+    $testStarted = [DateTime]::UtcNow
     $integration = Start-Process -FilePath "$fixture\T5Integration.exe" -WorkingDirectory $fixture `
         -ArgumentList ('{0} "{1}" {2} {3} {4}' -f $Mode,"$game\BlackOps.exe",$Layout,$ControllerSlots,$GrabDelay) `
         -WindowStyle Hidden -PassThru -RedirectStandardOutput "$run\fixture.out.log" -RedirectStandardError "$run\fixture.err.log"
     $startedGames = @{}
+    $startupInput = @{ Checked = $false }
     Wait-ForFixture 'both game windows' $StartupTimeout {
         foreach ($process in @(Get-FixtureGames)) {
             $path = $process.ExecutablePath
@@ -141,6 +155,26 @@ try {
         if ($integration.HasExited) {
             throw "Fixture exited early with code $($integration.ExitCode). See $run\fixture.out.log and $run\fixture.err.log."
         }
+        if ($Check -eq 'Input' -and !$startupInput.Checked -and $GrabDelay -eq 0 -and
+            !(Test-Path -LiteralPath "$run\game-pids.txt") -and (Test-ZombiesFrontendLoaded)) {
+            $frontendWindows = @(foreach ($player in 0,1) {
+                $windowFile = Join-Path $profileRoot "Instance$player\Plutonium\bin\nucleus-input-window"
+                $handle = Get-Content -LiteralPath $windowFile -Raw -ErrorAction SilentlyContinue
+                if ($handle) { [IntPtr]([long]$handle) }
+            })
+            if ($frontendWindows.Count -eq 2) {
+                $startupInput.Checked = $true
+                Start-Sleep -Milliseconds 1200
+                foreach ($window in $frontendWindows) {
+                    if ([T5WindowState]::IsWindowEnabled($window) -or ![T5WindowState]::IsIconic($window)) {
+                        throw "Game window $window was available for input before setup. See $run."
+                    }
+                }
+                $label = Send-PadReport 0 A 0.4
+                Wait-PadReport $label up
+                Write-Host 'Sent A while both Zombies windows were gated.'
+            }
+        }
         @(Get-Content -LiteralPath "$run\game-pids.txt" -ErrorAction SilentlyContinue).Count -eq 2
     }
     $gameIds = @(Get-Content -LiteralPath "$run\game-pids.txt" | ForEach-Object { [int]$_ })
@@ -149,6 +183,7 @@ try {
         'Startup' { Start-Sleep -Seconds 10 }
         'Menu' { Test-MenuInput }
         'HoldX' { Test-HeldX }
+        'Input' { Save-GameView 'menu-after-setup'; Test-MenuInput; Test-HeldX }
         'Audio' { Test-InstanceAudio }
         'Manual' {
             Write-Host "The games are ready. Write quit to $focusControl to stop the run."

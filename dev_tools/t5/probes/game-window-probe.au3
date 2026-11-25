@@ -29,12 +29,27 @@ For $i = 1 To $windows[0][0]
     If $action = "inspect" Then
         If $title <> "" Then ConsoleWrite($title & @CRLF & WinGetText($handle) & @CRLF)
     ElseIf StringInStr($title, "Plutonium T5") = 1 Then
+        If $action = "activate" Then
+            WinActivate($handle)
+            If Not WinWaitActive($handle, "", 3) Then Exit 4
+            Exit 0
+        EndIf
+        If $action = "click-window" Then
+            Local $bounds = WinGetPos($handle)
+            MouseClick("left", $bounds[0] + Int($bounds[2] / 2), $bounds[1] + Int($bounds[3] / 2), 1, 0)
+            Exit 0
+        EndIf
         If Not WinActive($handle) Then Exit 4
         Switch $action
             Case "key"
                 Send($CmdLine[3])
             Case "click"
                 MouseClick("left", Number($CmdLine[3]), Number($CmdLine[4]), 1, 0)
+            Case "mouse-look"
+                For $step = 1 To 16
+                    DllCall("user32.dll", "none", "mouse_event", "dword", 1, "int", 14, "int", 0, "dword", 0, "ulong_ptr", 0)
+                    Sleep(20)
+                Next
             Case "tab-hold"
                 Send("{TAB down}")
                 Sleep(1700)
