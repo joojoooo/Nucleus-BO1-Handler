@@ -1,27 +1,26 @@
-#include common_scripts\utility; 
+#include common_scripts\utility;
 #include maps\_utility;
 #include maps\_zombiemode_utility;
 
-
 /*------------------------------------
-CLAYMORE STUFFS - 
+CLAYMORE STUFFS -
 a rough prototype for now, needs a bit more polish
 
 ------------------------------------*/
 init()
 {
-	trigs = getentarray("claymore_purchase","targetname");
-	for(i=0; i<trigs.size; i++)
+	trigs = getentarray( "claymore_purchase", "targetname" );
+	for ( i = 0; i < trigs.size; i++ )
 	{
-		model = getent( trigs[i].target, "targetname" ); 
-		model hide(); 
+		model = getent( trigs[ i ].target, "targetname" );
+		model hide();
 	}
 
-	array_thread(trigs,::buy_claymores);
+	array_thread( trigs,::buy_claymores );
 	level thread give_claymores_after_rounds();
-	
-	level.pickup_claymores = ::pickup_claymores;
-	level.pickup_claymores_trigger_listener = ::pickup_claymores_trigger_listener;
+
+	level.pickup_claymores =::pickup_claymores;
+	level.pickup_claymores_trigger_listener =::pickup_claymores_trigger_listener;
 
 	level.claymore_detectionDot = cos( 70 );
 	level.claymore_detectionMinDist = 20;
@@ -30,59 +29,59 @@ init()
 buy_claymores()
 {
 	self.zombie_cost = 1000;
-	self sethintstring( &"ZOMBIE_CLAYMORE_PURCHASE" );	
+	self sethintstring( &"ZOMBIE_CLAYMORE_PURCHASE" );
 	self setCursorHint( "HINT_NOICON" );
 
 	level thread set_claymore_visible();
 	self.claymores_triggered = false;
 
-	while(1)
+	while ( 1 )
 	{
-		self waittill("trigger",who);
-		if( who in_revive_trigger() )
+		self waittill( "trigger", who );
+		if ( who in_revive_trigger() )
 		{
 			continue;
 		}
-		
-		if( who has_powerup_weapon() )
+
+		if ( who has_powerup_weapon() )
 		{
 			wait( 0.1 );
 			continue;
 		}
 
-		if( is_player_valid( who ) )
+		if ( is_player_valid( who ) )
 		{
 
-			if( who.score >= self.zombie_cost )
-			{				
+			if ( who.score >= self.zombie_cost )
+			{
 				if ( !who is_player_placeable_mine( "claymore_zm" ) )
 				{
 					play_sound_at_pos( "purchase", self.origin );
 
 					//set the score
-					who maps\_zombiemode_score::minus_to_player_score( self.zombie_cost ); 
+					who maps\_zombiemode_score::minus_to_player_score( self.zombie_cost );
 					who maps\_zombiemode_weapons::check_collector_achievement( "claymore_zm" );
 					who thread claymore_setup();
-					who thread show_claymore_hint("claymore_purchased");
+					who thread show_claymore_hint( "claymore_purchased" );
 					who thread maps\_zombiemode_audio::create_and_play_dialog( "weapon_pickup", "grenade" );
 
 					// JMA - display the claymores
-					if( self.claymores_triggered == false )
-					{						
-						model = getent( self.target, "targetname" ); 					
-						model thread maps\_zombiemode_weapons::weapon_show( who ); 
+					if ( self.claymores_triggered == false )
+					{
+						model = getent( self.target, "targetname" );
+						model thread maps\_zombiemode_weapons::weapon_show( who );
 						self.claymores_triggered = true;
 					}
 
-					trigs = getentarray("claymore_purchase","targetname");
-					for(i = 0; i < trigs.size; i++)
+					trigs = getentarray( "claymore_purchase", "targetname" );
+					for ( i = 0; i < trigs.size; i++ )
 					{
-						trigs[i] SetInvisibleToPlayer(who);
+						trigs[ i ] SetInvisibleToPlayer( who );
 					}
 				}
 				else
 				{
-					who thread show_claymore_hint("already_purchased");
+					who thread show_claymore_hint( "already_purchased" );
 				}
 			}
 		}
@@ -91,35 +90,35 @@ buy_claymores()
 
 set_claymore_visible()
 {
-	players = getplayers();	
-	trigs = getentarray("claymore_purchase","targetname");
+	players = getplayers();
+	trigs = getentarray( "claymore_purchase", "targetname" );
 
-	while(1)
+	while ( 1 )
 	{
-		for(j = 0; j < players.size; j++)
+		for ( j = 0; j < players.size; j++ )
 		{
-			if( !players[j] is_player_placeable_mine( "claymore_zm" ) )
-			{						
-				for(i = 0; i < trigs.size; i++)
+			if ( !players[ j ] is_player_placeable_mine( "claymore_zm" ) )
+			{
+				for ( i = 0; i < trigs.size; i++ )
 				{
-					trigs[i] SetInvisibleToPlayer(players[j], false);
+					trigs[ i ] SetInvisibleToPlayer( players[ j ], false );
 				}
 			}
 		}
 
-		wait(1);
-		players = getplayers();	
+		wait( 1 );
+		players = getplayers();
 	}
 }
 
 claymore_watch()
 {
-	self endon("death");
+	self endon( "death" );
 
-	while(1)
+	while ( 1 )
 	{
-		self waittill("grenade_fire",claymore,weapname);
-		if(weapname == "claymore_zm")
+		self waittill( "grenade_fire", claymore, weapname );
+		if ( weapname == "claymore_zm" )
 		{
 			claymore.owner = self;
 			claymore thread satchel_damage();
@@ -132,13 +131,13 @@ claymore_watch()
 }
 
 claymore_setup()
-{	
+{
 	self thread claymore_watch();
 
-	self giveweapon("claymore_zm");
-	self set_player_placeable_mine("claymore_zm");
-	self setactionslot(4,"weapon","claymore_zm");
-	self setweaponammostock("claymore_zm",2);
+	self giveweapon( "claymore_zm" );
+	self set_player_placeable_mine( "claymore_zm" );
+	self setactionslot( 4, "weapon", "claymore_zm" );
+	self setweaponammostock( "claymore_zm", 2 );
 }
 
 pickup_claymores()
@@ -149,10 +148,10 @@ pickup_claymores()
 	{
 		player thread claymore_watch();
 
-		player giveweapon("claymore_zm");
-		player set_player_placeable_mine("claymore_zm");
-		player setactionslot(4,"weapon","claymore_zm");
-		player setweaponammoclip("claymore_zm",0);
+		player giveweapon( "claymore_zm" );
+		player set_player_placeable_mine( "claymore_zm" );
+		player setactionslot( 4, "weapon", "claymore_zm" );
+		player setweaponammoclip( "claymore_zm", 0 );
 		player notify( "zmb_enable_claymore_prompt" );
 	}
 	else
@@ -189,7 +188,7 @@ pickup_claymores_trigger_listener_enable( trigger, player )
 	while ( true )
 	{
 		player waittill_any( "zmb_enable_claymore_prompt", "spawned_player" );
-		
+
 		if ( !isDefined( trigger ) )
 		{
 			return;
@@ -234,82 +233,83 @@ waittill_not_moving()
 
 shouldAffectWeaponObject( object )
 {
-	pos = self.origin + (0,0,32);
-	
+	pos = self.origin + ( 0, 0, 32 );
+
 	dirToPos = pos - object.origin;
 	objectForward = anglesToForward( object.angles );
-	
+
 	dist = vectorDot( dirToPos, objectForward );
 	if ( dist < level.claymore_detectionMinDist )
 		return false;
-	
+
 	dirToPos = vectornormalize( dirToPos );
-	
+
 	dot = vectorDot( dirToPos, objectForward );
 	return ( dot > level.claymore_detectionDot );
 }
 
 claymore_detonation()
 {
-	self endon("death");
-	
+	self endon( "death" );
+
 	// wait until we settle
 	self waittill_not_moving();
-	
+
 	detonateRadius = 96;
-	
-	spawnFlag = 1;// SF_TOUCH_AI_AXIS
+
+	spawnFlag = 1; // SF_TOUCH_AI_AXIS
 	playerTeamToAllow = "axis";
-	if( isDefined( self.owner ) && isDefined( self.owner.pers["team"] ) && self.owner.pers["team"] == "axis" )
+	if ( isDefined( self.owner ) && isDefined( self.owner.pers[ "team" ] ) && self.owner.pers[ "team" ] == "axis" )
 	{
-		spawnFlag = 2;// SF_TOUCH_AI_ALLIES
+		spawnFlag = 2; // SF_TOUCH_AI_ALLIES
 		playerTeamToAllow = "allies";
 	}
-	
-	damagearea = spawn("trigger_radius", self.origin + (0,0,0-detonateRadius), spawnFlag, detonateRadius, detonateRadius*2);
-	
+
+	damagearea = spawn( "trigger_radius", self.origin + ( 0, 0, 0 - detonateRadius ), spawnFlag, detonateRadius, detonateRadius * 2 );
+
 	damagearea enablelinkto();
 	damagearea linkto( self );
 
 	self thread delete_claymores_on_death( damagearea );
-	
-	if(!isdefined(level.claymores))
+
+	if ( !isdefined( level.claymores ) )
 		level.claymores = [];
+
 	level.claymores = array_add( level.claymores, self );
-	
-	if( level.claymores.size > 15 && GetDvar( #"player_sustainAmmo") != "0" )
-		level.claymores[0] delete();
-	
-	while(1)
+
+	if ( level.claymores.size > 15 && GetDvar( #"player_sustainAmmo" ) != "0" )
+		level.claymores[ 0 ] delete();
+
+	while ( 1 )
 	{
 		damagearea waittill( "trigger", ent );
-		
+
 		if ( isdefined( self.owner ) && ent == self.owner )
 			continue;
 
-		if( isDefined( ent.pers ) && isDefined( ent.pers["team"] ) && ent.pers["team"] != playerTeamToAllow )
+		if ( isDefined( ent.pers ) && isDefined( ent.pers[ "team" ] ) && ent.pers[ "team" ] != playerTeamToAllow )
 			continue;
-		
+
 		if ( !ent shouldAffectWeaponObject( self ) )
 			continue;
 
-		if ( ent damageConeTrace(self.origin, self) > 0 )
+		if ( ent damageConeTrace( self.origin, self ) > 0 )
 		{
-			self playsound ("claymore_activated_SP");
+			self playsound( "claymore_activated_SP" );
 			wait 0.4;
 			if ( isdefined( self.owner ) )
 				self detonate( self.owner );
 			else
-			self detonate( undefined );
-				
+				self detonate( undefined );
+
 			return;
 		}
 	}
 }
 
-delete_claymores_on_death(ent)
+delete_claymores_on_death( ent )
 {
-	self waittill("death");
+	self waittill( "death" );
 	// stupid getarraykeys in array_remove reversing the order - nate
 	level.claymores = array_remove_nokeys( level.claymores, self );
 	wait .05;
@@ -319,53 +319,53 @@ delete_claymores_on_death(ent)
 
 satchel_damage()
 {
-//	self endon( "death" );
+	//	self endon( "death" );
 
-	self setcandamage(true);
+	self setcandamage( true );
 	self.health = 100000;
-	
+
 	attacker = undefined;
-	
+
 	playerTeamToAllow = "axis";
-	if( isDefined( self.owner ) && isDefined( self.owner.pers["team"] ) && self.owner.pers["team"] == "axis" )
+	if ( isDefined( self.owner ) && isDefined( self.owner.pers[ "team" ] ) && self.owner.pers[ "team" ] == "axis" )
 	{
 		playerTeamToAllow = "allies";
 	}
 
-	while(1)
+	while ( 1 )
 	{
-		self waittill("damage", amount, attacker);
+		self waittill( "damage", amount, attacker );
 
-		if ( !isdefined( self ) )	// something else killed it
+		if ( !isdefined( self ) ) // something else killed it
 		{
 			return;
 		}
 
 		self.health = self.maxhealth;
-		if ( !isplayer(attacker) )
+		if ( !isplayer( attacker ) )
 			continue;
 
 		if ( isdefined( self.owner ) && attacker == self.owner )
 			continue;
 
-		if( isDefined( attacker.pers ) && isDefined( attacker.pers["team"] ) && attacker.pers["team"] != playerTeamToAllow )
+		if ( isDefined( attacker.pers ) && isDefined( attacker.pers[ "team" ] ) && attacker.pers[ "team" ] != playerTeamToAllow )
 			continue;
 
 		break;
 	}
-	
+
 	if ( level.satchelexplodethisframe )
-		wait .1 + randomfloat(.4);
+		wait .1 + randomfloat( .4 );
 	else
 		wait .05;
-	
-	if (!isdefined(self))
+
+	if ( !isdefined( self ) )
 		return;
-	
+
 	level.satchelexplodethisframe = true;
-	
+
 	thread reset_satchel_explode_this_frame();
-	
+
 	self detonate( attacker );
 	// won't get here; got death notify.
 }
@@ -378,37 +378,37 @@ reset_satchel_explode_this_frame()
 
 play_claymore_effects()
 {
-	self endon("death");
-	
+	self endon( "death" );
+
 	self waittill_not_moving();
-	
+
 	PlayFXOnTag( level._effect[ "claymore_laser" ], self, "tag_fx" );
 }
 
 give_claymores_after_rounds()
 {
-	while(1)
+	while ( 1 )
 	{
 		level waittill( "between_round_over" );
-		
+
 		if ( !level flag_exists( "teleporter_used" ) || !flag( "teleporter_used" ) )
 		{
 			players = get_players();
-			for(i=0;i<players.size;i++)
+			for ( i = 0; i < players.size; i++ )
 			{
-				if ( players[i] is_player_placeable_mine( "claymore_zm" ) )
+				if ( players[ i ] is_player_placeable_mine( "claymore_zm" ) )
 				{
-					players[i]  giveweapon("claymore_zm");
-					players[i]  set_player_placeable_mine("claymore_zm");
-					players[i]  setactionslot(4,"weapon","claymore_zm");
-					players[i]  setweaponammoclip("claymore_zm",2);
+					players[ i ] giveweapon( "claymore_zm" );
+					players[ i ] set_player_placeable_mine( "claymore_zm" );
+					players[ i ] setactionslot( 4, "weapon", "claymore_zm" );
+					players[ i ] setweaponammoclip( "claymore_zm", 2 );
 				}
 			}
 		}
 	}
 }
 
-init_hint_hudelem(x, y, alignX, alignY, fontscale, alpha)
+init_hint_hudelem( x, y, alignX, alignY, fontscale, alpha )
 {
 	self.x = x;
 	self.y = y;
@@ -422,29 +422,29 @@ init_hint_hudelem(x, y, alignX, alignY, fontscale, alpha)
 
 setup_client_hintelem()
 {
-	self endon("death");
-	self endon("disconnect");
+	self endon( "death" );
+	self endon( "disconnect" );
 
-	if(!isDefined(self.hintelem))
+	if ( !isDefined( self.hintelem ) )
 	{
-		self.hintelem = newclienthudelem(self);
+		self.hintelem = newclienthudelem( self );
 	}
-	self.hintelem init_hint_hudelem(320, 220, "center", "bottom", 1.6, 1.0);
+
+	self.hintelem init_hint_hudelem( 320, 220, "center", "bottom", 1.6, 1.0 );
 }
 
-
-show_claymore_hint(string)
+show_claymore_hint( string )
 {
-	self endon("death");
-	self endon("disconnect");
+	self endon( "death" );
+	self endon( "disconnect" );
 
-	if(string == "claymore_purchased")
+	if ( string == "claymore_purchased" )
 		text = &"ZOMBIE_CLAYMORE_HOWTO";
 	else
 		text = &"ZOMBIE_CLAYMORE_ALREADY_PURCHASED";
 
 	self setup_client_hintelem();
-	self.hintelem setText(text);
-	wait(3.5);
-	self.hintelem settext("");
+	self.hintelem setText( text );
+	wait( 3.5 );
+	self.hintelem settext( "" );
 }

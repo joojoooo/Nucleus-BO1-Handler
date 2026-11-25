@@ -1,8 +1,8 @@
-#include common_scripts\utility; 
-#include maps\_utility_code; 
+#include common_scripts\utility;
+#include maps\_utility_code;
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: array_levelthread( <entities> , <process> , <var1> , <var2> , <var3> )"
 "Summary: Threads the < process > function for every entity in the < entities > array. The level calls the function and each entity of the array is passed as the first parameter to the process."
@@ -17,15 +17,15 @@
 "Example: array_levelthread( getentarray( "palm", "targetname" ), ::palmTrees );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 array_levelthread( array, process, var1, var2, var3, var4 )
 {
 	keys = getArrayKeys( array );
 
-	if( IsDefined( var4 ) )
+	if ( IsDefined( var4 ) )
 	{
-		for( i = 0 ; i < keys.size ; i++ )
+		for ( i = 0; i < keys.size; i++ )
 		{
 			thread [[ process ]]( array[ keys[ i ] ], var1, var2, var3, var4 );
 		}
@@ -33,9 +33,9 @@ array_levelthread( array, process, var1, var2, var3, var4 )
 		return;
 	}
 
-	if( IsDefined( var3 ) )
+	if ( IsDefined( var3 ) )
 	{
-		for( i = 0 ; i < keys.size ; i++ )
+		for ( i = 0; i < keys.size; i++ )
 		{
 			thread [[ process ]]( array[ keys[ i ] ], var1, var2, var3 );
 		}
@@ -43,9 +43,9 @@ array_levelthread( array, process, var1, var2, var3, var4 )
 		return;
 	}
 
-	if( IsDefined( var2 ) )
+	if ( IsDefined( var2 ) )
 	{
-		for( i = 0 ; i < keys.size ; i++ )
+		for ( i = 0; i < keys.size; i++ )
 		{
 			thread [[ process ]]( array[ keys[ i ] ], var1, var2 );
 		}
@@ -53,9 +53,9 @@ array_levelthread( array, process, var1, var2, var3, var4 )
 		return;
 	}
 
-	if( IsDefined( var1 ) )
+	if ( IsDefined( var1 ) )
 	{
-		for( i = 0 ; i < keys.size ; i++ )
+		for ( i = 0; i < keys.size; i++ )
 		{
 			thread [[ process ]]( array[ keys[ i ] ], var1 );
 		}
@@ -63,7 +63,7 @@ array_levelthread( array, process, var1, var2, var3, var4 )
 		return;
 	}
 
-	for( i = 0 ; i < keys.size ; i++ )
+	for ( i = 0; i < keys.size; i++ )
 	{
 		thread [[ process ]]( array[ keys[ i ] ] );
 	}
@@ -93,11 +93,12 @@ set_vision_set( visionset, transition_time )
 	{
 		transition_time = 1;
 	}
+
 	visionSetNaked( visionset, transition_time );
 }
 
 /*
-============= 
+=============
 ///ScriptDocBegin
 "Name: ent_flag_wait( <flagname> )"
 "Summary: Waits until the specified flag is set on self. Even handles some default flags for ai such as 'goal' and 'damage'"
@@ -107,20 +108,20 @@ set_vision_set( visionset, transition_time )
 "Example: enemy ent_flag_wait( "goal" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 ent_flag_wait( msg )
 {
-	self endon("death");
+	self endon( "death" );
 
-	while( !self.ent_flag[ msg ] )
+	while ( !self.ent_flag[ msg ] )
 	{
 		self waittill( msg );
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: ent_flag_wait_either( <flagname1> , <flagname2> )"
 "Summary: Waits until either of the the specified flags are set on self. Even handles some default flags for ai such as 'goal' and 'damage'"
@@ -131,19 +132,20 @@ ent_flag_wait( msg )
 "Example: enemy ent_flag_wait( "goal", "damage" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 ent_flag_wait_either( flag1, flag2 )
 {
-	self endon("death");
+	self endon( "death" );
 
-	for( ;; )
+	for ( ;; )
 	{
-		if( ent_flag( flag1 ) )
+		if ( ent_flag( flag1 ) )
 		{
 			return;
 		}
-		if( ent_flag( flag2 ) )
+
+		if ( ent_flag( flag2 ) )
 		{
 			return;
 		}
@@ -152,8 +154,8 @@ ent_flag_wait_either( flag1, flag2 )
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: ent_flag_wait_or_timeout( <flagname> , <timer> )"
 "Summary: Waits until either the flag gets set on self or the timer elapses. Even handles some default flags for ai such as 'goal' and 'damage'"
@@ -164,21 +166,21 @@ ent_flag_wait_either( flag1, flag2 )
 "Example: ent_flag_wait_or_timeout( "time_to_go", 3 );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 ent_flag_wait_or_timeout( flagname, timer )
 {
-	self endon("death");
+	self endon( "death" );
 
 	start_time = gettime();
-	for( ;; )
+	for ( ;; )
 	{
-		if( self.ent_flag[ flagname ] )
+		if ( self.ent_flag[ flagname ] )
 		{
 			break;
 		}
 
-		if( gettime() >= start_time + timer * 1000 )
+		if ( gettime() >= start_time + timer * 1000 )
 		{
 			break;
 		}
@@ -189,16 +191,16 @@ ent_flag_wait_or_timeout( flagname, timer )
 
 ent_flag_waitopen( msg )
 {
-	self endon("death");
+	self endon( "death" );
 
-	while( self.ent_flag[ msg ] )
+	while ( self.ent_flag[ msg ] )
 	{
 		self waittill( msg );
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: ent_flag_init( <flagname> )"
 "Summary: Initialize a flag to be used. All flags must be initialized before using ent_flag_set or ent_flag_wait.  Some flags for ai are set by default such as 'goal', 'death', and 'damage'"
@@ -208,27 +210,27 @@ ent_flag_waitopen( msg )
 "Example: enemy ent_flag_init( "hq_cleared" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 ent_flag_init( message, val )
 {
-	if( !IsDefined( self.ent_flag ) )
+	if ( !IsDefined( self.ent_flag ) )
 	{
 		self.ent_flag = [];
 		self.ent_flags_lock = [];
 	}
-	
+
 	if ( !IsDefined( level.first_frame ) )
 	{
-		assertEx( !IsDefined( self.ent_flag[ message ] ), "Attempt to reinitialize existing flag '" + message + "' on entity.");
+		assertEx( !IsDefined( self.ent_flag[ message ] ), "Attempt to reinitialize existing flag '" + message + "' on entity." );
 	}
 
-	if (is_true(val))
+	if ( is_true( val ) )
 	{
 		self.ent_flag[ message ] = true;
 
 		/#
-			self.ent_flags_lock[ message ] = true;
+		self.ent_flags_lock[ message ] = true;
 		#/
 	}
 	else
@@ -236,13 +238,13 @@ ent_flag_init( message, val )
 		self.ent_flag[ message ] = false;
 
 		/#
-			self.ent_flags_lock[ message ] = false;
+		self.ent_flags_lock[ message ] = false;
 		#/
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: ent_flag_set_delayed( <flagname> , <delay> )"
 "Summary: Sets the specified flag after waiting the delay time on self, all scripts using ent_flag_wait on self will now continue."
@@ -253,16 +255,16 @@ ent_flag_init( message, val )
 "Example: entity flag_set_delayed( "hq_cleared", 2.5 );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 ent_flag_set_delayed( message, delay )
 {
-	wait( delay ); 
+	wait( delay );
 	self ent_flag_set( message );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: ent_flag_set( <flagname> )"
 "Summary: Sets the specified flag on self, all scripts using ent_flag_wait on self will now continue."
@@ -272,8 +274,8 @@ ent_flag_set_delayed( message, delay )
 "Example: enemy ent_flag_set( "hq_cleared" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 ent_flag_set( message )
 {
 	/#
@@ -282,15 +284,15 @@ ent_flag_set( message )
 	assertEx( IsDefined( self.ent_flag[ message ] ), "Attempt to set a flag before calling flag_init: '" + message + "'." );
 	assert( self.ent_flag[ message ] == self.ent_flags_lock[ message ] );
 	self.ent_flags_lock[ message ] = true;
-	
+
 	#/
 
 	self.ent_flag[ message ] = true;
 	self notify( message );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: ent_flag_toggle( <flagname> )"
 "Summary: Toggles the specified ent flag."
@@ -299,22 +301,22 @@ ent_flag_set( message )
 "Example: ent_flag_toggle( "hq_cleared" );"
 "SPMP: both"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 ent_flag_toggle( message )
 {
-	if (self ent_flag(message))
+	if ( self ent_flag( message ) )
 	{
-		self ent_flag_clear(message);
+		self ent_flag_clear( message );
 	}
 	else
 	{
-		self ent_flag_set(message);
+		self ent_flag_set( message );
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: ent_flag_clear( <flagname> )"
 "Summary: Clears the specified flag on self."
@@ -324,8 +326,8 @@ ent_flag_toggle( message )
 "Example: enemy ent_flag_clear( "hq_cleared" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 ent_flag_clear( message )
 {
 	/#
@@ -335,10 +337,10 @@ ent_flag_clear( message )
 	assert( self.ent_flag[ message ] == self.ent_flags_lock[ message ] );
 	self.ent_flags_lock[ message ] = false;
 
-	#/	
+	#/
 
 	//do this check so we don't unnecessarily send a notify
-	if(	self.ent_flag[ message ] )
+	if ( self.ent_flag[ message ] )
 	{
 		self.ent_flag[ message ] = false;
 		self notify( message );
@@ -351,8 +353,8 @@ ent_flag_clear_delayed( message, delay )
 	self ent_flag_clear( message );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: ent_flag( <flagname> )"
 "Summary: Checks if the flag is set on self. Returns true or false."
@@ -362,19 +364,19 @@ ent_flag_clear_delayed( message, delay )
 "Example: enemy ent_flag( "death" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 ent_flag( message )
 {
 	AssertEx( IsDefined( message ), "Tried to check flag but the flag was not defined." );
-	AssertEx( IsDefined( self.ent_flag[ message ] ), "Tried to check entity flag '" + message + "', but the flag was not initialized.");
+	AssertEx( IsDefined( self.ent_flag[ message ] ), "Tried to check entity flag '" + message + "', but the flag was not initialized." );
 
-	if( !self.ent_flag[ message ] )
+	if ( !self.ent_flag[ message ] )
 	{
-		return false; 
+		return false;
 	}
 
-	return true; 
+	return true;
 }
 
 ent_flag_init_ai_standards()
@@ -384,30 +386,30 @@ ent_flag_init_ai_standards()
 	message_array[ message_array.size ] = "goal";
 	message_array[ message_array.size ] = "damage";
 
-	for( i = 0; i < message_array.size; i++)
+	for ( i = 0; i < message_array.size; i++ )
 	{
 		self ent_flag_init( message_array[ i ] );
 		self thread ent_flag_wait_ai_standards( message_array[ i ] );
-	}	
+	}
 }
 
 ent_flag_wait_ai_standards( message )
 {
 	/*
-	only runs the first time on the message, so for 
+	only runs the first time on the message, so for
 	example if it's waiting on goal, it will only set
-	the goal to true the first time.  It also doesn't 
-	call ent_set_flag() because that would notify the 
-	message possibly twice in the same frame, or worse 
+	the goal to true the first time.  It also doesn't
+	call ent_set_flag() because that would notify the
+	message possibly twice in the same frame, or worse
 	in the next frame.
 	*/
-	self endon("death");
+	self endon( "death" );
 	self waittill( message );
 	self.ent_flag[ message ] = true;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: flag_wait_either( <flagname1> , <flagname2> )"
 "Summary: Waits until either of the the specified flags are set."
@@ -418,17 +420,18 @@ ent_flag_wait_ai_standards( message )
 "Example: flag_wait( "hq_cleared", "hq_destroyed" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 flag_wait_either( flag1, flag2 )
 {
-	for( ;; )
+	for ( ;; )
 	{
-		if( flag( flag1 ) )
+		if ( flag( flag1 ) )
 		{
 			return;
 		}
-		if( flag( flag2 ) )
+
+		if ( flag( flag2 ) )
 		{
 			return;
 		}
@@ -437,8 +440,8 @@ flag_wait_either( flag1, flag2 )
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: flag_wait_any( <flagname1> , <flagname2>, <flagname3> , <flagname4> )"
 "Summary: Waits until any of the the specified flags are set."
@@ -451,25 +454,25 @@ flag_wait_either( flag1, flag2 )
 "Example: flag_wait_any( "hq_cleared", "hq_destroyed", "hq_overrun", "hq_skipped" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 flag_wait_any( flag1, flag2, flag3, flag4 )
 {
 	array = [];
-	if( IsDefined( flag4 ) )
+	if ( IsDefined( flag4 ) )
 	{
 		array[ array.size ] = flag1;
 		array[ array.size ] = flag2;
 		array[ array.size ] = flag3;
 		array[ array.size ] = flag4;
-	}	
-	else if( IsDefined( flag3 ) )
+	}
+	else if ( IsDefined( flag3 ) )
 	{
 		array[ array.size ] = flag1;
 		array[ array.size ] = flag2;
 		array[ array.size ] = flag3;
-	}	
-	else if( IsDefined( flag2 ) )
+	}
+	else if ( IsDefined( flag2 ) )
 	{
 		flag_wait_either( flag1, flag2 );
 		return;
@@ -477,14 +480,14 @@ flag_wait_any( flag1, flag2, flag3, flag4 )
 	else
 	{
 		assertmsg( "flag_wait_any() needs at least 2 flags passed to it" );
-		return; 
+		return;
 	}
 
-	for( ;; )
+	for ( ;; )
 	{
-		for(i=0; i<array.size; i++)
+		for ( i = 0; i < array.size; i++ )
 		{
-			if( flag( array[i] ) )
+			if ( flag( array[ i ] ) )
 			{
 				return;
 			}
@@ -494,8 +497,8 @@ flag_wait_any( flag1, flag2, flag3, flag4 )
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: flag_wait_all( <flagname1> , <flagname2>, <flagname3> , <flagname4> )"
 "Summary: Waits until all of the the specified flags are set."
@@ -508,33 +511,33 @@ flag_wait_any( flag1, flag2, flag3, flag4 )
 "Example: flag_wait_any( "hq_cleared", "hq_destroyed", "hq_overrun", "hq_skipped" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 flag_wait_all( flag1, flag2, flag3, flag4 )
 {
-	if( IsDefined( flag1 ) )
+	if ( IsDefined( flag1 ) )
 	{
 		flag_wait( flag1 );
 	}
 
-	if( IsDefined( flag2 ) )
+	if ( IsDefined( flag2 ) )
 	{
 		flag_wait( flag2 );
 	}
 
-	if( IsDefined( flag3 ) )
+	if ( IsDefined( flag3 ) )
 	{
 		flag_wait( flag3 );
 	}
 
-	if( IsDefined( flag4 ) )
+	if ( IsDefined( flag4 ) )
 	{
 		flag_wait( flag4 );
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: flag_wait_on( <flagname> )"
 "Summary: Waits until the flag is initialized and set."
@@ -544,11 +547,11 @@ flag_wait_all( flag1, flag2, flag3, flag4 )
 "Example: flag_wait_on( "all_players_connected" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 flag_wait_on( flagname )
 {
-	while( !level flag_exists( flagname ) )
+	while ( !level flag_exists( flagname ) )
 	{
 		wait 0.05;
 	}
@@ -556,8 +559,8 @@ flag_wait_on( flagname )
 	flag_wait( flagname );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: flag_wait_or_timeout( <flagname> , <timer> )"
 "Summary: Waits until either the flag gets set or the timer elapses."
@@ -568,19 +571,19 @@ flag_wait_on( flagname )
 "Example: flag_wait_or_timeout( "time_to_go", 3 );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 flag_wait_or_timeout( flagname, timer )
 {
 	start_time = gettime();
-	for( ;; )
+	for ( ;; )
 	{
-		if( level.flag[ flagname ] )
+		if ( level.flag[ flagname ] )
 		{
 			break;
 		}
 
-		if( gettime() >= start_time + timer * 1000 )
+		if ( gettime() >= start_time + timer * 1000 )
 		{
 			break;
 		}
@@ -589,8 +592,8 @@ flag_wait_or_timeout( flagname, timer )
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: flag_waitopen_or_timeout( <flagname> , <timer> )"
 "Summary: Waits until either the flag gets cleared or the timer elapses."
@@ -601,19 +604,19 @@ flag_wait_or_timeout( flagname, timer )
 "Example: flag_waitopen_or_timeout( "time_to_go", 3 );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 flag_waitopen_or_timeout( flagname, timer )
 {
 	start_time = gettime();
-	for( ;; )
+	for ( ;; )
 	{
-		if( !level.flag[ flagname ] )
+		if ( !level.flag[ flagname ] )
 		{
 			break;
 		}
 
-		if( gettime() >= start_time + timer * 1000 )
+		if ( gettime() >= start_time + timer * 1000 )
 		{
 			break;
 		}
@@ -626,7 +629,7 @@ flag_trigger_init( message, trigger, continuous )
 {
 	flag_init( message );
 
-	if( !IsDefined( continuous ) )
+	if ( !IsDefined( continuous ) )
 	{
 		continuous = false;
 	}
@@ -637,17 +640,16 @@ flag_trigger_init( message, trigger, continuous )
 	return trigger;
 }
 
-
 flag_triggers_init( message, triggers, all )
 {
 	flag_init( message );
 
-	if( !IsDefined( all ) )
+	if ( !IsDefined( all ) )
 	{
 		all = false;
 	}
 
-	for( index = 0; index < triggers.size; index ++ )
+	for ( index = 0; index < triggers.size; index++ )
 	{
 		assert( isSubStr( triggers[ index ].classname, "trigger" ) );
 		triggers[ index ] thread _flag_wait_trigger( message, false );
@@ -658,11 +660,11 @@ flag_triggers_init( message, triggers, all )
 
 flag_assert( msg )
 {
-	assertEx( !flag( msg ), "Flag " + msg + " set too soon!" );	
+	assertEx( !flag( msg ), "Flag " + msg + " set too soon!" );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: flag_set_delayed( <flagname> , <delay> )"
 "Summary: Sets the specified flag after waiting the delay time, all scripts using flag_wait will now continue."
@@ -673,7 +675,7 @@ flag_assert( msg )
 "Example: flag_set_delayed( "hq_cleared", 2.5 );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 flag_set_delayed( message, delay )
 {
@@ -691,17 +693,17 @@ _flag_wait_trigger( message, continuous )
 {
 	self endon( "death" );
 
-	for( ;; )
+	for ( ;; )
 	{
 		self waittill( "trigger", other );
 		flag_set( message );
 
-		if( !continuous )
+		if ( !continuous )
 		{
-			return; 
+			return;
 		}
 
-		while( other isTouching( self ) )
+		while ( other isTouching( self ) )
 		{
 			wait( 0.05 );
 		}
@@ -712,18 +714,19 @@ _flag_wait_trigger( message, continuous )
 
 wait_endon( waitTime, endOnString, endonString2, endonString3 )
 {
-	self endon ( endOnString );
+	self endon( endOnString );
 	if ( isDefined( endonString2 ) )
-		self endon ( endonString2 );
+		self endon( endonString2 );
+
 	if ( isDefined( endonString3 ) )
-		self endon ( endonString3 );
-	
-	wait ( waitTime );
+		self endon( endonString3 );
+
+	wait( waitTime );
 }
 
 level_end_save()
 {
-	if( level.missionfailed )
+	if ( level.missionfailed )
 	{
 		return;
 	}
@@ -734,11 +737,10 @@ level_end_save()
 	}
 
 	players = get_players();
-	if( !IsAlive( players[0] ) )
+	if ( !IsAlive( players[ 0 ] ) )
 	{
-		return; 
+		return;
 	}
-
 
 	flag_set( "game_saving" );
 
@@ -749,8 +751,8 @@ level_end_save()
 	flag_clear( "game_saving" );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: autosave_by_name( <savename> )"
 "Summary: autosave the game with the specified save name"
@@ -760,23 +762,23 @@ level_end_save()
 "Example: thread autosave_by_name( "building2_cleared" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 autosave_by_name( name )
 {
-	thread autosave_by_name_thread( name ); 
+	thread autosave_by_name_thread( name );
 }
 
 autosave_by_name_thread( name, timeout )
 {
-	if( !IsDefined( level.curAutoSave ) )
+	if ( !IsDefined( level.curAutoSave ) )
 	{
-		level.curAutoSave = 1; 
-	}	
+		level.curAutoSave = 1;
+	}
 
 	imageName = "levelshots / autosave / autosave_" + level.script + level.curAutoSave;
 	result = level maps\_autosave::try_auto_save( level.curAutoSave, "autosave", imagename, timeout );
-	if( IsDefined( result ) && result )
+	if ( IsDefined( result ) && result )
 	{
 		level.curAutoSave++;
 	}
@@ -788,11 +790,11 @@ error( message )
 	wait 0.05;
 
 	/#
-		if( GetDebugDvar( "debug" ) != "1" )
-		{
-			assertmsg( "This is a forced error - attach the log file" ); 
-		}
-#/
+	if ( GetDebugDvar( "debug" ) != "1" )
+	{
+		assertmsg( "This is a forced error - attach the log file" );
+	}
+	#/
 }
 
 error2( message )
@@ -800,12 +802,12 @@ error2( message )
 	println( "^c * ERROR * ", message );
 	wait 0.05;
 
-/#
-		if( GetDebugDvar( "debug" ) != "1" )
-		{
-			assertmsg( message ); 
-		}
-#/
+	/#
+	if ( GetDebugDvar( "debug" ) != "1" )
+	{
+		assertmsg( message );
+	}
+	#/
 }
 
 /*
@@ -824,12 +826,12 @@ error2( message )
 */
 debug_message( message, origin, duration )
 {
-	if( !IsDefined( duration ) )
+	if ( !IsDefined( duration ) )
 	{
-		duration = 5; 
+		duration = 5;
 	}
 
-	for( time = 0; time < ( duration * 20 );time ++ )
+	for ( time = 0; time < ( duration * 20 ); time++ )
 	{
 		print3d( ( origin + ( 0, 0, 45 ) ), message, ( 0.48, 9.4, 0.76 ), 0.85 );
 		wait 0.05;
@@ -853,23 +855,23 @@ debug_message( message, origin, duration )
 */
 debug_message_clear( message, origin, duration, extraEndon )
 {
-	if( IsDefined( extraEndon ) )
+	if ( IsDefined( extraEndon ) )
 	{
-		level notify( message + extraEndon ); 
-		level endon( message + extraEndon ); 
+		level notify( message + extraEndon );
+		level endon( message + extraEndon );
 	}
 	else
 	{
-		level notify( message ); 
-		level endon( message ); 
+		level notify( message );
+		level endon( message );
 	}
 
-	if( !IsDefined( duration ) )
+	if ( !IsDefined( duration ) )
 	{
-		duration = 5; 
+		duration = 5;
 	}
 
-	for( time = 0; time < ( duration * 20 );time ++ )
+	for ( time = 0; time < ( duration * 20 ); time++ )
 	{
 		print3d( ( origin + ( 0, 0, 45 ) ), message, ( 0.48, 9.4, 0.76 ), 0.85 );
 		wait 0.05;
@@ -881,23 +883,23 @@ precache( model )
 	ent = spawn( "script_model", ( 0, 0, 0 ) );
 	// SCRIPTER_MOD: dguzzo: 3-19-09 : no more level.player
 	//	ent.origin = level.player getorigin();
-	ent.origin = get_players()[0] getorigin();
+	ent.origin = get_players()[ 0 ] getorigin();
 	ent setmodel( model );
 	ent delete();
 }
 
 closerFunc( dist1, dist2 )
 {
-	return dist1 >= dist2; 
+	return dist1 >= dist2;
 }
 
 fartherFunc( dist1, dist2 )
 {
-	return dist1 <= dist2; 
+	return dist1 <= dist2;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: getClosest( <org> , <array> , <dist> )"
 "Summary: Returns the closest entity in < array > to location < org > "
@@ -909,15 +911,15 @@ fartherFunc( dist1, dist2 )
 "Example: friendly = getclosest( get_players()[0].origin, allies );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 getClosest( org, array, dist )
 {
-	return compareSizes( org, array, dist, ::closerFunc ); 
+	return compareSizes( org, array, dist,::closerFunc );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: getFarthest( <org> , <array> , <dist> )"
 "Summary: Returns the farthest entity in < array > to location < org > "
@@ -929,93 +931,103 @@ getClosest( org, array, dist )
 "Example: target = getFarthest( get_players()[0].origin, targets );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 getFarthest( org, array, dist )
 {
-	return compareSizes( org, array, dist, ::fartherFunc ); 
+	return compareSizes( org, array, dist,::fartherFunc );
 }
 
 compareSizesFx( org, array, dist, compareFunc )
 {
-	if( !array.size )
+	if ( !array.size )
 	{
 		return undefined;
 	}
-	if( IsDefined( dist ) )
+
+	if ( IsDefined( dist ) )
 	{
 		struct = undefined;
 		keys = getArrayKeys( array );
-		for( i = 0; i < keys.size; i++ )
+		for ( i = 0; i < keys.size; i++ )
 		{
 			newdist = distance( array[ keys[ i ] ].v[ "origin" ], org );
-			if( [[ compareFunc ]]( newDist, dist ) )
+			if ( [[ compareFunc ]]( newDist, dist ) )
 			{
 				continue;
 			}
+
 			dist = newdist;
 			struct = array[ keys[ i ] ];
 		}
+
 		return struct;
 	}
 
 	keys = getArrayKeys( array );
 	struct = array[ keys[ 0 ] ];
 	dist = distance( struct.v[ "origin" ], org );
-	for( i = 1; i < keys.size; i++ )
+	for ( i = 1; i < keys.size; i++ )
 	{
 		newdist = distance( array[ keys[ i ] ].v[ "origin" ], org );
-		if( [[ compareFunc ]]( newDist, dist ) )
+		if ( [[ compareFunc ]]( newDist, dist ) )
 		{
 			continue;
 		}
+
 		dist = newdist;
 		struct = array[ keys[ i ] ];
 	}
+
 	return struct;
 }
 
 compareSizes( org, array, dist, compareFunc )
 {
-	if( !array.size )
+	if ( !array.size )
 	{
-		return undefined; 
+		return undefined;
 	}
-	if( IsDefined( dist ) )
+
+	if ( IsDefined( dist ) )
 	{
-		ent = undefined; 
-		keys = GetArrayKeys( array ); 
-		for( i = 0; i < keys.size; i++ )
+		ent = undefined;
+		keys = GetArrayKeys( array );
+		for ( i = 0; i < keys.size; i++ )
 		{
 			newdist = distance( array[ keys[ i ] ].origin, org );
-			if( [[ compareFunc ]]( newDist, dist ) )
+			if ( [[ compareFunc ]]( newDist, dist ) )
 			{
-				continue; 
+				continue;
 			}
-			dist = newdist; 
+
+			dist = newdist;
 			ent = array[ keys[ i ] ];
 		}
-		return ent; 
+
+		return ent;
 	}
 
-	keys = GetArrayKeys( array ); 
+	keys = GetArrayKeys( array );
 	ent = array[ keys[ 0 ] ];
-	dist = Distance( ent.origin, org ); 
-	for( i = 1; i < keys.size; i++ )
+	dist = Distance( ent.origin, org );
+	for ( i = 1; i < keys.size; i++ )
 	{
 		newdist = distance( array[ keys[ i ] ].origin, org );
-		if( [[ compareFunc ]]( newDist, dist ) )
+		if ( [[ compareFunc ]]( newDist, dist ) )
 		{
-			continue; 
+			continue;
 		}
-		dist = newdist; 
+
+		dist = newdist;
 		ent = array[ keys[ i ] ];
 	}
-	return ent; 
+
+	return ent;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: get_closest_point( <origin> , <points> , <maxDist> )"
 "Summary: Returns the closest point from array < points > from location < origin > "
@@ -1027,38 +1039,37 @@ compareSizes( org, array, dist, compareFunc )
 "Example: target = getFarthest( get_players()[0].origin, targets );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 get_closest_point( origin, points, maxDist )
 {
-	assert( points.size ); 
+	assert( points.size );
 
 	closestPoint = points[ 0 ];
-	dist = Distance( origin, closestPoint ); 
+	dist = Distance( origin, closestPoint );
 
-	for( index = 0; index < points.size; index ++ )
+	for ( index = 0; index < points.size; index++ )
 	{
 		testDist = distance( origin, points[ index ] );
-		if( testDist >= dist )
+		if ( testDist >= dist )
 		{
-			continue; 
+			continue;
 		}
 
-		dist = testDist; 
+		dist = testDist;
 		closestPoint = points[ index ];
 	}
 
-	if( !IsDefined( maxDist ) || dist <= maxDist )
+	if ( !IsDefined( maxDist ) || dist <= maxDist )
 	{
-		return closestPoint; 
+		return closestPoint;
 	}
 
-	return undefined; 		
+	return undefined;
 }
 
-
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: get_within_range( <org> , <array> , <dist> )"
 "Summary: Returns all elements from the array that are within DIST range to ORG."
@@ -1070,23 +1081,24 @@ get_closest_point( origin, points, maxDist )
 "Example: close_ai = get_within_range( get_players()[0].origin, ai, 500 );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 get_within_range( org, array, dist )
 {
 	guys = [];
-	for( i = 0; i < array.size; i++ )
+	for ( i = 0; i < array.size; i++ )
 	{
-		if( distance( array[ i ].origin, org ) <= dist )
+		if ( distance( array[ i ].origin, org ) <= dist )
 		{
 			guys[ guys.size ] = array[ i ];
 		}
 	}
+
 	return guys;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: get_outisde_range( <org> , <array> , <dist> )"
 "Summary: Returns all elements from the array that are outside DIST range to ORG."
@@ -1098,23 +1110,24 @@ get_within_range( org, array, dist )
 "Example: close_ai = get_outside_range( get_players()[0].origin, ai, 500 );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 get_outside_range( org, array, dist )
 {
 	guys = [];
-	for( i = 0; i < array.size; i++ )
+	for ( i = 0; i < array.size; i++ )
 	{
-		if( distance( array[ i ].origin, org ) > dist )
+		if ( distance( array[ i ].origin, org ) > dist )
 		{
 			guys[ guys.size ] = array[ i ];
 		}
 	}
+
 	return guys;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: get_closest_living( <org> , <array> , <dist> )"
 "Summary: Returns the closest living entity from the array from the origin"
@@ -1126,66 +1139,73 @@ get_outside_range( org, array, dist )
 "Example: kicker = get_closest_living( node.origin, ai );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 get_closest_living( org, array, dist )
 {
-	if( !IsDefined( dist ) )
+	if ( !IsDefined( dist ) )
 	{
-		dist = 9999999; 
+		dist = 9999999;
 	}
-	if( array.size < 1 )
+
+	if ( array.size < 1 )
 	{
-		return; 
+		return;
 	}
-	ent = undefined; 		
-	for( i = 0;i < array.size;i++ )
+
+	ent = undefined;
+	for ( i = 0; i < array.size; i++ )
 	{
-		if( !isalive( array[ i ] ) )
+		if ( !isalive( array[ i ] ) )
 		{
-			continue; 
+			continue;
 		}
+
 		newdist = distance( array[ i ].origin, org );
-		if( newdist >= dist )
+		if ( newdist >= dist )
 		{
-			continue; 
+			continue;
 		}
-		dist = newdist; 
+
+		dist = newdist;
 		ent = array[ i ];
 	}
-	return ent; 
+
+	return ent;
 }
 
 get_highest_dot( start, end, array )
 {
-	if( !array.size )
+	if ( !array.size )
 	{
-		return; 
+		return;
 	}
 
-	ent = undefined; 		
+	ent = undefined;
 
-	angles = VectorToAngles( end - start ); 
-	dotforward = AnglesToForward( angles ); 
-	dot = -1; 
-	for( i = 0;i < array.size;i++ )
+	angles = VectorToAngles( end - start );
+	dotforward = AnglesToForward( angles );
+	dot = -1;
+	for ( i = 0; i < array.size; i++ )
 	{
 		angles = vectorToAngles( array[ i ].origin - start );
-		forward = AnglesToForward( angles ); 
+		forward = AnglesToForward( angles );
 
-		newdot = VectorDot( dotforward, forward ); 
-		if( newdot < dot )
+		newdot = VectorDot( dotforward, forward );
+		if ( newdot < dot )
 		{
-			continue; 
+			continue;
 		}
-		dot = newdot; 
+
+		dot = newdot;
 		ent = array[ i ];
 	}
-	return ent; 
+
+	return ent;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: get_closest_index( <org> , <array> , <dist> )"
 "Summary: same as getClosest but returns the closest entity's array index instead of the actual entity."
@@ -1197,153 +1217,159 @@ get_highest_dot( start, end, array )
 "Example: "
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 get_closest_index( org, array, dist )
 {
-	if( !IsDefined( dist ) )
+	if ( !IsDefined( dist ) )
 	{
-		dist = 9999999; 
+		dist = 9999999;
 	}
-	if( array.size < 1 )
+
+	if ( array.size < 1 )
 	{
-		return; 
+		return;
 	}
-	index = undefined; 		
-	for( i = 0;i < array.size;i++ )
+
+	index = undefined;
+	for ( i = 0; i < array.size; i++ )
 	{
 		newdist = distance( array[ i ].origin, org );
-		if( newdist >= dist )
+		if ( newdist >= dist )
 		{
-			continue; 
+			continue;
 		}
-		dist = newdist; 
-		index = i; 
+
+		dist = newdist;
+		index = i;
 	}
-	return index; 
+
+	return index;
 }
 
 get_farthest( org, array )
 {
-	if( array.size < 1 )
+	if ( array.size < 1 )
 	{
-		return; 
+		return;
 	}
 
-	dist = Distance( array[0].origin, org ); 
-	ent = array[0]; 
-	for( i = 1; i < array.size; i++ )
+	dist = Distance( array[ 0 ].origin, org );
+	ent = array[ 0 ];
+	for ( i = 1; i < array.size; i++ )
 	{
-		newdist = Distance( array[i].origin, org ); 
-		if( newdist <= dist )
+		newdist = Distance( array[ i ].origin, org );
+		if ( newdist <= dist )
 		{
-			continue; 
+			continue;
 		}
-		dist = newdist; 
-		ent = array[i]; 
+
+		dist = newdist;
+		ent = array[ i ];
 	}
-	return ent; 
+
+	return ent;
 }
 
 get_closest_exclude( org, ents, excluders )
 {
-	if( !IsDefined( ents ) )
+	if ( !IsDefined( ents ) )
 	{
-		return undefined; 
+		return undefined;
 	}
 
-	range = 0; 
-	if( IsDefined( excluders ) && excluders.size )
+	range = 0;
+	if ( IsDefined( excluders ) && excluders.size )
 	{
-		exclude = []; 
-		for( i = 0;i < ents.size;i++ )
+		exclude = [];
+		for ( i = 0; i < ents.size; i++ )
 		{
 			exclude[ i ] = false;
 		}
 
-		for( i = 0;i < ents.size;i++ )
+		for ( i = 0; i < ents.size; i++ )
 		{
-			for( p = 0;p < excluders.size;p ++ )
+			for ( p = 0; p < excluders.size; p++ )
 			{
-				if( ents[ i ] == excluders[ p ] )
+				if ( ents[ i ] == excluders[ p ] )
 				{
 					exclude[ i ] = true;
 				}
 			}
 		}
 
-		found_unexcluded = false; 
-		for( i = 0;i < ents.size;i++ )
+		found_unexcluded = false;
+		for ( i = 0; i < ents.size; i++ )
 		{
-			if( ( !exclude[ i ] ) && ( IsDefined( ents[ i ] ) ) )
+			if ( ( !exclude[ i ] ) && ( IsDefined( ents[ i ] ) ) )
 			{
-				found_unexcluded = true; 
+				found_unexcluded = true;
 				range = distance( org, ents[ i ].origin );
-				ent = i; 
-				i = ents.size + 1; 
+				ent = i;
+				i = ents.size + 1;
 			}
 		}
 
-		if( !found_unexcluded )
+		if ( !found_unexcluded )
 		{
-			return( undefined ); 
+			return ( undefined );
 		}
 	}
 	else
 	{
-		for( i = 0;i < ents.size;i++ )
+		for ( i = 0; i < ents.size; i++ )
 		{
-			if( IsDefined( ents[ i ] ) )
+			if ( IsDefined( ents[ i ] ) )
 			{
 				range = distance( org, ents[ 0 ].origin );
-				ent = i; 
-				i = ents.size + 1; 
+				ent = i;
+				i = ents.size + 1;
 			}
 		}
 	}
 
-	ent = undefined; 
+	ent = undefined;
 
-	for( i = 0;i < ents.size;i++ )
+	for ( i = 0; i < ents.size; i++ )
 	{
-		if( IsDefined( ents[ i ] ) )
+		if ( IsDefined( ents[ i ] ) )
 		{
-			exclude = false; 
-			if( IsDefined( excluders ) )
+			exclude = false;
+			if ( IsDefined( excluders ) )
 			{
-				for( p = 0;p < excluders.size;p ++ )
+				for ( p = 0; p < excluders.size; p++ )
 				{
-					if( ents[ i ] == excluders[ p ] )
+					if ( ents[ i ] == excluders[ p ] )
 					{
-						exclude = true; 
+						exclude = true;
 					}
 				}
 			}
 
-			if( !exclude )
+			if ( !exclude )
 			{
 				newrange = distance( org, ents[ i ].origin );
-				if( newrange <= range )
+				if ( newrange <= range )
 				{
-					range = newrange; 
-					ent = i; 
+					range = newrange;
+					ent = i;
 				}
 			}
 		}
 	}
 
-	if( IsDefined( ent ) )
+	if ( IsDefined( ent ) )
 	{
 		return ents[ ent ];
 	}
 	else
 	{
-		return undefined; 
+		return undefined;
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: get_closest_ai( <org> , <team> )"
 "Summary: Returns the closest AI of the specified team to the specified origin."
@@ -1354,29 +1380,29 @@ get_closest_exclude( org, ents, excluders )
 "Example: friendly = get_closest_ai( get_players()[0].origin, "allies" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 get_closest_ai( org, team )
 {
-	if( IsDefined( team ) )
+	if ( IsDefined( team ) )
 	{
-		ents = GetAiArray( team ); 
+		ents = GetAiArray( team );
 	}
 	else
 	{
-		ents = GetAiArray(); 
+		ents = GetAiArray();
 	}
 
-	if( ents.size == 0 )
+	if ( ents.size == 0 )
 	{
-		return undefined; 
+		return undefined;
 	}
 
-	return getClosest( org, ents ); 
+	return getClosest( org, ents );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: get_array_of_closest( <org> , <array> , <excluders> , <max>, <maxdist> )"
 "Summary: Returns an array of all the entities in < array > sorted in order of closest to farthest."
@@ -1390,74 +1416,78 @@ get_closest_ai( org, team )
 "Example: allies_sort = get_array_of_closest( originFC1.origin, allies );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 get_array_of_closest( org, array, excluders, max, maxdist )
 {
 	// pass an array of entities to this function and it will return them in the order of closest
 	// to the origin you pass, you can also set max to limit how many ents get returned
-	if( !IsDefined( max ) )
+	if ( !IsDefined( max ) )
 	{
-		max = array.size; 
+		max = array.size;
 	}
-	if( !IsDefined( excluders ) )
+
+	if ( !IsDefined( excluders ) )
 	{
 		excluders = [];
 	}
 
 	maxdists2rd = undefined;
-	if( IsDefined( maxdist ) )
+	if ( IsDefined( maxdist ) )
 	{
 		maxdists2rd = maxdist * maxdist;
 	}
 
 	// return the array, reordered from closest to farthest
-	dist = []; 
-	index = []; 
-	for( i = 0;i < array.size;i++ )
+	dist = [];
+	index = [];
+	for ( i = 0; i < array.size; i++ )
 	{
-		excluded = false; 
-		for( p = 0;p < excluders.size;p ++ )
+		excluded = false;
+		for ( p = 0; p < excluders.size; p++ )
 		{
-			if( array[ i ] != excluders[ p ] )
+			if ( array[ i ] != excluders[ p ] )
 			{
-				continue; 
+				continue;
 			}
-			excluded = true; 
-			break; 
+
+			excluded = true;
+			break;
 		}
-		if( excluded )
+
+		if ( excluded )
 		{
-			continue; 
+			continue;
 		}
-		if( !IsDefined(array[ i ]) )
+
+		if ( !IsDefined( array[ i ] ) )
 		{
 			continue;
 		}
 
 		length = distancesquared( org, array[ i ].origin );
 
-		if( IsDefined( maxdists2rd ) && maxdists2rd < length )
+		if ( IsDefined( maxdists2rd ) && maxdists2rd < length )
 		{
 			continue;
 		}
 
 		dist[ dist.size ] = length;
 
-
 		index[ index.size ] = i;
 	}
 
-	for( ;; )
+	for ( ;; )
 	{
-		change = false; 
-		for( i = 0;i < dist.size - 1;i++ )
+		change = false;
+		for ( i = 0; i < dist.size - 1; i++ )
 		{
-			if( dist[ i ] <= dist[ i + 1 ] )
+			if ( dist[ i ] <= dist[ i + 1 ] )
 			{
-				continue; 
+				continue;
 			}
-			change = true; 
+
+			change = true;
 			temp = dist[ i ];
 			dist[ i ] = dist[ i + 1 ];
 			dist[ i + 1 ] = temp;
@@ -1465,27 +1495,29 @@ get_array_of_closest( org, array, excluders, max, maxdist )
 			index[ i ] = index[ i + 1 ];
 			index[ i + 1 ] = temp;
 		}
-		if( !change )
+
+		if ( !change )
 		{
-			break; 
+			break;
 		}
 	}
 
-	newArray = []; 
-	if( max > dist.size )
+	newArray = [];
+	if ( max > dist.size )
 	{
-		max = dist.size; 
+		max = dist.size;
 	}
-	for( i = 0;i < max;i++ )
+
+	for ( i = 0; i < max; i++ )
 	{
 		newArray[ i ] = array[ index[ i ] ];
 	}
-	return newArray; 
+
+	return newArray;
 }
 
-
-/* 
- ============= 
+/*
+ =============
 ///ScriptDocBegin
 "Name: get_array_of_farthest( <org> , <array> , <excluders> , <max> )"
 "Summary: Returns an array of all the entities in < array > sorted in order of farthest to closest."
@@ -1496,37 +1528,36 @@ get_array_of_closest( org, array, excluders, max, maxdist )
 "Example: allies_sort = get_array_of_farthest( originFC1.origin, allies );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
- ============= 
- */ 
+ =============
+ */
 get_array_of_farthest( org, array, excluders, max )
 {
 	sorted_array = get_array_of_closest( org, array, excluders, max );
 	sorted_array = array_reverse( sorted_array );
-	return( sorted_array );
+	return ( sorted_array );
 }
-
 
 get_closest_ai_exclude( org, team, excluders )
 {
-	if( IsDefined( team ) )
+	if ( IsDefined( team ) )
 	{
-		ents = GetAiArray( team ); 
+		ents = GetAiArray( team );
 	}
 	else
 	{
-		ents = GetAiArray(); 
+		ents = GetAiArray();
 	}
 
-	if( ents.size == 0 )
+	if ( ents.size == 0 )
 	{
-		return undefined; 
+		return undefined;
 	}
 
-	return get_closest_exclude( org, ents, excluders ); 
+	return get_closest_exclude( org, ents, excluders );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: stop_magic_bullet_shield()"
 "Summary: Stops magic bullet shield on an AI, setting his health back to a normal value and making him vulnerable to death."
@@ -1535,25 +1566,25 @@ get_closest_ai_exclude( org, team, excluders )
 "Example: friendly stop_magic_bullet_shield();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
 stop_magic_bullet_shield()
 {
-	if ( IsAI(self) )
+	if ( IsAI( self ) )
 	{
 		self BloodImpact( "normal" );
 	}
 
-	self.attackerAccuracy = 1;	// TODO: restore old value if we need it.
+	self.attackerAccuracy = 1; // TODO: restore old value if we need it.
 
-	self notify("stop_magic_bullet_shield");
+	self notify( "stop_magic_bullet_shield" );
 	self.magic_bullet_shield = undefined;
 	self._mbs = undefined;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: magic_bullet_shield()"
 "Summary: Makes an AI invulnerable to death. When he gets shot, he is temporarily ignored by enemies."
@@ -1562,27 +1593,27 @@ stop_magic_bullet_shield()
 "Example: guy magic_bullet_shield();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
 magic_bullet_shield()
 {
-	if (!is_true(self.magic_bullet_shield))
+	if ( !is_true( self.magic_bullet_shield ) )
 	{
-		if(	IsAI(self) || IsPlayer(self))
+		if ( IsAI( self ) || IsPlayer( self ) )
 		{
 			self.magic_bullet_shield = true;
 
 			/#
-				level thread debug_magic_bullet_shield_death(self);
+			level thread debug_magic_bullet_shield_death( self );
 			#/
 
-			if (!IsDefined(self._mbs))
+			if ( !IsDefined( self._mbs ) )
 			{
 				self._mbs = SpawnStruct();
 			}
 
-			if ( IsAI(self) )
+			if ( IsAI( self ) )
 			{
 				AssertEx( IsAlive( self ), "Tried to do magic_bullet_shield on a dead or undefined guy." );
 				//AssertEx( !self.delayedDeath, "Tried to do magic_bullet_shield on a guy about to die." ); // no longer needed
@@ -1597,29 +1628,29 @@ magic_bullet_shield()
 		}
 		else
 		{
-			if (self is_vehicle())
+			if ( self is_vehicle() )
 			{
-				AssertMsg("Use veh_magic_bullet_shield for vehicles.");
+				AssertMsg( "Use veh_magic_bullet_shield for vehicles." );
 			}
 			else
 			{
-				AssertMsg("magic_bullet_shield does not support entity of classname '" + self.classname + "'.");
+				AssertMsg( "magic_bullet_shield does not support entity of classname '" + self.classname + "'." );
 			}
 		}
 	}
 }
 
-debug_magic_bullet_shield_death(guy)
+debug_magic_bullet_shield_death( guy )
 {
 	targetname = "none";
-	if (IsDefined(guy.targetname))
+	if ( IsDefined( guy.targetname ) )
 	{
 		targetname = guy.targetname;
 	}
 
-	guy endon("stop_magic_bullet_shield");
-	guy waittill("death");
-	AssertEx(!IsDefined(guy), "Guy died with magic bullet shield on with targetname: " + targetname);
+	guy endon( "stop_magic_bullet_shield" );
+	guy waittill( "death" );
+	AssertEx( !IsDefined( guy ), "Guy died with magic bullet shield on with targetname: " + targetname );
 }
 
 /*
@@ -1658,8 +1689,8 @@ enable_long_death()
 	self.a.disableLongDeath = false;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: get_ignoreme()"
 "Summary: Returns an actor's .ignoreme value"
@@ -1668,15 +1699,15 @@ enable_long_death()
 "Example: if( guy get_ignoreme() )..."
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 get_ignoreme()
 {
-	return self.ignoreme; 
+	return self.ignoreme;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: set_ignoreme( <val> )"
 "Summary: Sets an actor's .ignoreme value. If 'true', other entities will ignore him."
@@ -1686,16 +1717,16 @@ get_ignoreme()
 "MandatoryArg: <val> : Boolean"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 set_ignoreme( val )
 {
-	assertex( IsSentient( self ), "Non ai tried to set ignoreme" ); 
-	self.ignoreme = val; 
+	assertex( IsSentient( self ), "Non ai tried to set ignoreme" );
+	self.ignoreme = val;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: set_ignoreall( <val> )"
 "Summary: Sets an actor's .ignoreall value"
@@ -1705,16 +1736,16 @@ set_ignoreme( val )
 "MandatoryArg: <val> : Boolean"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 set_ignoreall( val )
 {
 	assertEx( isSentient( self ), "Non ai tried to set ignoraell" );
 	self.ignoreall = val;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: get_pacifist()"
 "Summary: Returns an actor's .pacifist value"
@@ -1723,15 +1754,15 @@ set_ignoreall( val )
 "Example: if( guy get_pacifist() )..."
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 get_pacifist()
 {
-	return self.pacifist; 
+	return self.pacifist;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: set_pacifist( <val> )"
 "Summary: Sets an actor's .pacifist value. If 'true', he'll only fire back if fired upon first."
@@ -1741,30 +1772,30 @@ get_pacifist()
 "MandatoryArg: <val> : Boolean"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 set_pacifist( val )
 {
-	assertex( IsSentient( self ), "Non ai tried to set pacifist" ); 
-	self.pacifist = val; 
+	assertex( IsSentient( self ), "Non ai tried to set pacifist" );
+	self.pacifist = val;
 }
 
 // mainly used for magic_bullet_shield
 ignore_me_timer( time, endon_msg )
 {
-	self notify("ignore_me_timer");
+	self notify( "ignore_me_timer" );
 
 	self.ignore_me_timer_old = self get_ignoreme();
 
-	if( !self.ignore_me_timer_old )
+	if ( !self.ignore_me_timer_old )
 	{
 		// force my enemy to acquire a new enemy //
 
 		ai = GetAiArray( "axis" );
-		for( i = 0; i < ai.size; i++ )
+		for ( i = 0; i < ai.size; i++ )
 		{
 			guy = ai[ i ];
-			if( IsAlive( guy.enemy ) && guy.enemy == self )
+			if ( IsAlive( guy.enemy ) && guy.enemy == self )
 			{
 				guy notify( "enemy" );
 			}
@@ -1774,11 +1805,11 @@ ignore_me_timer( time, endon_msg )
 	self endon( "death" );
 	self endon( "ignore_me_timer" );
 
-	self set_ignoreme(true);
+	self set_ignoreme( true );
 
 	waittill_any_or_timeout( time, endon_msg );
-	
-	self set_ignoreme(self.ignore_me_timer_old);
+
+	self set_ignoreme( self.ignore_me_timer_old );
 }
 
 turret_ignore_me_timer( time )
@@ -1793,30 +1824,30 @@ turret_ignore_me_timer( time )
 
 exploder_damage()
 {
-	if( IsDefined( self.v[ "delay" ] ) )
+	if ( IsDefined( self.v[ "delay" ] ) )
 	{
 		delay = self.v[ "delay" ];
 	}
 	else
 	{
-		delay = 0; 
+		delay = 0;
 	}
 
-	if( IsDefined( self.v[ "damage_radius" ] ) )
+	if ( IsDefined( self.v[ "damage_radius" ] ) )
 	{
 		radius = self.v[ "damage_radius" ];
 	}
 	else
 	{
-		radius = 128; 
+		radius = 128;
 	}
 
 	damage = self.v[ "damage" ];
 	origin = self.v[ "origin" ];
 
-	wait( delay ); 
+	wait( delay );
 	// Range, max damage, min damage
-	self.model RadiusDamage( origin, radius, damage, damage / 3 ); 
+	self.model RadiusDamage( origin, radius, damage, damage / 3 );
 }
 
 exploder( num )
@@ -1828,89 +1859,88 @@ exploder_before_load( num )
 {
 	// gotta wait twice because the createfx_init function waits once then inits all exploders. This guarentees
 	// that if an exploder is run on the first frame, it happens after the fx are init.
-	waittillframeend; 
-	waittillframeend; 
-	activate_exploder( num ); 
+	waittillframeend;
+	waittillframeend;
+	activate_exploder( num );
 }
 
 exploder_after_load( num )
 {
-	activate_exploder( num ); 
+	activate_exploder( num );
 }
 
-activate_exploder_on_clients(num)
+activate_exploder_on_clients( num )
 {
 
-	if(!IsDefined(level._exploder_ids[num]))
+	if ( !IsDefined( level._exploder_ids[ num ] ) )
 	{
 		return;
 	}
 
-	if(!IsDefined(level._client_exploders[num]))
+	if ( !IsDefined( level._client_exploders[ num ] ) )
 	{
-		level._client_exploders[num] = 1;
+		level._client_exploders[ num ] = 1;
 	}
 
-	if(!IsDefined(level._client_exploder_ids[num]))
+	if ( !IsDefined( level._client_exploder_ids[ num ] ) )
 	{
-		level._client_exploder_ids[num] = 1;
-	}	
+		level._client_exploder_ids[ num ] = 1;
+	}
 
-	ActivateClientExploder(level._exploder_ids[num]);
+	ActivateClientExploder( level._exploder_ids[ num ] );
 }
 
-delete_exploder_on_clients(num)
+delete_exploder_on_clients( num )
 {
-	if(!IsDefined(level._exploder_ids[num]))
+	if ( !IsDefined( level._exploder_ids[ num ] ) )
 	{
 		return;
 	}
 
-
-	if(!IsDefined(level._client_exploders[num]))
+	if ( !IsDefined( level._client_exploders[ num ] ) )
 	{
 		return;
 	}
 
-	level._client_exploders[num] = undefined;
+	level._client_exploders[ num ] = undefined;
 
-	level._client_exploder_ids[num] = undefined;
+	level._client_exploder_ids[ num ] = undefined;
 
-	DeactivateClientExploder(level._exploder_ids[num]);
+	DeactivateClientExploder( level._exploder_ids[ num ] );
 }
 
 activate_exploder( num )
 {
-	num = int( num ); 
+	num = int( num );
 
 	client_send = true;
 
 	prof_begin( "activate_exploder" );
-	for( i = 0;i < level.createFXent.size;i++ )
+	for ( i = 0; i < level.createFXent.size; i++ )
 	{
 		ent = level.createFXent[ i ];
-		if( !IsDefined( ent ) )
+		if ( !IsDefined( ent ) )
 		{
 			continue;
 		}
 
-		if( ent.v[ "type" ] != "exploder" )
+		if ( ent.v[ "type" ] != "exploder" )
 		{
-			continue; 	
+			continue;
 		}
 
 		// make the exploder actually removed the array instead?
-		if( !IsDefined( ent.v[ "exploder" ] ) )
+		if ( !IsDefined( ent.v[ "exploder" ] ) )
 		{
-			continue; 
+			continue;
 		}
 
-		if( ent.v[ "exploder" ] != num )
+		if ( ent.v[ "exploder" ] != num )
 		{
-			continue; 
+			continue;
 		}
 
-		if(IsDefined(ent.v["exploder_server"]))
+		if ( IsDefined( ent.v[ "exploder_server" ] ) )
 		{
 			client_send = false;
 		}
@@ -1919,13 +1949,13 @@ activate_exploder( num )
 
 	}
 
-	if(level.clientScripts)
+	if ( level.clientScripts )
 	{
-		if(!level.createFX_enabled && client_send == true)
+		if ( !level.createFX_enabled && client_send == true )
 		{
-			activate_exploder_on_clients(num);
+			activate_exploder_on_clients( num );
 		}
-	}	
+	}
 
 	prof_end( "activate_exploder" );
 }
@@ -1934,34 +1964,34 @@ stop_exploder( num )
 {
 	num = int( num );
 
-	if(level.clientScripts)
+	if ( level.clientScripts )
 	{
-		if(!level.createFX_enabled)
+		if ( !level.createFX_enabled )
 		{
-			delete_exploder_on_clients(num);
+			delete_exploder_on_clients( num );
 		}
 	}
 
-	for( i = 0;i < level.createFXent.size;i++ )
+	for ( i = 0; i < level.createFXent.size; i++ )
 	{
 		ent = level.createFXent[ i ];
-		if( !IsDefined( ent ) )
-		{
-			continue; 
-		}
-
-		if( ent.v[ "type" ] != "exploder" )
-		{
-			continue; 
-		}
-
-		// make the exploder actually removed the array instead?
-		if( !IsDefined( ent.v[ "exploder" ] ) )
+		if ( !IsDefined( ent ) )
 		{
 			continue;
 		}
 
-		if( ent.v[ "exploder" ] != num )
+		if ( ent.v[ "type" ] != "exploder" )
+		{
+			continue;
+		}
+
+		// make the exploder actually removed the array instead?
+		if ( !IsDefined( ent.v[ "exploder" ] ) )
+		{
+			continue;
+		}
+
+		if ( ent.v[ "exploder" ] != num )
 		{
 			continue;
 		}
@@ -1990,35 +2020,35 @@ stop_exploder( num )
 
 activate_individual_exploder()
 {
-	level notify("exploder" + self.v["exploder"]);
+	level notify( "exploder" + self.v[ "exploder" ] );
 
 	// CODER_MOD : DSL - Contents of if statement created on client.
 	// GLocke (12/8/2008) - checking for self.v["exploder_server"] instead of self.exploder_server
-	if(level.createFX_enabled || !level.clientScripts || !IsDefined(level._exploder_ids[int(self.v["exploder"])] ) || IsDefined(self.v["exploder_server"]))
+	if ( level.createFX_enabled || !level.clientScripts || !IsDefined( level._exploder_ids[ int( self.v[ "exploder" ] ) ] ) || IsDefined( self.v[ "exploder_server" ] ) )
 	{
-		/#		
-			println("Exploder " + self.v["exploder"] + " created on server.");
-#/		
-		if( IsDefined( self.v[ "firefx" ] ) )
+		/#
+		println( "Exploder " + self.v[ "exploder" ] + " created on server." );
+		#/
+		if ( IsDefined( self.v[ "firefx" ] ) )
 		{
 			self thread fire_effect();
 		}
 
-		if( IsDefined( self.v[ "fxid" ] ) && self.v[ "fxid" ] != "No FX" )
+		if ( IsDefined( self.v[ "fxid" ] ) && self.v[ "fxid" ] != "No FX" )
 		{
 			self thread cannon_effect();
 		}
-		else if( IsDefined( self.v[ "soundalias" ] ) )
+		else if ( IsDefined( self.v[ "soundalias" ] ) )
 		{
 			self thread sound_effect();
 		}
 
-		if( IsDefined( self.v[ "earthquake" ] ) )
+		if ( IsDefined( self.v[ "earthquake" ] ) )
 		{
 			self thread exploder_earthquake();
 		}
 
-		if( IsDefined( self.v[ "rumble" ] ) )
+		if ( IsDefined( self.v[ "rumble" ] ) )
 		{
 			self thread exploder_rumble();
 		}
@@ -2026,21 +2056,21 @@ activate_individual_exploder()
 
 	// CODER_MOD : DSL - Stuff below here happens on the server.
 
-	if( IsDefined( self.v[ "trailfx" ] ) )
+	if ( IsDefined( self.v[ "trailfx" ] ) )
 	{
 		self thread trail_effect();
 	}
 
-	if( IsDefined( self.v[ "damage" ] ) )
+	if ( IsDefined( self.v[ "damage" ] ) )
 	{
 		self thread exploder_damage();
 	}
 
-	if( self.v[ "exploder_type" ] == "exploder" )
+	if ( self.v[ "exploder_type" ] == "exploder" )
 	{
 		self thread brush_show();
 	}
-	else if( ( self.v[ "exploder_type" ] == "exploderchunk" ) || ( self.v[ "exploder_type" ] == "exploderchunk visible" ) )
+	else if ( ( self.v[ "exploder_type" ] == "exploderchunk" ) || ( self.v[ "exploder_type" ] == "exploderchunk visible" ) )
 	{
 		self thread brush_throw();
 	}
@@ -2050,32 +2080,31 @@ activate_individual_exploder()
 	}
 }
 
-
-
 loop_sound_Delete( ender, ent )
 {
-	ent endon( "death" ); 
-	self waittill( ender ); 
-	ent Delete(); 
+	ent endon( "death" );
+	self waittill( ender );
+	ent Delete();
 }
 
 loop_fx_sound( alias, origin, ender, timeout )
 {
-	org = Spawn( "script_origin", ( 0, 0, 0 ) ); 
-	if( IsDefined( ender ) )
+	org = Spawn( "script_origin", ( 0, 0, 0 ) );
+	if ( IsDefined( ender ) )
 	{
-		thread loop_sound_Delete( ender, org ); 
-		self endon( ender ); 
-	}
-	org.origin = origin; 
-	org PlayLoopSound( alias ); 
-	if( !IsDefined( timeout ) )
-	{
-		return; 
+		thread loop_sound_Delete( ender, org );
+		self endon( ender );
 	}
 
-	wait( timeout ); 
-	//	org Delete(); 
+	org.origin = origin;
+	org PlayLoopSound( alias );
+	if ( !IsDefined( timeout ) )
+	{
+		return;
+	}
+
+	wait( timeout );
+	//	org Delete();
 }
 
 brush_delete()
@@ -2084,124 +2113,122 @@ brush_delete()
 	// 		if( !IsDefined( ent.script_fxid ) )
 
 	num = self.v[ "exploder" ];
-	if( IsDefined( self.v[ "delay" ] ) )
+	if ( IsDefined( self.v[ "delay" ] ) )
 	{
 		wait( self.v[ "delay" ] );
 	}
 	else
 	{
-		wait( .05 );// so it disappears after the replacement appears
+		wait( .05 ); // so it disappears after the replacement appears
 	}
 
-	if( !IsDefined( self.model ) )
+	if ( !IsDefined( self.model ) )
 	{
-		return; 
+		return;
 	}
 
+	assert( IsDefined( self.model ) );
 
-	assert( IsDefined( self.model ) ); 
-
-	if( self.model has_spawnflag(level.SPAWNFLAG_MODEL_DYNAMIC_PATH) )
+	if ( self.model has_spawnflag( level.SPAWNFLAG_MODEL_DYNAMIC_PATH ) )
 	{
-		self.model ConnectPaths(); 
+		self.model ConnectPaths();
 	}
 
-	if( level.createFX_enabled )
+	if ( level.createFX_enabled )
 	{
-		if( IsDefined( self.exploded ) )
+		if ( IsDefined( self.exploded ) )
 		{
-			return; 
+			return;
 		}
 
-		self.exploded = true; 
-		self.model Hide(); 
-		self.model NotSolid(); 
+		self.exploded = true;
+		self.model Hide();
+		self.model NotSolid();
 
-		wait( 3 ); 
-		self.exploded = undefined; 
-		self.model Show(); 
-		self.model Solid(); 
-		return; 
+		wait( 3 );
+		self.exploded = undefined;
+		self.model Show();
+		self.model Solid();
+		return;
 	}
 
-	if( !IsDefined( self.v[ "fxid" ] ) || self.v[ "fxid" ] == "No FX" )
+	if ( !IsDefined( self.v[ "fxid" ] ) || self.v[ "fxid" ] == "No FX" )
 	{
 		self.v[ "exploder" ] = undefined;
 	}
 
-	waittillframeend;// so it hides stuff after it shows the new stuff
-	self.model Delete(); 
+	waittillframeend; // so it hides stuff after it shows the new stuff
+	self.model Delete();
 }
 
 brush_Show()
 {
-	if( IsDefined( self.v[ "delay" ] ) )
+	if ( IsDefined( self.v[ "delay" ] ) )
 	{
 		wait( self.v[ "delay" ] );
 	}
 
-	assert( IsDefined( self.model ) ); 
+	assert( IsDefined( self.model ) );
 
-	self.model Show(); 
-	self.model Solid(); 
+	self.model Show();
+	self.model Solid();
 
-	if( self.model has_spawnflag(level.SPAWNFLAG_MODEL_DYNAMIC_PATH) )
+	if ( self.model has_spawnflag( level.SPAWNFLAG_MODEL_DYNAMIC_PATH ) )
 	{
-		if( !IsDefined( self.model.disconnect_paths ) )
+		if ( !IsDefined( self.model.disconnect_paths ) )
 		{
-			self.model ConnectPaths(); 
+			self.model ConnectPaths();
 		}
 		else
 		{
-			self.model DisconnectPaths(); 
+			self.model DisconnectPaths();
 		}
 	}
 
-	if( level.createFX_enabled )
+	if ( level.createFX_enabled )
 	{
-		if( IsDefined( self.exploded ) )
+		if ( IsDefined( self.exploded ) )
 		{
-			return; 
+			return;
 		}
 
-		self.exploded = true; 
-		wait( 3 ); 
-		self.exploded = undefined; 
-		self.model Hide(); 
-		self.model NotSolid(); 
+		self.exploded = true;
+		wait( 3 );
+		self.exploded = undefined;
+		self.model Hide();
+		self.model NotSolid();
 	}
 }
 
 brush_throw()
 {
-	if( IsDefined( self.v[ "delay" ] ) )
+	if ( IsDefined( self.v[ "delay" ] ) )
 	{
 		wait( self.v[ "delay" ] );
 	}
 
-	ent = undefined; 
-	if( IsDefined( self.v[ "target" ] ) )
+	ent = undefined;
+	if ( IsDefined( self.v[ "target" ] ) )
 	{
 		ent = getent( self.v[ "target" ], "targetname" );
 	}
 
-	if( !IsDefined( ent ) )
+	if ( !IsDefined( ent ) )
 	{
-		ent = GetStruct( self.v["target"], "targetname" );
+		ent = GetStruct( self.v[ "target" ], "targetname" );
 
-		if( !IsDefined( ent ) )
+		if ( !IsDefined( ent ) )
 		{
-			self.model Delete(); 
-			return; 
+			self.model Delete();
+			return;
 		}
 	}
 
-	self.model Show(); 
+	self.model Show();
 
 	startorg = self.v[ "origin" ];
 	startang = self.v[ "angles" ];
-	org = ent.origin; 
-
+	org = ent.origin;
 
 	temp_vec = ( org - self.v[ "origin" ] );
 	x = temp_vec[ 0 ];
@@ -2219,13 +2246,13 @@ brush_throw()
 
 		if ( !IsDefined( target ) )
 		{
-			contact_point = startorg;// no spin just push it.
+			contact_point = startorg; // no spin just push it.
 			throw_vec = ent.origin;
 		}
 		else
 		{
 			contact_point = ent.origin;
-			throw_vec = vector_scale(target.origin - ent.origin, self.v[ "physics" ]);
+			throw_vec = vector_scale( target.origin - ent.origin, self.v[ "physics" ] );
 
 		}
 
@@ -2237,76 +2264,75 @@ brush_throw()
 	}
 	else
 	{
-		self.model RotateVelocity( ( x, y, z ), 12 ); 
+		self.model RotateVelocity( ( x, y, z ), 12 );
 		self.model moveGravity( ( x, y, z ), 12 );
 	}
 
-
-	if( level.createFX_enabled )
+	if ( level.createFX_enabled )
 	{
-		if( IsDefined( self.exploded ) )
+		if ( IsDefined( self.exploded ) )
 		{
-			return; 
+			return;
 		}
 
-		self.exploded = true; 
-		wait( 3 ); 
-		self.exploded = undefined; 
+		self.exploded = true;
+		wait( 3 );
+		self.exploded = undefined;
 		self.v[ "origin" ] = startorg;
 		self.v[ "angles" ] = startang;
-		self.model Hide(); 
-		return; 
+		self.model Hide();
+		return;
 	}
 
 	self.v[ "exploder" ] = undefined;
-	wait( 6 ); 
-	self.model Delete(); 
-	//	self Delete(); 
+	wait( 6 );
+	self.model Delete();
+	//	self Delete();
 }
 
 shock_onpain()
 {
-	self endon( "death" ); 
-	self endon( "disconnect" ); 
+	self endon( "death" );
+	self endon( "disconnect" );
 
-	if( GetDvar( #"blurpain" ) == "" )
+	if ( GetDvar( #"blurpain" ) == "" )
 	{
-		SetDvar( "blurpain", "on" ); 
+		SetDvar( "blurpain", "on" );
 	}
 
-	while( 1 )
+	while ( 1 )
 	{
-		oldhealth = self.health; 
-		self waittill( "damage", damage, attacker, direction_vec, point, mod ); 
+		oldhealth = self.health;
+		self waittill( "damage", damage, attacker, direction_vec, point, mod );
 
-		if( IsDefined( level.shock_onpain ) && !level.shock_onpain )
+		if ( IsDefined( level.shock_onpain ) && !level.shock_onpain )
 		{
 			continue;
 		}
 
-		if( IsDefined( self.shock_onpain ) && !self.shock_onpain )
+		if ( IsDefined( self.shock_onpain ) && !self.shock_onpain )
 		{
 			continue;
 		}
 
-		if( self.health < 1 )
+		if ( self.health < 1 )
 		{
 			continue;
 		}
 
-		if( mod == "MOD_PROJECTILE" || mod == "MOD_PROJECTILE_SPLASH" )
+		if ( mod == "MOD_PROJECTILE" || mod == "MOD_PROJECTILE_SPLASH" )
 		{
 			continue;
 		}
-		else if( mod == "MOD_GRENADE_SPLASH" || mod == "MOD_GRENADE" ||  mod == "MOD_EXPLOSIVE" )
+		else if ( mod == "MOD_GRENADE_SPLASH" || mod == "MOD_GRENADE" || mod == "MOD_EXPLOSIVE" )
 		{
 			self shock_onexplosion( damage );
 		}
 		else
 		{
-			if( GetDvar( #"blurpain" ) == "on" )
+			if ( GetDvar( #"blurpain" ) == "on" )
 			{
-				self ShellShock( "pain", 0.5 ); 
+				self ShellShock( "pain", 0.5 );
 			}
 		}
 	}
@@ -2314,29 +2340,29 @@ shock_onpain()
 
 shock_onexplosion( damage )
 {
-	time = 0; 
+	time = 0;
 
-	multiplier = self.maxhealth / 100; 
+	multiplier = self.maxhealth / 100;
 	scaled_damage = damage * multiplier;
 
-	if( scaled_damage >= 90 )
+	if ( scaled_damage >= 90 )
 	{
-		time = 4; 
+		time = 4;
 	}
-	else if( scaled_damage >= 50 )
+	else if ( scaled_damage >= 50 )
 	{
-		time = 3; 
+		time = 3;
 	}
-	else if( scaled_damage >= 25 )
+	else if ( scaled_damage >= 25 )
 	{
-		time = 2; 
+		time = 2;
 	}
-	else if( scaled_damage > 10 )
+	else if ( scaled_damage > 10 )
 	{
-		time = 1; 
+		time = 1;
 	}
 
-	if( time )
+	if ( time )
 	{
 		self ShellShock( "explosion", time );
 	}
@@ -2345,56 +2371,56 @@ shock_onexplosion( damage )
 shock_ondeath()
 {
 	// CODE_MOD
-	// moved to _load::main so hot joiners would not try and 
+	// moved to _load::main so hot joiners would not try and
 	// precache mid game
 	//precacheShellshock( "default" );
-	self waittill( "death" ); 
+	self waittill( "death" );
 
-	if( IsDefined( level.shock_ondeath ) && !level.shock_ondeath )
+	if ( IsDefined( level.shock_ondeath ) && !level.shock_ondeath )
 	{
 		return;
 	}
 
-	if( IsDefined( self.shock_ondeath ) && !self.shock_ondeath )
+	if ( IsDefined( self.shock_ondeath ) && !self.shock_ondeath )
 	{
 		return;
 	}
 
-	if( IsDefined( self.specialDeath ) )
+	if ( IsDefined( self.specialDeath ) )
 	{
 		return;
 	}
 
-	if( GetDvar( #"r_texturebits" ) == "16" )
+	if ( GetDvar( #"r_texturebits" ) == "16" )
 	{
-		return; 
+		return;
 	}
+
 	//self shellshock( "default", 3 );
 }
 
 delete_on_death( ent )
 {
-	ent endon( "death" ); 
-	self waittill( "death" ); 
-	if( IsDefined( ent ) )
+	ent endon( "death" );
+	self waittill( "death" );
+	if ( IsDefined( ent ) )
 	{
 		ent delete();
 	}
 }
 
-
 delete_on_death_wait_sound( ent, sounddone )
 {
 	ent endon( "death" );
 	self waittill( "death" );
-	if( IsDefined( ent ) )
+	if ( IsDefined( ent ) )
 	{
 		if ( ent iswaitingonsound() )
 		{
 			ent waittill( sounddone );
 		}
 
-		ent Delete(); 
+		ent Delete();
 	}
 }
 
@@ -2403,8 +2429,8 @@ is_dead_sentient()
 	return isSentient( self ) && !isalive( self );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: play_sound_on_tag( <alias> , <tag>, <ends_on_death> )"
 "Summary: Play the specified sound alias on a tag of an entity"
@@ -2416,51 +2442,52 @@ is_dead_sentient()
 "Example: vehicle thread play_sound_on_tag( "horn_honk", "tag_engine" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 play_sound_on_tag( alias, tag, ends_on_death )
 {
 	if ( is_dead_sentient() )
 	{
-		return; 
+		return;
 	}
 
-	org = Spawn( "script_origin", ( 0, 0, 0 ) ); 
-	org endon( "death" ); 
+	org = Spawn( "script_origin", ( 0, 0, 0 ) );
+	org endon( "death" );
 
 	thread delete_on_death_wait_sound( org, "sounddone" );
 	if ( IsDefined( tag ) )
 	{
-		org LinkTo( self, tag, ( 0, 0, 0 ), ( 0, 0, 0 ) ); 
+		org LinkTo( self, tag, ( 0, 0, 0 ), ( 0, 0, 0 ) );
 	}
 	else
 	{
-		org.origin = self.origin; 
-		org.angles = self.angles; 
-		org LinkTo( self ); 
+		org.origin = self.origin;
+		org.angles = self.angles;
+		org LinkTo( self );
 	}
 
-	org PlaySound( alias, "sounddone" ); 
+	org PlaySound( alias, "sounddone" );
 	if ( IsDefined( ends_on_death ) )
 	{
 		assertex( ends_on_death, "ends_on_death must be true or undefined" );
 		wait_for_sounddone_or_death( org );
-		if(is_dead_sentient())
+		if ( is_dead_sentient() )
 		{
 			org StopSounds();
 		}
+
 		wait( 0.05 ); // stopsounds doesnt work if the org is deleted same frame
 	}
 	else
 	{
-		org waittill( "sounddone" ); 
+		org waittill( "sounddone" );
 	}
-	org Delete(); 
+
+	org Delete();
 }
 
-
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: play_sound_on_tag_endon_death( <alias>, <tag> )"
 "Summary: Play the specified sound alias on a tag of an entity but gets cut short if the entity dies"
@@ -2471,15 +2498,15 @@ play_sound_on_tag( alias, tag, ends_on_death )
 "Example: vehicle thread play_sound_on_tag_endon_death( "horn_honk", "tag_engine" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 play_sound_on_tag_endon_death( alias, tag )
 {
 	play_sound_on_tag( alias, tag, true );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: play_sound_on_entity( <alias> )"
 "Summary: Play the specified sound alias on an entity at it's origin"
@@ -2489,15 +2516,15 @@ play_sound_on_tag_endon_death( alias, tag )
 "Example: guy play_sound_on_entity( "breathing_better" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 play_sound_on_entity( alias )
 {
 	play_sound_on_tag( alias );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: play_loop_sound_on_tag( <alias> , <tag>, bStopSoundOnDeath )"
 "Summary: Play the specified looping sound alias on a tag of an entity"
@@ -2509,40 +2536,43 @@ play_sound_on_entity( alias )
 "Example: vehicle thread play_loop_sound_on_tag( "engine_belt_run", "tag_engine" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 play_loop_sound_on_tag( alias, tag, bStopSoundOnDeath )
 {
-	org = Spawn( "script_origin", ( 0, 0, 0 ) ); 
-	org endon( "death" ); 
+	org = Spawn( "script_origin", ( 0, 0, 0 ) );
+	org endon( "death" );
 	if ( !IsDefined( bStopSoundOnDeath ) )
 	{
 		bStopSoundOnDeath = true;
 	}
+
 	if ( bStopSoundOnDeath )
 	{
-		thread delete_on_death( org ); 
+		thread delete_on_death( org );
 	}
-	if( IsDefined( tag ) )
+
+	if ( IsDefined( tag ) )
 	{
-		org LinkTo( self, tag, ( 0, 0, 0 ), ( 0, 0, 0 ) ); 
+		org LinkTo( self, tag, ( 0, 0, 0 ), ( 0, 0, 0 ) );
 	}
 	else
 	{
-		org.origin = self.origin; 
-		org.angles = self.angles; 
-		org LinkTo( self ); 
+		org.origin = self.origin;
+		org.angles = self.angles;
+		org LinkTo( self );
 	}
-	//	org endon( "death" ); 
-	org PlayLoopSound( alias ); 
-	//	println( "playing loop sound ", alias, " on entity at origin ", self.origin, " at ORIGIN ", org.origin ); 
-	self waittill( "stop sound" + alias ); 
-	org StopLoopSound( alias ); 
-	org Delete(); 
+
+	//	org endon( "death" );
+	org PlayLoopSound( alias );
+	//	println( "playing loop sound ", alias, " on entity at origin ", self.origin, " at ORIGIN ", org.origin );
+	self waittill( "stop sound" + alias );
+	org StopLoopSound( alias );
+	org Delete();
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: stop_loop_sound_on_entity( <alias> )"
 "Summary: Stop playing the the loop sound alias on an entity"
@@ -2552,15 +2582,15 @@ play_loop_sound_on_tag( alias, tag, bStopSoundOnDeath )
 "Example: vehicle thread stop_loop_sound_on_entity( "engine_belt_run" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 stop_loop_sound_on_entity( alias )
 {
 	self notify( "stop sound" + alias );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: play_loop_sound_on_entity( <alias> , <offset> )"
 "Summary: Play loop sound alias on an entity"
@@ -2571,35 +2601,36 @@ stop_loop_sound_on_entity( alias )
 "Example: vehicle thread play_loop_sound_on_entity( "engine_belt_run" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 play_loop_sound_on_entity( alias, offset )
 {
-	org = Spawn( "script_origin", ( 0, 0, 0 ) ); 
-	org endon( "death" ); 
-	thread delete_on_death( org ); 
-	if( IsDefined( offset ) )
+	org = Spawn( "script_origin", ( 0, 0, 0 ) );
+	org endon( "death" );
+	thread delete_on_death( org );
+	if ( IsDefined( offset ) )
 	{
-		org.origin = self.origin + offset; 
-		org.angles = self.angles; 
-		org LinkTo( self ); 
+		org.origin = self.origin + offset;
+		org.angles = self.angles;
+		org LinkTo( self );
 	}
 	else
 	{
-		org.origin = self.origin; 
-		org.angles = self.angles; 
-		org LinkTo( self ); 
+		org.origin = self.origin;
+		org.angles = self.angles;
+		org LinkTo( self );
 	}
-	//	org endon( "death" ); 
-	org PlayLoopSound( alias ); 
-	//	println( "playing loop sound ", alias, " on entity at origin ", self.origin, " at ORIGIN ", org.origin ); 
-	self waittill( "stop sound" + alias ); 
-	org StopLoopSound( 0.1 ); 
-	org Delete(); 
+
+	//	org endon( "death" );
+	org PlayLoopSound( alias );
+	//	println( "playing loop sound ", alias, " on entity at origin ", self.origin, " at ORIGIN ", org.origin );
+	self waittill( "stop sound" + alias );
+	org StopLoopSound( 0.1 );
+	org Delete();
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: play_sound_in_space( <alias> , <origin> , <master> )"
 "Summary: Stop playing the the loop sound alias on an entity"
@@ -2611,37 +2642,39 @@ play_loop_sound_on_entity( alias, offset )
 "Example: play_sound_in_space( "siren", level.speaker.origin );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 play_sound_in_space( alias, origin, master )
 {
-	org = Spawn( "script_origin", ( 0, 0, 1 ) ); 
+	org = Spawn( "script_origin", ( 0, 0, 1 ) );
 
-	if( !IsDefined( origin ) )
+	if ( !IsDefined( origin ) )
 	{
-		origin = self.origin; 
+		origin = self.origin;
 	}
-	org.origin = origin; 
-	if( IsDefined( master ) && master )
+
+	org.origin = origin;
+	if ( IsDefined( master ) && master )
 	{
-		org PlaySoundAsMaster( alias, "sounddone" ); 
+		org PlaySoundAsMaster( alias, "sounddone" );
 	}
 	else
 	{
-		org PlaySound( alias, "sounddone" ); 
+		org PlaySound( alias, "sounddone" );
 	}
-	org waittill( "sounddone" ); 
+
+	org waittill( "sounddone" );
 
 	// 5/29/08 - guzzo added b/c sometimes org can undefined and will cause a crash when it's deleted
-	if( IsDefined( org ) )
+	if ( IsDefined( org ) )
 	{
-		org Delete(); 
+		org Delete();
 	}
 
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: spawn_failed( <spawn> )"
 "Summary: Checks to see if the spawned AI spawned correctly or had errors. Also waits until all spawn initialization is complete. Returns true or false."
@@ -2651,45 +2684,45 @@ play_sound_in_space( alias, origin, master )
 "Example: spawn_failed( level.price );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 spawn_failed( spawn )
 {
-	if ( IsDefined(spawn) && IsAlive(spawn) )
+	if ( IsDefined( spawn ) && IsAlive( spawn ) )
 	{
-		if ( !IsDefined(spawn.finished_spawning) )
+		if ( !IsDefined( spawn.finished_spawning ) )
 		{
-			spawn waittill("finished spawning"); 
+			spawn waittill( "finished spawning" );
 		}
 
 		waittillframeend;
 
-		if ( IsAlive(spawn) )
+		if ( IsAlive( spawn ) )
 		{
-			return false; 
+			return false;
 		}
 	}
 
-	return true; 
+	return true;
 }
 
 spawn_setcharacter( data )
 {
-	codescripts\character::precache( data ); 
+	codescripts\character::precache( data );
 
-	self waittill( "spawned", spawn ); 
-	if( maps\_utility::spawn_failed( spawn ) )
+	self waittill( "spawned", spawn );
+	if ( maps\_utility::spawn_failed( spawn ) )
 	{
-		return; 
+		return;
 	}
 
 	println( "Size is ", data[ "attach" ].size );
-	spawn codescripts\character::new(); 
-	spawn codescripts\character::load( data ); 
+	spawn codescripts\character::new();
+	spawn codescripts\character::load( data );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: assign_animtree( [animname] )"
 "Summary: Assigns the level.scr_animtree for the given animname to self."
@@ -2698,12 +2731,12 @@ spawn_setcharacter( data )
 "Example: model = assign_animtree( "whatever" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
-assign_animtree(animname)
+assign_animtree( animname )
 {
-	if( IsDefined( animname ) )
+	if ( IsDefined( animname ) )
 	{
 		self.animname = animname;
 	}
@@ -2711,21 +2744,22 @@ assign_animtree(animname)
 	assertEx( IsDefined( level.scr_animtree[ self.animname ] ), "There is no level.scr_animtree for animname " + self.animname );
 
 	animtree = level.scr_animtree[ self.animname ];
-	self UseAnimTree(animtree);
+	self UseAnimTree( animtree );
 }
 
-assign_model(animname)
+assign_model( animname )
 {
-	if (!IsDefined(animname))
+	if ( !IsDefined( animname ) )
 	{
 		animname = self.animname;
 	}
+
 	assertEx( IsDefined( level.scr_model[ animname ] ), "There is no level.scr_model for animname " + animname );
 	self SetModel( level.scr_model[ animname ] );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: spawn_anim_model( <animname>, [origin], [angles], [is_simple_prop] )"
 "Summary: Spawns a script model and gives it the animtree and model associated with that animname"
@@ -2737,8 +2771,8 @@ assign_model(animname)
 "Example: model = spawn_anim_model( "player_rappel" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 spawn_anim_model( animname, origin, angles, is_simple_prop )
 {
 	if ( !IsDefined( origin ) )
@@ -2748,21 +2782,21 @@ spawn_anim_model( animname, origin, angles, is_simple_prop )
 
 	model = spawn( "script_model", origin );
 
-	model assign_model(animname);
-	model init_anim_model(animname, is_simple_prop);
-	
-	if(!isDefined(angles))
+	model assign_model( animname );
+	model init_anim_model( animname, is_simple_prop );
+
+	if ( !isDefined( angles ) )
 	{
-		angles = (0,0,0);
-	}	
-	
+		angles = ( 0, 0, 0 );
+	}
+
 	model.angles = angles;
 
 	return model;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: init_anim_model( [animname], [is_simple_prop] )"
 "Summary: inits a model to be used in a scripted animation."
@@ -2772,27 +2806,27 @@ spawn_anim_model( animname, origin, angles, is_simple_prop )
 "Example: model init_anim_model();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
-init_anim_model(animname, is_simple_prop)
+=============
+*/
+init_anim_model( animname, is_simple_prop )
 {
-	if (!IsDefined(animname))
+	if ( !IsDefined( animname ) )
 	{
 		animname = self.animname;
 	}
 
-	AssertEx(IsDefined(animname), "Trying to init anim model with no animname.");
+	AssertEx( IsDefined( animname ), "Trying to init anim model with no animname." );
 
 	self.animname = animname;
 
-	if (is_true(is_simple_prop))
+	if ( is_true( is_simple_prop ) )
 	{
-		if (!IsDefined(self.anim_link))
+		if ( !IsDefined( self.anim_link ) )
 		{
-			self.anim_link = Spawn("script_model", self.origin);
-			self.anim_link SetModel("tag_origin_animate");
+			self.anim_link = Spawn( "script_model", self.origin );
+			self.anim_link SetModel( "tag_origin_animate" );
 
-			level thread delete_anim_link_on_death(self, self.anim_link);
+			level thread delete_anim_link_on_death( self, self.anim_link );
 
 			// TODO: cleanup when animation is finished?
 		}
@@ -2805,7 +2839,7 @@ init_anim_model(animname, is_simple_prop)
 		self.anim_link.angles = self.angles;
 		self.anim_link.origin = self.origin;
 
-		self LinkTo(self.anim_link, "origin_animate_jnt");
+		self LinkTo( self.anim_link, "origin_animate_jnt" );
 	}
 	else
 	{
@@ -2813,36 +2847,36 @@ init_anim_model(animname, is_simple_prop)
 	}
 }
 
-delete_anim_link_on_death(ent, anim_link)
+delete_anim_link_on_death( ent, anim_link )
 {
-	anim_link endon("death");
-	ent waittill("death");
+	anim_link endon( "death" );
+	ent waittill( "death" );
 	anim_link Delete();
 }
 
 triggerOff()
 {
-	if (!isdefined (self.realOrigin))
+	if ( !isdefined( self.realOrigin ) )
 	{
 		self.realOrigin = self.origin;
 	}
 
-	if (self.origin == self.realorigin)
+	if ( self.origin == self.realorigin )
 	{
-		self.origin += (0, 0, -10000);
+		self.origin += ( 0, 0, -10000 );
 	}
 }
 
 triggerOn()
 {
-	if (isDefined (self.realOrigin) )
+	if ( isDefined( self.realOrigin ) )
 	{
 		self.origin = self.realOrigin;
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: trigger_use( <strName> , <strKey>, <ent> )"
 "Summary: Activates a trigger with the specified key / value is triggered"
@@ -2854,34 +2888,34 @@ triggerOn()
 "Example: trigger_use( "player_in_building1, "targetname", enemy );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 trigger_use( strName, strKey, ent )
 {
-    if( !IsDefined( strKey ) )
-    {
-        strKey = "targetname";
-    }
-    
-    if( !IsDefined( ent ) )
-    {
-        ent = get_players()[0];
-    }
-
-	eTrigger = GetEnt( strName, strKey ); 
-	if( !IsDefined( eTrigger ) )
+	if ( !IsDefined( strKey ) )
 	{
-		assertmsg( "trigger not found: " + strName + " key: " + strKey ); 
-		return; 
+		strKey = "targetname";
 	}
-	
+
+	if ( !IsDefined( ent ) )
+	{
+		ent = get_players()[ 0 ];
+	}
+
+	eTrigger = GetEnt( strName, strKey );
+	if ( !IsDefined( eTrigger ) )
+	{
+		assertmsg( "trigger not found: " + strName + " key: " + strKey );
+		return;
+	}
+
 	eTrigger UseBy( ent );
-	level notify( strName, ent ); 
-	return eTrigger; 
+	level notify( strName, ent );
+	return eTrigger;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: set_flag_on_notify( <notifyStr> , <strFlag> )"
 "Summary: Calls flag_set to set the specified flag when the notify is recieved on the parent entity"
@@ -2892,19 +2926,19 @@ trigger_use( strName, strKey, ent )
 "Example: vehicle thread set_flag_on_notify( "dead", "he_is_dead_flag" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 set_flag_on_notify( notifyStr, strFlag )
 {
-	if( !level.flag[ strFlag ] )
+	if ( !level.flag[ strFlag ] )
 	{
-		self waittill( notifyStr ); 
-		flag_set( strFlag ); 
+		self waittill( notifyStr );
+		flag_set( strFlag );
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: set_flag_on_trigger( <eTrigger> , <strFlag> )"
 "Summary: Calls flag_set to set the specified flag when the trigger is triggered"
@@ -2915,20 +2949,20 @@ set_flag_on_notify( notifyStr, strFlag )
 "Example: set_flag_on_trigger( trig, "player_is_outside" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 set_flag_on_trigger( eTrigger, strFlag )
 {
-	if( !level.flag[ strFlag ] )
+	if ( !level.flag[ strFlag ] )
 	{
-		eTrigger waittill( "trigger", eOther ); 
-		flag_set( strFlag ); 
-		return eOther; 
+		eTrigger waittill( "trigger", eOther );
+		flag_set( strFlag );
+		return eOther;
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: set_flag_on_targetname_trigger( <flag> )"
 "Summary: Sets the specified flag when a trigger with targetname < flag > is triggered."
@@ -2938,23 +2972,23 @@ set_flag_on_trigger( eTrigger, strFlag )
 "Example:  set_flag_on_targetname_trigger( "player_is_outside" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 set_flag_on_targetname_trigger( msg )
 {
 	assert( IsDefined( level.flag[ msg ] ) );
-	if( flag( msg ) )
+	if ( flag( msg ) )
 	{
-		return; 
+		return;
 	}
 
-	trigger = GetEnt( msg, "targetname" ); 
-	trigger waittill( "trigger" ); 
-	flag_set( msg ); 
+	trigger = GetEnt( msg, "targetname" );
+	trigger waittill( "trigger" );
+	flag_set( msg );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: waittill_dead( <guys> , <num> , <timeoutLength> )"
 "Summary: Waits until all the AI in array < guys > are dead."
@@ -2966,57 +3000,61 @@ set_flag_on_targetname_trigger( msg )
 "Example: waittill_dead( getaiarray( "axis" ) );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 waittill_dead( guys, num, timeoutLength )
 {
 	// verify the living - ness of the ai
-	allAlive = true; 
-	for( i = 0;i < guys.size;i++ )
+	allAlive = true;
+	for ( i = 0; i < guys.size; i++ )
 	{
-		if( isalive( guys[ i ] ) )
+		if ( isalive( guys[ i ] ) )
 		{
-			continue; 
+			continue;
 		}
-		allAlive = false; 
-		break; 
+
+		allAlive = false;
+		break;
 	}
-	assertex( allAlive, "Waittill_Dead was called with dead or removed AI in the array, meaning it will never pass." ); 
-	if( !allAlive )
-	{	
-		newArray = []; 
-		for( i = 0;i < guys.size;i++ )
+
+	assertex( allAlive, "Waittill_Dead was called with dead or removed AI in the array, meaning it will never pass." );
+	if ( !allAlive )
+	{
+		newArray = [];
+		for ( i = 0; i < guys.size; i++ )
 		{
-			if( isalive( guys[ i ] ) )
+			if ( isalive( guys[ i ] ) )
 			{
 				newArray[ newArray.size ] = guys[ i ];
 			}
 		}
-		guys = newArray; 
+
+		guys = newArray;
 	}
 
-	ent = SpawnStruct(); 
-	if( IsDefined( timeoutLength ) )
+	ent = SpawnStruct();
+	if ( IsDefined( timeoutLength ) )
 	{
 		ent endon( "thread_timed_out" );
-		ent thread waittill_dead_timeout( timeoutLength ); 
+		ent thread waittill_dead_timeout( timeoutLength );
 	}
 
-	ent.count = guys.size; 
-	if( IsDefined( num ) && num < ent.count )
+	ent.count = guys.size;
+	if ( IsDefined( num ) && num < ent.count )
 	{
-		ent.count = num; 
+		ent.count = num;
 	}
-	array_thread( guys, ::waittill_dead_thread, ent ); 
 
-	while( ent.count > 0 )
+	array_thread( guys,::waittill_dead_thread, ent );
+
+	while ( ent.count > 0 )
 	{
 		ent waittill( "waittill_dead guy died" );
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: waittill_dead_or_dying( <guys> , <num> , <timeoutLength> )"
 "Summary: Similar to waittill_dead(). Waits until all the AI in array < guys > are dead OR dying (long deaths)."
@@ -3028,23 +3066,24 @@ waittill_dead( guys, num, timeoutLength )
 "Example: waittill_dead_or_dying( getaiarray( "axis" ) );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 waittill_dead_or_dying( guys, num, timeoutLength )
 {
 	// verify the living - ness and healthy - ness of the ai
 	newArray = [];
-	for( i = 0;i < guys.size;i++ )
+	for ( i = 0; i < guys.size; i++ )
 	{
-		if( isalive( guys[ i ] ) && !guys[ i ].ignoreForFixedNodeSafeCheck )
+		if ( isalive( guys[ i ] ) && !guys[ i ].ignoreForFixedNodeSafeCheck )
 		{
 			newArray[ newArray.size ] = guys[ i ];
 		}
 	}
+
 	guys = newArray;
 
 	ent = spawnStruct();
-	if( IsDefined( timeoutLength ) )
+	if ( IsDefined( timeoutLength ) )
 	{
 		ent endon( "thread_timed_out" );
 		ent thread waittill_dead_timeout( timeoutLength );
@@ -3053,14 +3092,14 @@ waittill_dead_or_dying( guys, num, timeoutLength )
 	ent.count = guys.size;
 
 	// optional override on count
-	if( IsDefined( num ) && num < ent.count )
+	if ( IsDefined( num ) && num < ent.count )
 	{
 		ent.count = num;
 	}
 
-	array_thread( guys, ::waittill_dead_or_dying_thread, ent );
+	array_thread( guys,::waittill_dead_or_dying_thread, ent );
 
-	while( ent.count > 0 )
+	while ( ent.count > 0 )
 	{
 		ent waittill( "waittill_dead_guy_dead_or_dying" );
 	}
@@ -3068,26 +3107,26 @@ waittill_dead_or_dying( guys, num, timeoutLength )
 
 waittill_dead_thread( ent )
 {
-	self waittill( "death" ); 
-	ent.count-- ;
-	ent notify( "waittill_dead guy died" ); 
+	self waittill( "death" );
+	ent.count--;
+	ent notify( "waittill_dead guy died" );
 }
 
 waittill_dead_or_dying_thread( ent )
 {
 	self waittill_either( "death", "pain_death" );
-	ent.count-- ;
+	ent.count--;
 	ent notify( "waittill_dead_guy_dead_or_dying" );
 }
 
 waittill_dead_timeout( timeoutLength )
 {
-	wait( timeoutLength ); 
+	wait( timeoutLength );
 	self notify( "thread_timed_out" );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: set_ai_group_cleared_count( <aigroup>, <count> )"
 "Summary: Sets how many guys left in an aigroup for it to be "cleared"."
@@ -3097,16 +3136,16 @@ waittill_dead_timeout( timeoutLength )
 "Example: set_ai_group_cleared_count( "room_1_guys", 2 ); // cleared when 2 guys are left"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
-set_ai_group_cleared_count(aigroup, count)
+=============
+*/
+set_ai_group_cleared_count( aigroup, count )
 {
-	maps\_spawner::aigroup_init(aigroup);
-	level._ai_group[aigroup].cleared_count = count;
+	maps\_spawner::aigroup_init( aigroup );
+	level._ai_group[ aigroup ].cleared_count = count;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: waittill_ai_group_cleared( <aigroup> )"
 "Summary: Waits until all of an AI group is cleared, including alive guys and spawners. If any spawners have a count greater than 0, this will continue to wait."
@@ -3115,16 +3154,16 @@ set_ai_group_cleared_count(aigroup, count)
 "Example: waittill_ai_group_cleared( "room_1_guys" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 waittill_ai_group_cleared( aigroup )
 {
-	AssertEx(IsDefined(level._ai_group[aigroup]), "The aigroup "+aigroup+" does not exist");
-	flag_wait(aigroup + "_cleared");
+	AssertEx( IsDefined( level._ai_group[ aigroup ] ), "The aigroup " + aigroup + " does not exist" );
+	flag_wait( aigroup + "_cleared" );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: waittill_ai_group_count( <aigroup>, <count> )"
 "Summary: Waits until an AI group's count is equal to or lower than the specified number. The group's count is made up of the sum of its spawner counts and the number of alive guys in the group"
@@ -3133,18 +3172,18 @@ waittill_ai_group_cleared( aigroup )
 "Example: waittill_ai_group_count( "room_1_guys", 3 );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 waittill_ai_group_count( aigroup, count )
 {
-	while( level._ai_group[ aigroup ].spawnercount + level._ai_group[ aigroup ].aicount > count )
+	while ( level._ai_group[ aigroup ].spawnercount + level._ai_group[ aigroup ].aicount > count )
 	{
 		wait( 0.25 );
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: waittill_ai_group_ai_count( <aigroup>, <count> )"
 "Summary: Waits until an AI group's AI count is equal to or lower than the specified number. Only alive guys are counted (spawner counts are not counted)."
@@ -3153,18 +3192,18 @@ waittill_ai_group_count( aigroup, count )
 "Example: waittill_ai_group_ai_count( "room_1_guys", 3 );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 waittill_ai_group_ai_count( aigroup, count )
 {
-	while( level._ai_group[ aigroup ].aicount > count )
+	while ( level._ai_group[ aigroup ].aicount > count )
 	{
 		wait( 0.25 );
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: waittill_ai_group_spawner_count( <aigroup>, <count> )"
 "Summary: Waits until an AI group's spawner count is equal to or lower than the specified number. Only spawner counts are counted (alive AI are not counted)."
@@ -3173,18 +3212,18 @@ waittill_ai_group_ai_count( aigroup, count )
 "Example: waittill_ai_group_spawner_count( "room_1_guys", 3 );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 waittill_ai_group_spawner_count( aigroup, count )
 {
-	while( level._ai_group[ aigroup ].spawnercount > count )
+	while ( level._ai_group[ aigroup ].spawnercount > count )
 	{
 		wait( 0.25 );
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: waittill_ai_group_amount_killed( <aigroup>, <amount_killed> )"
 "Summary: Waits until a certain number of members an AI group are killed."
@@ -3193,18 +3232,18 @@ waittill_ai_group_spawner_count( aigroup, count )
 "Example: waittill_ai_group_amount_killed( "room_1_guys", 3 );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 waittill_ai_group_amount_killed( aigroup, amount_killed )
 {
-	while( level._ai_group[ aigroup ].killed_count < amount_killed )
+	while ( level._ai_group[ aigroup ].killed_count < amount_killed )
 	{
-		wait( 0.25 );	
+		wait( 0.25 );
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: get_ai_group_count( <aigroup> )"
 "Summary: Returns the integer sum of alive AI count and spawner count for this group."
@@ -3213,15 +3252,15 @@ waittill_ai_group_amount_killed( aigroup, amount_killed )
 "Example: if( get_ai_group_count( "room_1_guys" ) < 3 )..."
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 get_ai_group_count( aigroup )
 {
-	return( level._ai_group[ aigroup ].spawnercount + level._ai_group[ aigroup ].aicount );
+	return ( level._ai_group[ aigroup ].spawnercount + level._ai_group[ aigroup ].aicount );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: get_ai_group_sentient_count( <aigroup> )"
 "Summary: Returns integer of the alive AI count for this group."
@@ -3230,15 +3269,15 @@ get_ai_group_count( aigroup )
 "Example: if( get_ai_group_sentient_count( "room_1_guys" ) < 3 )..."
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 get_ai_group_sentient_count( aigroup )
 {
-	return( level._ai_group[ aigroup ].aicount );
+	return ( level._ai_group[ aigroup ].aicount );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: get_ai_group_ai( <aigroup> )"
 "Summary: Returns an array of the alive AI for this group."
@@ -3247,14 +3286,14 @@ get_ai_group_sentient_count( aigroup )
 "Example: room_1_guys = get_ai_group_ai( "room_1_guys" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 get_ai_group_ai( aigroup )
 {
-	aiSet = []; 
-	for( index = 0; index < level._ai_group[ aigroup ].ai.size; index ++ )
+	aiSet = [];
+	for ( index = 0; index < level._ai_group[ aigroup ].ai.size; index++ )
 	{
-		if( !isAlive( level._ai_group[ aigroup ].ai[ index ] ) )
+		if ( !isAlive( level._ai_group[ aigroup ].ai[ index ] ) )
 		{
 			continue;
 		}
@@ -3262,11 +3301,11 @@ get_ai_group_ai( aigroup )
 		aiSet[ aiSet.size ] = level._ai_group[ aigroup ].ai[ index ];
 	}
 
-	return( aiSet );
+	return ( aiSet );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: get_ai( <name> , <type> )"
 "Summary: Returns single spawned ai in the level of <name> and <type>. Error if used on more than one ai with same name and type "
@@ -3277,21 +3316,22 @@ get_ai_group_ai( aigroup )
 "Example: patroller = get_ai( "patrol", "script_noteworthy" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 get_ai( name, type )
 {
 	array = get_ai_array( name, type );
-	if( array.size > 1 )
+	if ( array.size > 1 )
 	{
 		assertMsg( "get_ai used for more than one living ai of type " + type + " called " + name + "." );
 		return undefined;
 	}
-	return array[0];
+
+	return array[ 0 ];
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: get_ai_array( <name> , <type> )"
 "Summary: Returns array of spawned ai in the level of <name> and <type> "
@@ -3302,53 +3342,54 @@ get_ai( name, type )
 "Example: patrollers = get_ai_array( "patrol", "script_noteworthy" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
-get_ai_array(name, type)
+=============
+*/
+get_ai_array( name, type )
 {
 	ai = GetAIArray();
-	
-	if (!IsDefined(type))
+
+	if ( !IsDefined( type ) )
 	{
 		type = "script_noteworthy";
 	}
 
 	array = [];
-	for(i=0; i<ai.size; i++)
+	for ( i = 0; i < ai.size; i++ )
 	{
-		switch(type)
+		switch ( type )
 		{
-		case "targetname":
+			case "targetname":
 
-			if(IsDefined(ai[i].targetname) && ai[i].targetname == name)
-			{
-				array[array.size] = ai[i];	
-			}
-			break;	
+				if ( IsDefined( ai[ i ].targetname ) && ai[ i ].targetname == name )
+				{
+					array[ array.size ] = ai[ i ];
+				}
+				break;
 
-		case "script_noteworthy":
+			case "script_noteworthy":
 
-			if(IsDefined(ai[i].script_noteworthy) && ai[i].script_noteworthy == name)
-			{
-				array[array.size] = ai[i];
-			}
-			break;
+				if ( IsDefined( ai[ i ].script_noteworthy ) && ai[ i ].script_noteworthy == name )
+				{
+					array[ array.size ] = ai[ i ];
+				}
+				break;
 
-		case "classname":
+			case "classname":
 
-			if(IsDefined(ai[i].classname) && ai[i].classname == name)
-			{
-				array[array.size] = ai[i];
-			}
-			break;
+				if ( IsDefined( ai[ i ].classname ) && ai[ i ].classname == name )
+				{
+					array[ array.size ] = ai[ i ];
+				}
+				break;
 
 		}
 	}
+
 	return array;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: get_aispecies( <name> , <type>, <breed> )"
 "Summary: Returns single spawned ai in the level of <name> and <type>. Error if used on more than one ai with same name and type "
@@ -3360,21 +3401,22 @@ get_ai_array(name, type)
 "Example: patroller = get_aispecies( "patrol", "script_noteworthy", "dog" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 get_aispecies( name, type, breed )
 {
 	array = get_ai_array( name, type, breed );
-	if( array.size > 1 )
+	if ( array.size > 1 )
 	{
 		assertMsg( "get_aispecies used for more than one living ai of type " + type + " called " + name + "." );
 		return undefined;
 	}
-	return array[0];
+
+	return array[ 0 ];
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: get_aispecies_array( <name> , <type>, <breed> )"
 "Summary: Returns array of spawned ai of any species in the level of <name>, <type>, and <breed> "
@@ -3386,133 +3428,145 @@ get_aispecies( name, type, breed )
 "Example: patrollers = get_aispecies_array( "patrol", "script_noteworthy", "dog" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
-get_aispecies_array(name, type, breed)
+=============
+*/
+get_aispecies_array( name, type, breed )
 {
-	if( !IsDefined( breed ) )
+	if ( !IsDefined( breed ) )
 	{
 		breed = "all";
 	}
 
-	ai = getaispeciesarray("allies", breed);
-	ai = array_combine(ai, getaispeciesarray("axis", breed) );
+	ai = getaispeciesarray( "allies", breed );
+	ai = array_combine( ai, getaispeciesarray( "axis", breed ) );
 
 	array = [];
-	for(i=0; i<ai.size; i++)
+	for ( i = 0; i < ai.size; i++ )
 	{
-		switch(type)
+		switch ( type )
 		{
-		case "targetname":
-			if(IsDefined(ai[i].targetname) && ai[i].targetname == name)
-			{
-				array[array.size] = ai[i];	
-			}
-			break;	
+			case "targetname":
+				if ( IsDefined( ai[ i ].targetname ) && ai[ i ].targetname == name )
+				{
+					array[ array.size ] = ai[ i ];
+				}
+				break;
 
-		case "script_noteworthy":
-			if(IsDefined(ai[i].script_noteworthy) && ai[i].script_noteworthy == name)
-			{
-				array[array.size] = ai[i];
-			}
-			break;
+			case "script_noteworthy":
+				if ( IsDefined( ai[ i ].script_noteworthy ) && ai[ i ].script_noteworthy == name )
+				{
+					array[ array.size ] = ai[ i ];
+				}
+				break;
 		}
 	}
+
 	return array;
 }
 
 set_environment( env )
 {
-	animscripts\utility::setEnv( env ); 
+	animscripts\utility::setEnv( env );
 }
 
 getchar( num )
 {
-	if( num == 0 )
+	if ( num == 0 )
 	{
-		return "0"; 
+		return "0";
 	}
-	if( num == 1 )
+
+	if ( num == 1 )
 	{
-		return "1"; 
+		return "1";
 	}
-	if( num == 2 )
+
+	if ( num == 2 )
 	{
-		return "2"; 
+		return "2";
 	}
-	if( num == 3 )
+
+	if ( num == 3 )
 	{
-		return "3"; 
+		return "3";
 	}
-	if( num == 4 )
+
+	if ( num == 4 )
 	{
-		return "4"; 
+		return "4";
 	}
-	if( num == 5 )
+
+	if ( num == 5 )
 	{
-		return "5"; 
+		return "5";
 	}
-	if( num == 6 )
+
+	if ( num == 6 )
 	{
-		return "6"; 
+		return "6";
 	}
-	if( num == 7 )
+
+	if ( num == 7 )
 	{
-		return "7"; 
+		return "7";
 	}
-	if( num == 8 )
+
+	if ( num == 8 )
 	{
-		return "8"; 
+		return "8";
 	}
-	if( num == 9 )
+
+	if ( num == 9 )
 	{
-		return "9"; 
+		return "9";
 	}
 }
 
 waittill_either( msg1, msg2 )
 {
-	self endon( msg1 ); 
-	self waittill( msg2 ); 
+	self endon( msg1 );
+	self waittill( msg2 );
 }
 
 // Adds only things that are new to the array.
 // Requires the arrays to be of node with script_linkname defined.
 array_merge_links( array1, array2 )
 {
-	if( !array1.size )
+	if ( !array1.size )
 	{
-		return array2; 
-	}
-	if( !array2.size )
-	{
-		return array1; 
+		return array2;
 	}
 
-	linkMap = []; 
+	if ( !array2.size )
+	{
+		return array1;
+	}
 
-	for( i = 0; i < array1.size; i++ )
+	linkMap = [];
+
+	for ( i = 0; i < array1.size; i++ )
 	{
 		node = array1[ i ];
 		linkMap[ node.script_linkname ] = true;
 	}
 
-	for( i = 0; i < array2.size; i++ )
+	for ( i = 0; i < array2.size; i++ )
 	{
 		node = array2[ i ];
-		if( IsDefined( linkMap[ node.script_linkname ] ) )
+		if ( IsDefined( linkMap[ node.script_linkname ] ) )
 		{
-			continue; 
+			continue;
 		}
+
 		linkMap[ node.script_linkname ] = true;
 		array1[ array1.size ] = node;
 	}
 
-	return array1; 
+	return array1;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: flat_angle( <angle> )"
 "Summary: Returns the specified angle as a flat angle.( 45, 90, 30 ) becomes( 0, 90, 0 ). Useful if you just need an angle around Y - axis."
@@ -3522,16 +3576,16 @@ array_merge_links( array1, array2 )
 "Example: yaw = flat_angle( node.angles );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 flat_angle( angle )
 {
 	rangle = ( 0, angle[ 1 ], 0 );
-	return rangle; 
+	return rangle;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: flat_origin( <org> )"
 "Summary: Returns a flat origin of the specified origin. Moves Z corrdinate to 0.( x, y, z ) becomes( x, y, 0 )"
@@ -3541,43 +3595,47 @@ flat_angle( angle )
 "Example: org = flat_origin( self.origin );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 flat_origin( org )
 {
 	rorg = ( org[ 0 ], org[ 1 ], 0 );
-	return rorg; 
+	return rorg;
 
 }
 
 plot_points( plotpoints, r, g, b, timer )
 {
 	lastpoint = plotpoints[ 0 ];
-	if( !IsDefined( r ) )
+	if ( !IsDefined( r ) )
 	{
-		r = 1; 
+		r = 1;
 	}
-	if( !IsDefined( g ) )
+
+	if ( !IsDefined( g ) )
 	{
-		g = 1; 
+		g = 1;
 	}
-	if( !IsDefined( b ) )
+
+	if ( !IsDefined( b ) )
 	{
-		b = 1; 
+		b = 1;
 	}
-	if( !IsDefined( timer ) )
+
+	if ( !IsDefined( timer ) )
 	{
-		timer = 0.05; 
+		timer = 0.05;
 	}
-	for( i = 1;i < plotpoints.size;i++ )
+
+	for ( i = 1; i < plotpoints.size; i++ )
 	{
 		thread draw_line_for_time( lastpoint, plotpoints[ i ], r, g, b, timer );
-		lastpoint = plotpoints[ i ];	
+		lastpoint = plotpoints[ i ];
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: draw_line_for_time( <org1> , <org2> , <r> , <g> , <b> , <timer> )"
 "Summary: Draws a line from < org1 > to < org2 > in the specified color for the specified duration"
@@ -3592,21 +3650,21 @@ plot_points( plotpoints, r, g, b, timer )
 "Example: thread draw_line_for_time( player.origin, vehicle.origin, 1, 0, 0, 10.0 );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 draw_line_for_time( org1, org2, r, g, b, timer )
 {
 	timer = gettime() + ( timer * 1000 );
-	while( GetTime() < timer )
+	while ( GetTime() < timer )
 	{
-		line( org1, org2, ( r, g, b ), 1 ); 
-		wait .05;		
+		line( org1, org2, ( r, g, b ), 1 );
+		wait .05;
 	}
 
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: draw_point( <org> , <scale>, <color>, <timer> )"
 "Summary: Draws a point at <org> in the specified color for the specified duration"
@@ -3619,32 +3677,32 @@ draw_line_for_time( org1, org2, r, g, b, timer )
 "Example: thread draw_point( player.origin, 10, (1, 0, 0), 10.0 );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 draw_point( org, scale, color, timer )
 {
-	timer	= gettime() + ( timer * 1000 );
-	range	= 10*scale;
-	rt		= (range,0,0);
-	ot		= (0,range,0);
-	up		= (0,0,range);
-	v1_1	= org + rt;
-	v2_1	= org + ot;
-	v3_1	= org + up;
-	v1_2	= org - rt;
-	v2_2	= org - ot;
-	v3_2	= org - up;
-	while( GetTime() < timer )
+	timer = gettime() + ( timer * 1000 );
+	range = 10 * scale;
+	rt = ( range, 0, 0 );
+	ot = ( 0, range, 0 );
+	up = ( 0, 0, range );
+	v1_1 = org + rt;
+	v2_1 = org + ot;
+	v3_1 = org + up;
+	v1_2 = org - rt;
+	v2_2 = org - ot;
+	v3_2 = org - up;
+	while ( GetTime() < timer )
 	{
-		line( v1_1, v1_2, color, 1 ); 
-		line( v2_1, v2_2, color, 1 ); 
-		line( v3_1, v3_2, color, 1 ); 
-		wait .05;		
+		line( v1_1, v1_2, color, 1 );
+		line( v2_1, v2_2, color, 1 );
+		line( v3_1, v3_2, color, 1 );
+		wait .05;
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: draw_line_to_ent_for_time( <org1> , <ent> , <r> , <g> , <b> , <timer> )"
 "Summary: Draws a line from < org1 > to < ent > origin in the specified color for the specified duration. Updates to the entities origin each frame."
@@ -3659,15 +3717,15 @@ draw_point( org, scale, color, timer )
 "Example: thread draw_line_to_ent_for_time( guy.origin, vehicle, 1, 0, 0, 10.0 );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 draw_line_to_ent_for_time( org1, ent, r, g, b, timer )
 {
 	timer = gettime() + ( timer * 1000 );
-	while( GetTime() < timer )
+	while ( GetTime() < timer )
 	{
-		line( org1, ent.origin, ( r, g, b ), 1 ); 
-		wait .05;		
+		line( org1, ent.origin, ( r, g, b ), 1 );
+		wait .05;
 	}
 
 }
@@ -3677,8 +3735,8 @@ draw_line_from_ent_for_time( ent, org, r, g, b, timer )
 	draw_line_to_ent_for_time( org, ent, r, g, b, timer );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: draw_line_from_ent_to_ent_for_time( <ent1> , <ent2> , <r> , <g> , <b> , <timer> )"
 "Summary: Draws a line from one entity origin to another entity origin in the specified color for the specified duration. Updates to the entities origin each frame."
@@ -3693,24 +3751,24 @@ draw_line_from_ent_for_time( ent, org, r, g, b, timer )
 "Example: thread draw_line_from_ent_to_ent_for_time( guy, vehicle, 1, 0, 0, 10.0 );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 draw_line_from_ent_to_ent_for_time( ent1, ent2, r, g, b, timer )
 {
 	ent1 endon( "death" );
 	ent2 endon( "death" );
 
 	timer = gettime() + ( timer * 1000 );
-	while( gettime() < timer )
+	while ( gettime() < timer )
 	{
-		line( ent1.origin, ent2.origin, ( r, g, b ), 1 ); 
-		wait .05;		
+		line( ent1.origin, ent2.origin, ( r, g, b ), 1 );
+		wait .05;
 	}
 
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: draw_line_from_ent_to_ent_until_notify( <ent1> , <ent2> , <r> , <g> , <b> , <notifyEnt> , <notifyString> )"
 "Summary: Draws a line from one entity origin to another entity origin in the specified color until < notifyEnt > is notified < notifyString > . Updates to the entities origin each frame."
@@ -3726,8 +3784,8 @@ draw_line_from_ent_to_ent_for_time( ent1, ent2, r, g, b, timer )
 "Example: thread draw_line_from_ent_to_ent_until_notify( get_players()[0], guy, 1, 0, 0, guy, "anim_on_tag_done" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 draw_line_from_ent_to_ent_until_notify( ent1, ent2, r, g, b, notifyEnt, notifyString )
 {
 	assert( IsDefined( notifyEnt ) );
@@ -3738,16 +3796,16 @@ draw_line_from_ent_to_ent_until_notify( ent1, ent2, r, g, b, notifyEnt, notifySt
 
 	notifyEnt endon( notifyString );
 
-	while( 1 )
+	while ( 1 )
 	{
 		line( ent1.origin, ent2.origin, ( r, g, b ), 0.05 );
-		wait .05;		
+		wait .05;
 	}
 
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: draw_line_until_notify( <org1> , <org2> , <r> , <g> , <b> , <notifyEnt> , <notifyString> )"
 "Summary: Draws a line from < org1 > to < org2 > in the specified color until < notifyEnt > is notified < notifyString > "
@@ -3763,23 +3821,23 @@ draw_line_from_ent_to_ent_until_notify( ent1, ent2, r, g, b, notifyEnt, notifySt
 "Example: thread draw_line_until_notify( self.origin, targetLoc, 1, 0, 0, self, "stop_drawing_line" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 draw_line_until_notify( org1, org2, r, g, b, notifyEnt, notifyString )
 {
-	assert( IsDefined( notifyEnt ) ); 
-	assert( IsDefined( notifyString ) ); 
+	assert( IsDefined( notifyEnt ) );
+	assert( IsDefined( notifyString ) );
 
-	notifyEnt endon( notifyString ); 
+	notifyEnt endon( notifyString );
 
-	while( 1 )
+	while ( 1 )
 	{
-		draw_line_for_time( org1, org2, r, g, b, 0.05 ); 	
+		draw_line_for_time( org1, org2, r, g, b, 0.05 );
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: draw_arrow_time( <start> , <end> , <color> , <duration> )"
 "Summary: Draws an arrow pointing at < end > in the specified color for < duration > seconds."
@@ -3792,68 +3850,69 @@ draw_line_until_notify( org1, org2, r, g, b, notifyEnt, notifyString )
 "Example: thread draw_arrow_time( lasttarg.origin, targ.origin, ( 0, 0, 1 ), 5.0 );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 draw_arrow_time( start, end, color, duration )
 {
-	level endon( "newpath" ); 
-	pts = []; 
-	angles = VectorToAngles( start - end ); 
-	right = AnglesToRight( angles ); 
-	forward = AnglesToForward( angles ); 
-	up = AnglesToUp( angles ); 
+	level endon( "newpath" );
+	pts = [];
+	angles = VectorToAngles( start - end );
+	right = AnglesToRight( angles );
+	forward = AnglesToForward( angles );
+	up = AnglesToUp( angles );
 
-	dist = Distance( start, end ); 
-	arrow = []; 
-	range = 0.1; 
+	dist = Distance( start, end );
+	arrow = [];
+	range = 0.1;
 
-	arrow[ 0 ] =  start;
-	arrow[ 1 ] =  start + vector_scale( right, dist * ( range ) ) + vector_scale( forward, dist * - 0.1 );
-	arrow[ 2 ] =  end;
-	arrow[ 3 ] =  start + vector_scale( right, dist * ( - 1 * range ) ) + vector_scale( forward, dist * - 0.1 );
+	arrow[ 0 ] = start;
+	arrow[ 1 ] = start + vector_scale( right, dist * ( range ) ) + vector_scale( forward, dist * -0.1 );
+	arrow[ 2 ] = end;
+	arrow[ 3 ] = start + vector_scale( right, dist * ( -1 * range ) ) + vector_scale( forward, dist * -0.1 );
 
-	arrow[ 4 ] =  start;
-	arrow[ 5 ] =  start + vector_scale( up, dist * ( range ) ) + vector_scale( forward, dist * - 0.1 );
-	arrow[ 6 ] =  end;
-	arrow[ 7 ] =  start + vector_scale( up, dist * ( - 1 * range ) ) + vector_scale( forward, dist * - 0.1 );
-	arrow[ 8 ] =  start;
+	arrow[ 4 ] = start;
+	arrow[ 5 ] = start + vector_scale( up, dist * ( range ) ) + vector_scale( forward, dist * -0.1 );
+	arrow[ 6 ] = end;
+	arrow[ 7 ] = start + vector_scale( up, dist * ( -1 * range ) ) + vector_scale( forward, dist * -0.1 );
+	arrow[ 8 ] = start;
 
 	r = color[ 0 ];
 	g = color[ 1 ];
 	b = color[ 2 ];
 
-	plot_points( arrow, r, g, b, duration ); 
+	plot_points( arrow, r, g, b, duration );
 }
 
 draw_arrow( start, end, color )
 {
-	level endon( "newpath" ); 
-	pts = []; 
-	angles = VectorToAngles( start - end ); 
-	right = AnglesToRight( angles ); 
-	forward = AnglesToForward( angles ); 
+	level endon( "newpath" );
+	pts = [];
+	angles = VectorToAngles( start - end );
+	right = AnglesToRight( angles );
+	forward = AnglesToForward( angles );
 
-	dist = Distance( start, end ); 
-	arrow = []; 
-	range = 0.05; 
-	arrow[ 0 ] =  start;
-	arrow[ 1 ] =  start + vector_scale( right, dist * ( range ) ) + vector_scale( forward, dist * - 0.2 );
-	arrow[ 2 ] =  end;
-	arrow[ 3 ] =  start + vector_scale( right, dist * ( - 1 * range ) ) + vector_scale( forward, dist * - 0.2 );
+	dist = Distance( start, end );
+	arrow = [];
+	range = 0.05;
+	arrow[ 0 ] = start;
+	arrow[ 1 ] = start + vector_scale( right, dist * ( range ) ) + vector_scale( forward, dist * -0.2 );
+	arrow[ 2 ] = end;
+	arrow[ 3 ] = start + vector_scale( right, dist * ( -1 * range ) ) + vector_scale( forward, dist * -0.2 );
 
-	for( p = 0;p < 4;p++ )
+	for ( p = 0; p < 4; p++ )
 	{
 		nextpoint = p + 1;
-		if( nextpoint >= 4 )
+		if ( nextpoint >= 4 )
 		{
-			nextpoint = 0; 
+			nextpoint = 0;
 		}
+
 		line( arrow[ p ], arrow[ nextpoint ], color, 1.0 );
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: battlechatter_off( <team> )"
 "Summary: Disable DDS (formally known as battlechatter) for the specified team. Not specifying a team turns both teams off."
@@ -3863,16 +3922,16 @@ draw_arrow( start, end, color )
 "Example: battlechatter_off( "allies" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 battlechatter_off( team )
 {
 	maps\_dds::dds_disable( team );
 	return;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: battlechatter_on( <team> )"
 "Summary: Enable DDS (formally known as battlechatter) for the specified team"
@@ -3882,16 +3941,16 @@ battlechatter_off( team )
 "Example: battlechatter_on( "allies" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 battlechatter_on( team )
 {
 	maps\_dds::dds_enable( team );
 	return;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: dds_set_player_character_name( <hero_name> )"
 "Summary: Sets the player character name in DDS so correct player DDS is played. Default for COD7 is Mason."
@@ -3901,17 +3960,17 @@ battlechatter_on( team )
 "Example: player dds_set_player_character_name( "hudson" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 dds_set_player_character_name( hero_name )
 {
-	if( !IsPlayer( self ) )
+	if ( !IsPlayer( self ) )
 	{
 		PrintLn( "dds 'dds_set_player_character_name' function was not called on a player. No changes made." );
 		return;
 	}
 
-	switch( hero_name )
+	switch ( hero_name )
 	{
 		case "mason":
 		case "hudson":
@@ -3924,11 +3983,12 @@ dds_set_player_character_name( hero_name )
 			level.dds.player_character_name = "mas";
 			break;
 	}
+
 	self.dds_characterID = level.dds.player_character_name;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: dds_exclude_this_ai()"
 "Summary: Mark an AI to not be in DDS and to not say any DDS lines."
@@ -3938,11 +3998,11 @@ dds_set_player_character_name( hero_name )
 "Example: us_redshirt dds_exclude_this_ai();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 dds_exclude_this_ai()
 {
-	if( IsAI( self ) && IsAlive( self ) )
+	if ( IsAI( self ) && IsAlive( self ) )
 	{
 		self.dds_characterID = undefined;
 	}
@@ -3952,33 +4012,31 @@ dds_exclude_this_ai()
 	}
 }
 
-
 debugorigin()
 {
-	//	self endon( "killanimscript" ); 
-	//	self endon( anim.scriptChange ); 
-	self notify( "Debug origin" ); 
-	self endon( "Debug origin" ); 
-	self endon( "death" ); 
-	for( ;; )
+	//	self endon( "killanimscript" );
+	//	self endon( anim.scriptChange );
+	self notify( "Debug origin" );
+	self endon( "Debug origin" );
+	self endon( "death" );
+	for ( ;; )
 	{
-		forward = AnglesToForward( self.angles ); 
-		forwardFar = vector_scale( forward, 30 ); 
-		forwardClose = vector_scale( forward, 20 ); 
-		right = AnglesToRight( self.angles ); 
-		left = vector_scale( right, -10 ); 
-		right = vector_scale( right, 10 ); 
-		line( self.origin, self.origin + forwardFar, ( 0.9, 0.7, 0.6 ), 0.9 ); 
-		line( self.origin + forwardFar, self.origin + forwardClose + right, ( 0.9, 0.7, 0.6 ), 0.9 ); 
-		line( self.origin + forwardFar, self.origin + forwardClose + left, ( 0.9, 0.7, 0.6 ), 0.9 ); 
-		wait( 0.05 ); 
+		forward = AnglesToForward( self.angles );
+		forwardFar = vector_scale( forward, 30 );
+		forwardClose = vector_scale( forward, 20 );
+		right = AnglesToRight( self.angles );
+		left = vector_scale( right, -10 );
+		right = vector_scale( right, 10 );
+		line( self.origin, self.origin + forwardFar, ( 0.9, 0.7, 0.6 ), 0.9 );
+		line( self.origin + forwardFar, self.origin + forwardClose + right, ( 0.9, 0.7, 0.6 ), 0.9 );
+		line( self.origin + forwardFar, self.origin + forwardClose + left, ( 0.9, 0.7, 0.6 ), 0.9 );
+		wait( 0.05 );
 	}
 }
 
-
 get_links()
 {
-	return Strtok( self.script_linkTo, " " ); 
+	return Strtok( self.script_linkTo, " " );
 }
 
 /*
@@ -4045,8 +4103,8 @@ get_linked_structs()
 	return array;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: get_last_ent_in_chain( <sEntityType> )"
 "Summary: Get the last entity/node/vehiclenode in a chain of targeted entities"
@@ -4056,97 +4114,98 @@ get_linked_structs()
 "Example: eLastNode = eVehicle get_last_ent_in_chain( "vehiclenode" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 get_last_ent_in_chain( sEntityType )
 {
 	ePathpoint = self;
-	while ( IsDefined(ePathpoint.target) )
+	while ( IsDefined( ePathpoint.target ) )
 	{
-		wait (0.05);
+		wait( 0.05 );
 		if ( IsDefined( ePathpoint.target ) )
 		{
 			switch ( sEntityType )
 			{
-			case "vehiclenode":
-				ePathpoint = getvehiclenode( ePathpoint.target, "targetname" );
-				break;
-			case "pathnode":
-				ePathpoint = getnode( ePathpoint.target, "targetname" );
-				break;
-			case "ent":
-				ePathpoint = getent( ePathpoint.target, "targetname" );
-				break;
-			default:
-				assertmsg("sEntityType needs to be 'vehiclenode', 'pathnode' or 'ent'");
-			}		
+				case "vehiclenode":
+					ePathpoint = getvehiclenode( ePathpoint.target, "targetname" );
+					break;
+				case "pathnode":
+					ePathpoint = getnode( ePathpoint.target, "targetname" );
+					break;
+				case "ent":
+					ePathpoint = getent( ePathpoint.target, "targetname" );
+					break;
+				default:
+					assertmsg( "sEntityType needs to be 'vehiclenode', 'pathnode' or 'ent'" );
+			}
 		}
 		else
 		{
 			break;
 		}
-	}		
+	}
+
 	ePathend = ePathpoint;
 	return ePathend;
 }
 
-
 timeout( timeout )
 {
-	self endon( "death" ); 
-	wait( timeout ); 
-	self notify( "timeout" ); 
+	self endon( "death" );
+	wait( timeout );
+	self notify( "timeout" );
 }
 
 set_forcegoal()
 {
-	if( IsDefined( self.set_forcedgoal ) )
+	if ( IsDefined( self.set_forcedgoal ) )
 	{
-		return; 
+		return;
 	}
 
-	self.oldfightdist 	 = self.pathenemyfightdist; 
-	self.oldmaxdist 	 = self.pathenemylookahead; 
-	self.oldmaxsight 	 = self.maxsightdistsqrd; 
+	self.oldfightdist = self.pathenemyfightdist;
+	self.oldmaxdist = self.pathenemylookahead;
+	self.oldmaxsight = self.maxsightdistsqrd;
 
-	self.pathenemyfightdist = 8; 
-	self.pathenemylookahead = 8; 
-	self.maxsightdistsqrd = 1; 
-	self.set_forcedgoal = true; 
+	self.pathenemyfightdist = 8;
+	self.pathenemylookahead = 8;
+	self.maxsightdistsqrd = 1;
+	self.set_forcedgoal = true;
 }
 
 unset_forcegoal()
 {
-	if( !IsDefined( self.set_forcedgoal ) )
+	if ( !IsDefined( self.set_forcedgoal ) )
 	{
-		return; 
+		return;
 	}
 
-	self.pathenemyfightdist = self.oldfightdist; 
-	self.pathenemylookahead = self.oldmaxdist; 
-	self.maxsightdistsqrd 	 = self.oldmaxsight; 
-	self.set_forcedgoal = undefined; 
+	self.pathenemyfightdist = self.oldfightdist;
+	self.pathenemylookahead = self.oldmaxdist;
+	self.maxsightdistsqrd = self.oldmaxsight;
+	self.set_forcedgoal = undefined;
 }
 
 array_removeDead_keepkeys( array )
 {
 	newArray = [];
 	keys = getarraykeys( array );
-	for( i = 0; i < keys.size; i++ )
+	for ( i = 0; i < keys.size; i++ )
 	{
 		key = keys[ i ];
-		if( !isalive( array[ key ] ) )
+		if ( !isalive( array[ key ] ) )
 		{
 			continue;
 		}
+
 		newArray[ key ] = array[ key ];
 	}
 
 	return newArray;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: array_removeDead( <array> )"
 "Summary: Returns a new array of < array > minus the dead entities"
@@ -4156,45 +4215,45 @@ array_removeDead_keepkeys( array )
 "Example: friendlies = array_removeDead( friendlies );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
 array_removeDead( array )
 {
-	newArray = []; 
+	newArray = [];
 
-	if( !IsDefined( array ) )
+	if ( !IsDefined( array ) )
 	{
-		return undefined;		
+		return undefined;
 	}
 
-	for( i = 0; i < array.size; i++ )
+	for ( i = 0; i < array.size; i++ )
 	{
 		//GLocke: the .isacorpse is a value specific to physics vehicles because they never become vehicle_corpse entities
-		if( !isalive( array[ i ] ) || ( isDefined( array[i].isacorpse) && array[i].isacorpse) )
+		if ( !isalive( array[ i ] ) || ( isDefined( array[ i ].isacorpse ) && array[ i ].isacorpse ) )
 		{
-			continue; 
+			continue;
 		}
+
 		newArray[ newArray.size ] = array[ i ];
 	}
 
-	return newArray; 
+	return newArray;
 }
 
-
-// fancy quicker struct array handling, assumes array elements are objects with which an index can be asigned to( IE: can't do 5.struct_array_index ) 
+// fancy quicker struct array handling, assumes array elements are objects with which an index can be asigned to( IE: can't do 5.struct_array_index )
 // also have to be sure that objects can't be a part of another structarray setup as the index position is asigned to the object
 
 struct_arraySpawn()
 {
-	struct = SpawnStruct(); 
-	struct.array = []; 
-	struct.lastindex = 0; 
-	return struct; 
+	struct = SpawnStruct();
+	struct.array = [];
+	struct.lastindex = 0;
+	return struct;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: structarray_add( <struct> , <object> )"
 "Summary: "
@@ -4205,18 +4264,18 @@ struct_arraySpawn()
 "Example: structarray_add( level.drones[self.team], self );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 structarray_add( struct, object )
 {
-	assert( !IsDefined( object.struct_array_index ) );// can't have elements of two structarrays on these. can add that later if it's needed
+	assert( !IsDefined( object.struct_array_index ) ); // can't have elements of two structarrays on these. can add that later if it's needed
 	struct.array[ struct.lastindex ] = object;
-	object.struct_array_index = struct.lastindex; 
-	struct.lastindex ++ ;
+	object.struct_array_index = struct.lastindex;
+	struct.lastindex++;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: structarray_remove( <struct> , <object> )"
 "Summary: "
@@ -4227,13 +4286,13 @@ structarray_add( struct, object )
 "Example: structarray_remove( level.drones[self.team], self );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 structarray_remove( struct, object )
 {
-	structarray_swaptolast( struct, object ); 
+	structarray_swaptolast( struct, object );
 	struct.array[ struct.lastindex - 1 ] = undefined;
-	struct.lastindex -- ;
+	struct.lastindex--;
 }
 
 structarray_swaptolast( struct, object )
@@ -4243,15 +4302,13 @@ structarray_swaptolast( struct, object )
 
 structarray_shuffle( struct, shuffle )
 {
-	for( i = 0;i < shuffle;i++ )
+	for ( i = 0; i < shuffle; i++ )
 	{
 		struct structarray_swap( struct.array[ i ], struct.array[ randomint( struct.lastindex ) ] );
 	}
 }
 
-
-
-/* 
+/*
 move_generic		"Go! Go! Go!"
 move_flank			"Find a way to flank them! Go!"
 move_flankleft		"Take their left flank! Go!"
@@ -4274,7 +4331,7 @@ vehicle_truck		"Troop truck!"
 
 action_smoke		"Get some smoke out there!"
 
-The following can be appended to any infantry or vehicle dialog line:	
+The following can be appended to any infantry or vehicle dialog line:
 _left				"On our left!"
 _right				"To the right!"
 _front				"Up front!"
@@ -4295,167 +4352,168 @@ _inbound_north		"Coming in from the north!"
 _inbound_south		"Coming in from the south!"
 _inbound_east		"Approaching from the east!"
 _inbound_west		"Pushing in from the west!"
-*/ 
+*/
 
 custom_battlechatter( string )
 {
-	excluders = []; 
+	excluders = [];
 	excluders[ 0 ] = self;
-	buddy = get_closest_ai_exclude( self.origin, self.team, excluders ); 
+	buddy = get_closest_ai_exclude( self.origin, self.team, excluders );
 
-	if( IsDefined( buddy ) && Distance( buddy.origin, self.origin ) > 384 ) 
+	if ( IsDefined( buddy ) && Distance( buddy.origin, self.origin ) > 384 )
 	{
-		buddy = undefined; 
+		buddy = undefined;
 	}
 
-	self animscripts\battlechatter_ai::beginCustomEvent(); 
+	self animscripts\battlechatter_ai::beginCustomEvent();
 
-	tokens = Strtok( string, "_" ); 
+	tokens = Strtok( string, "_" );
 
-	if( !tokens.size )
+	if ( !tokens.size )
 	{
-		return; 
+		return;
 	}
 
-	if( tokens[ 0 ] == "move" )
+	if ( tokens[ 0 ] == "move" )
 	{
-		if( tokens.size > 1 )
+		if ( tokens.size > 1 )
 		{
 			modifier = tokens[ 1 ];
 		}
-		else 
+		else
 		{
-			modifier = "generic"; 
+			modifier = "generic";
 		}
 
-		self animscripts\battlechatter_ai::addGenericAliasEx( "order", "move", modifier ); 
+		self animscripts\battlechatter_ai::addGenericAliasEx( "order", "move", modifier );
 
 	}
-	else if( tokens[ 0 ] == "infantry" )
+	else if ( tokens[ 0 ] == "infantry" )
 	{
 		self animscripts\battlechatter_ai::addGenericAliasEx( "threat", "infantry", tokens[ 1 ] );
 
-		if( tokens.size > 2 && tokens[ 2 ] != "inbound" )
+		if ( tokens.size > 2 && tokens[ 2 ] != "inbound" )
 		{
 			self animscripts\battlechatter_ai::addGenericAliasEx( "direction", "relative", tokens[ 2 ] );
 		}
-		else if( tokens.size > 2 )
+		else if ( tokens.size > 2 )
 		{
 			self animscripts\battlechatter_ai::addGenericAliasEx( "direction", "inbound", tokens[ 3 ] );
 		}
 	}
-	else if( tokens[ 0 ] == "vehicle" )
+	else if ( tokens[ 0 ] == "vehicle" )
 	{
 		self animscripts\battlechatter_ai::addGenericAliasEx( "threat", "vehicle", tokens[ 1 ] );
 
-		if( tokens.size > 2 && tokens[ 2 ] != "inbound" )
+		if ( tokens.size > 2 && tokens[ 2 ] != "inbound" )
 		{
 			self animscripts\battlechatter_ai::addGenericAliasEx( "direction", "relative", tokens[ 2 ] );
 		}
-		else if( tokens.size > 2 )
+		else if ( tokens.size > 2 )
 		{
 			self animscripts\battlechatter_ai::addGenericAliasEx( "direction", "inbound", tokens[ 3 ] );
 		}
 	}
 
-	self animscripts\battlechatter_ai::endCustomEvent( 2000 ); 
+	self animscripts\battlechatter_ai::endCustomEvent( 2000 );
 }
 
 buildbcalias( action, type, modifier )
 {
-	if( IsDefined( modifier ) )
+	if ( IsDefined( modifier ) )
 	{
-		return( self.countryID + "_" + self.npcID + "_" + action + "_" + type + "_" + modifier ); 
+		return ( self.countryID + "_" + self.npcID + "_" + action + "_" + type + "_" + modifier );
 	}
 	else
 	{
-		return( self.countryID + "_" + self.npcID + "_" + action + "_" + type ); 
+		return ( self.countryID + "_" + self.npcID + "_" + action + "_" + type );
 	}
 }
 
 get_stop_watch( time, othertime )
 {
-	watch = NewHudElem(); 
-	if( level.console )
+	watch = NewHudElem();
+	if ( level.console )
 	{
-		watch.x = 68; 
-		watch.y = 35; 
+		watch.x = 68;
+		watch.y = 35;
 	}
 	else
 	{
-		watch.x = 58; 
-		watch.y = 95; 
+		watch.x = 58;
+		watch.y = 95;
 	}
 
-	watch.alignx = "center"; 
-	watch.aligny = "middle"; 
-	watch.horzAlign = "left"; 
-	watch.vertAlign = "middle"; 
-	if( IsDefined( othertime ) )
+	watch.alignx = "center";
+	watch.aligny = "middle";
+	watch.horzAlign = "left";
+	watch.vertAlign = "middle";
+	if ( IsDefined( othertime ) )
 	{
-		timer = othertime; 
+		timer = othertime;
 	}
 	else
 	{
-		timer = level.explosiveplanttime; 
+		timer = level.explosiveplanttime;
 	}
-	watch setClock( timer, time, "hudStopwatch", 64, 64 );// count down for level.explosiveplanttime of 60 seconds, size is 64x64
-	return watch; 
+
+	watch setClock( timer, time, "hudStopwatch", 64, 64 ); // count down for level.explosiveplanttime of 60 seconds, size is 64x64
+	return watch;
 }
 
 // SCRIPTER_MOD: dguzzo: 3/20/2009 : pretty sure these are all deprecated
 //objective_is_active( msg )
 //{
-//	active = false; 
+//	active = false;
 //	// objective must be active for this trigger to hit
 //	for( i = 0;i < level.active_objective.size;i++ )
 //		{
 //		if( level.active_objective[ i ] != msg )
-//			continue; 
-//		active = true; 
-//		break; 
+//			continue;
+//		active = true;
+//		break;
 //	}
-//	return( active ); 
+//	return( active );
 //}
 //
 //objective_is_inactive( msg )
 //{
-//	inactive = false; 
+//	inactive = false;
 //	// objective must be active for this trigger to hit
 //	for( i = 0;i < level.inactive_objective.size;i++ )
 //		{
 //		if( level.inactive_objective[ i ] != msg )
-//			continue; 
-//		inactive = true; 
-//		break; 
+//			continue;
+//		inactive = true;
+//		break;
 //	}
-//	return( inactive ); 
+//	return( inactive );
 //}
 //
 //set_objective_inactive( msg )
 //{
 //	// remove the objective from the active list
-//	array = []; 
+//	array = [];
 //	for( i = 0;i < level.active_objective.size;i++ )
 //		{
 //		if( level.active_objective[ i ] == msg )
-//			continue; 
+//			continue;
 //		array[ array.size ] = level.active_objective[ i ];
 //	}
-//	level.active_objective = array; 
-//	
-//	
+//	level.active_objective = array;
+//
+//
 //	// add it to the inactive list
-//	exists = false; 
+//	exists = false;
 //	for( i = 0;i < level.inactive_objective.size;i++ )
 //		{
 //		if( level.inactive_objective[ i ] != msg )
-//			continue; 
-//		exists = true; 
+//			continue;
+//		exists = true;
 //	}
 //	if( !exists )
 //		level.inactive_objective[ level.inactive_objective.size ] = msg;
-//		
+//
 //	/#
 //	// assert that each objective is only on one list
 //	for( i = 0;i < level.active_objective.size;i++ )
@@ -4469,26 +4527,26 @@ get_stop_watch( time, othertime )
 //set_objective_active( msg )
 //{
 //	// remove the objective from the inactive list
-//	array = []; 
+//	array = [];
 //	for( i = 0;i < level.inactive_objective.size;i++ )
 //		{
 //		if( level.inactive_objective[ i ] == msg )
-//			continue; 
+//			continue;
 //		array[ array.size ] = level.inactive_objective[ i ];
 //	}
-//	level.inactive_objective = array; 
-//		
+//	level.inactive_objective = array;
+//
 //	// add it to the active list
-//	exists = false; 
+//	exists = false;
 //	for( i = 0;i < level.active_objective.size;i++ )
 //		{
 //		if( level.active_objective[ i ] != msg )
-//			continue; 
-//		exists = true; 
+//			continue;
+//		exists = true;
 //	}
 //	if( !exists )
 //		level.active_objective[ level.active_objective.size ] = msg;
-//		
+//
 //	/#
 //	// assert that each objective is only on one list
 //	for( i = 0;i < level.active_objective.size;i++ )
@@ -4499,10 +4557,8 @@ get_stop_watch( time, othertime )
 //	#/
 //}
 
-
-
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: missionFailedWrapper()"
 "Summary: Call when you want the player to fail the mission in a generic manner."
@@ -4517,18 +4573,18 @@ get_stop_watch( time, othertime )
 "Example: maps\_utility::missionFailedWrapper();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 missionfailedwrapper( fail_hint, shader, iWidth, iHeight, fDelay, x, y )
 {
-	if( level.missionfailed )
+	if ( level.missionfailed )
 	{
 		return;
 	}
 
 	if ( IsDefined( level.nextmission ) )
 	{
-		return;  // don't fail the mission while the game is on it's way to the next mission.
+		return; // don't fail the mission while the game is on it's way to the next mission.
 	}
 
 	if ( GetDvar( #"failure_disabled" ) == "1" )
@@ -4539,24 +4595,24 @@ missionfailedwrapper( fail_hint, shader, iWidth, iHeight, fDelay, x, y )
 	// delete any existing in-game instructions created by screen_message_create() functionality
 	screen_message_delete();
 
-	if( IsDefined( fail_hint ) )
+	if ( IsDefined( fail_hint ) )
 	{
 		SetDvar( "ui_deadquote", fail_hint );
 	}
-	
-	if( IsDefined( shader ) )
+
+	if ( IsDefined( shader ) )
 	{
-		get_players()[0] thread maps\_load_common::special_death_indicator_hudelement( shader, iWidth, iHeight, fDelay, x, y );
+		get_players()[ 0 ] thread maps\_load_common::special_death_indicator_hudelement( shader, iWidth, iHeight, fDelay, x, y );
 	}
 
-	level.missionfailed = true; 	
+	level.missionfailed = true;
 	flag_set( "missionfailed" );
 
-	MissionFailed(); 
+	MissionFailed();
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: nextmission()"
 "Summary: Call at the end of the level scripting when the mission has been completed."
@@ -4565,8 +4621,8 @@ missionfailedwrapper( fail_hint, shader, iWidth, iHeight, fDelay, x, y )
 "Example: nextmission();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 nextmission()
 {
 	maps\_endmission::_nextmission();
@@ -4579,25 +4635,24 @@ prefetchnext()
 
 script_delay()
 {
-	if( IsDefined( self.script_delay ) )
+	if ( IsDefined( self.script_delay ) )
 	{
-		wait( self.script_delay ); 
+		wait( self.script_delay );
 		return true;
 	}
-	else if( IsDefined( self.script_delay_min ) && IsDefined( self.script_delay_max ) )
+	else if ( IsDefined( self.script_delay_min ) && IsDefined( self.script_delay_max ) )
 	{
-		wait( RandomFloatrange( self.script_delay_min, self.script_delay_max ) ); 
+		wait( RandomFloatrange( self.script_delay_min, self.script_delay_max ) );
 		return true;
 	}
 
 	return false;
 }
 
-
 script_wait( called_from_spawner )
 {
 	// co-op scaling should only affect calls from spawning functions
-	if (!IsDefined(called_from_spawner))
+	if ( !IsDefined( called_from_spawner ) )
 	{
 		called_from_spawner = false;
 	}
@@ -4608,42 +4663,42 @@ script_wait( called_from_spawner )
 	{
 		players = get_players();
 
-		if (players.size == 2)
+		if ( players.size == 2 )
 		{
 			coop_scalar = 0.7;
 		}
-		else if (players.size == 3)
+		else if ( players.size == 3 )
 		{
 			coop_scalar = 0.4;
 		}
-		else if (players.size == 4)
+		else if ( players.size == 4 )
 		{
 			coop_scalar = 0.1;
 		}
 	}
 
-	startTime = GetTime(); 
-	if( IsDefined( self.script_wait ) )
+	startTime = GetTime();
+	if ( IsDefined( self.script_wait ) )
 	{
-		wait( self.script_wait * coop_scalar); 
+		wait( self.script_wait * coop_scalar );
 
-		if( IsDefined( self.script_wait_add ) )
+		if ( IsDefined( self.script_wait_add ) )
 		{
-			self.script_wait += self.script_wait_add; 
+			self.script_wait += self.script_wait_add;
 		}
 	}
-	else if( IsDefined( self.script_wait_min ) && IsDefined( self.script_wait_max ) )
+	else if ( IsDefined( self.script_wait_min ) && IsDefined( self.script_wait_max ) )
 	{
-		wait( RandomFloatrange( self.script_wait_min, self.script_wait_max ) * coop_scalar); 
+		wait( RandomFloatrange( self.script_wait_min, self.script_wait_max ) * coop_scalar );
 
-		if( IsDefined( self.script_wait_add ) )
+		if ( IsDefined( self.script_wait_add ) )
 		{
-			self.script_wait_min += self.script_wait_add; 
-			self.script_wait_max += self.script_wait_add; 
+			self.script_wait_min += self.script_wait_add;
+			self.script_wait_max += self.script_wait_add;
 		}
 	}
 
-	return( GetTime() - startTime ); 
+	return ( GetTime() - startTime );
 }
 
 // AE 5-14-09: cleaned this function up and took out the guy parameter (made it self)
@@ -4663,7 +4718,7 @@ script_wait( called_from_spawner )
 */
 enter_vehicle( vehicle, tag ) // self == ai
 {
-	self maps\_vehicle_aianim::vehicle_enter( vehicle, tag ); 
+	self maps\_vehicle_aianim::vehicle_enter( vehicle, tag );
 }
 
 /*
@@ -4681,7 +4736,7 @@ enter_vehicle( vehicle, tag ) // self == ai
 */
 guy_array_enter_vehicle( guy, vehicle )
 {
-	maps\_vehicle_aianim::guy_array_enter( guy, vehicle ); 
+	maps\_vehicle_aianim::guy_array_enter( guy, vehicle );
 }
 
 // AE 5-14-09: cleaned this function up and took out the guy parameter (made it self)
@@ -4701,9 +4756,9 @@ guy_array_enter_vehicle( guy, vehicle )
 ///ScriptDocEnd
 =============
 */
-run_to_vehicle_load(vehicle, bGodDriver, seat_tag) // self == ai
+run_to_vehicle_load( vehicle, bGodDriver, seat_tag ) // self == ai
 {
-	self maps\_vehicle_aianim::run_to_vehicle( vehicle, bGodDriver, seat_tag ); 
+	self maps\_vehicle_aianim::run_to_vehicle( vehicle, bGodDriver, seat_tag );
 }
 
 // AE 7-21-09: created this so it would exist in docs because people don't know how to unload a vehicle
@@ -4720,9 +4775,9 @@ run_to_vehicle_load(vehicle, bGodDriver, seat_tag) // self == ai
 ///ScriptDocEnd
 =============
 */
-vehicle_unload(delay) // self == vehicle
+vehicle_unload( delay ) // self == vehicle
 {
-	self maps\_vehicle::do_unload(delay); 
+	self maps\_vehicle::do_unload( delay );
 }
 
 /*
@@ -4740,9 +4795,9 @@ vehicle_unload(delay) // self == vehicle
 ///ScriptDocEnd
 =============
 */
-vehicle_override_anim(action, tag, animation)
+vehicle_override_anim( action, tag, animation )
 {
-	self maps\_vehicle_aianim::override_anim(action, tag, animation);
+	self maps\_vehicle_aianim::override_anim( action, tag, animation );
 }
 
 // AE 7-20-09: created this so we can control the ai running to a vehicle and waiting
@@ -4760,21 +4815,21 @@ vehicle_override_anim(action, tag, animation)
 ///ScriptDocEnd
 =============
 */
-set_wait_for_players(seat_tag, player_array) // self == vehicle
+set_wait_for_players( seat_tag, player_array ) // self == vehicle
 {
 	// get the vehicle ai anims
 	vehicleanim = level.vehicle_aianims[ self.vehicletype ];
 
 	// cross reference the seat tag to get the pos number
-	for(i = 0; i < vehicleanim.size; i++)
+	for ( i = 0; i < vehicleanim.size; i++ )
 	{
-		if(vehicleanim[i].sittag == seat_tag)
+		if ( vehicleanim[ i ].sittag == seat_tag )
 		{
 			// put the player array in another array to use later
-			vehicleanim[i].wait_for_player = [];
-			for(j = 0; j < player_array.size; j++)
+			vehicleanim[ i ].wait_for_player = [];
+			for ( j = 0; j < player_array.size; j++ )
 			{
-				vehicleanim[i].wait_for_player[j] = player_array[j];
+				vehicleanim[ i ].wait_for_player[ j ] = player_array[ j ];
 			}
 			break;
 		}
@@ -4796,17 +4851,17 @@ set_wait_for_players(seat_tag, player_array) // self == vehicle
 ///ScriptDocEnd
 =============
 */
-set_wait_for_notify(seat_tag, custom_notify) // self == vehicle
+set_wait_for_notify( seat_tag, custom_notify ) // self == vehicle
 {
 	// get the vehicle ai anims
 	vehicleanim = level.vehicle_aianims[ self.vehicletype ];
 
 	// cross reference the seat tag to get the pos number
-	for(i = 0; i < vehicleanim.size; i++)
+	for ( i = 0; i < vehicleanim.size; i++ )
 	{
-		if(vehicleanim[i].sittag == seat_tag)
+		if ( vehicleanim[ i ].sittag == seat_tag )
 		{
-			vehicleanim[i].wait_for_notify = custom_notify;
+			vehicleanim[ i ].wait_for_notify = custom_notify;
 			break;
 		}
 	}
@@ -4826,23 +4881,23 @@ set_wait_for_notify(seat_tag, custom_notify) // self == vehicle
 ///ScriptDocEnd
 =============
 */
-is_on_vehicle(vehicle) // self == player
+is_on_vehicle( vehicle ) // self == player
 {
 
-	if(!IsDefined(self.viewlockedentity))
+	if ( !IsDefined( self.viewlockedentity ) )
 	{
 		return false;
 	}
-	else if(self.viewlockedentity == vehicle)
+	else if ( self.viewlockedentity == vehicle )
 	{
 		return true;
 	}
 
-	if(!IsDefined(self.groundentity))
+	if ( !IsDefined( self.groundentity ) )
 	{
 		return false;
 	}
-	else if(self.groundentity == vehicle)
+	else if ( self.groundentity == vehicle )
 	{
 		return true;
 	}
@@ -4850,8 +4905,8 @@ is_on_vehicle(vehicle) // self == player
 	return false;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: get_force_color_guys( <team>, <color> )"
 "Summary: Returns all alive ai of a certain force color."
@@ -4862,45 +4917,47 @@ is_on_vehicle(vehicle) // self == player
 "MandatoryArg: <color> : the color value of the guys you want to collect"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 get_force_color_guys( team, color )
 {
-	ai = GetAiArray( team ); 
-	guys = []; 
-	for( i = 0; i < ai.size; i++ )
+	ai = GetAiArray( team );
+	guys = [];
+	for ( i = 0; i < ai.size; i++ )
 	{
 		guy = ai[ i ];
-		if( !IsDefined( guy.script_forceColor ) )
+		if ( !IsDefined( guy.script_forceColor ) )
 		{
-			continue; 
+			continue;
 		}
 
-		if( guy.script_forceColor != color )
+		if ( guy.script_forceColor != color )
 		{
-			continue; 
+			continue;
 		}
+
 		guys[ guys.size ] = guy;
 	}
 
-	return guys; 
+	return guys;
 }
 
 get_all_force_color_friendlies()
 {
-	ai = GetAiArray( "allies" ); 
-	guys = []; 
-	for( i = 0; i < ai.size; i++ )
+	ai = GetAiArray( "allies" );
+	guys = [];
+	for ( i = 0; i < ai.size; i++ )
 	{
 		guy = ai[ i ];
-		if( !IsDefined( guy.script_forceColor ) )
+		if ( !IsDefined( guy.script_forceColor ) )
 		{
-			continue; 
+			continue;
 		}
+
 		guys[ guys.size ] = guy;
 	}
 
-	return guys; 
+	return guys;
 }
 
 /*
@@ -4917,11 +4974,12 @@ get_all_force_color_friendlies()
 */
 enable_ai_color()
 {
-	if( IsDefined( self.script_forceColor ) )
+	if ( IsDefined( self.script_forceColor ) )
 	{
 		return;
 	}
-	if( !IsDefined( self.old_forceColor ) )
+
+	if ( !IsDefined( self.old_forceColor ) )
 	{
 		return;
 	}
@@ -4944,7 +5002,7 @@ enable_ai_color()
 */
 disable_ai_color()
 {
-	if( IsDefined( self.new_force_color_being_set ) )
+	if ( IsDefined( self.new_force_color_being_set ) )
 	{
 		self endon( "death" );
 		// setting force color happens after waittillframeend so we need to wait until it finishes
@@ -4954,7 +5012,7 @@ disable_ai_color()
 
 	self clearFixedNodeSafeVolume();
 	// any color on this guy?
-	if( !IsDefined( self.script_forceColor ) )
+	if ( !IsDefined( self.script_forceColor ) )
 	{
 		return;
 	}
@@ -4962,7 +5020,6 @@ disable_ai_color()
 	assertEx( !IsDefined( self.old_forcecolor ), "Tried to disable forcecolor on a guy that somehow had a old_forcecolor already. Investigate!!!" );
 
 	self.old_forceColor = self.script_forceColor;
-
 
 	// first remove the guy from the force color array he used to belong to
 	level.arrays_of_colorForced_ai[ self.team ][ self.script_forcecolor ] = array_remove( level.arrays_of_colorForced_ai[ self.team ][ self.script_forcecolor ], self );
@@ -4972,8 +5029,8 @@ disable_ai_color()
 	self.script_forceColor = undefined;
 	self.currentColorCode = undefined;
 	/#
-		update_debug_friendlycolor( self.ai_number );
-#/ 
+	update_debug_friendlycolor( self.ai_number );
+	#/
 }
 
 /*
@@ -5009,13 +5066,13 @@ clear_force_color()
 check_force_color( _color )
 {
 	color = level.colorCheckList[ tolower( _color ) ];
-	if( IsDefined( self.script_forcecolor ) && color == self.script_forcecolor )
+	if ( IsDefined( self.script_forcecolor ) && color == self.script_forcecolor )
 	{
-		return true; 
+		return true;
 	}
 	else
 	{
-		return false; 
+		return false;
 	}
 }
 
@@ -5033,8 +5090,8 @@ check_force_color( _color )
 */
 get_force_color()
 {
-	color = self.script_forceColor; 
-	return color; 
+	color = self.script_forceColor;
+	return color;
 }
 
 shortenColor( color )
@@ -5058,24 +5115,24 @@ shortenColor( color )
 set_force_color( _color )
 {
 	// shorten and lowercase the ai's forcecolor to a single letter
-	color = shortenColor( _color ); 
+	color = shortenColor( _color );
 
 	assertEx( maps\_colors::colorIsLegit( color ), "Tried to set force color on an undefined color: " + color );
 
-	if( !isAI( self ) )
+	if ( !isAI( self ) )
 	{
-		set_force_color_spawner( color ); 
-		return; 
+		set_force_color_spawner( color );
+		return;
 	}
 
 	assertEx( isalive( self ), "Tried to set force color on a dead / undefined entity." );
-	/* 
+	/*
 	/#
-	thread insure_player_does_not_set_forcecolor_twice_in_one_frame(); 
+	thread insure_player_does_not_set_forcecolor_twice_in_one_frame();
 	#/
-	*/ 
+	*/
 
-	if( self.team == "allies" )
+	if ( self.team == "allies" )
 	{
 		// enable fixed node mode.
 		self.fixedNode = true;
@@ -5084,21 +5141,21 @@ set_force_color( _color )
 		self.pathEnemyLookAhead = 0;
 	}
 
-	// 	maps\_colors::removeAIFromColorNumberArray();	
+	// 	maps\_colors::removeAIFromColorNumberArray();
 	self.script_color_axis = undefined;
 	self.script_color_allies = undefined;
 	self.old_forcecolor = undefined;
 
-	if( IsDefined( self.script_forcecolor ) )
+	if ( IsDefined( self.script_forcecolor ) )
 	{
 		// first remove the guy from the force color array he used to belong to
 		level.arrays_of_colorForced_ai[ self.team ][ self.script_forcecolor ] = array_remove( level.arrays_of_colorForced_ai[ self.team ][ self.script_forcecolor ], self );
 	}
+
 	self.script_forceColor = color;
 
 	// get added to the new array of AI that are forced to this color
 	level.arrays_of_colorForced_ai[ self.team ][ self.script_forceColor ] = array_add( level.arrays_of_colorForced_ai[ self.team ][ self.script_forceColor ], self );
-
 
 	// set it here so that he continues in script as the correct color
 	thread new_color_being_set( color );
@@ -5106,25 +5163,25 @@ set_force_color( _color )
 
 set_force_color_spawner( color )
 {
-	/* 
-	team = undefined; 
-	colorTeam = undefined; 
+	/*
+	team = undefined;
+	colorTeam = undefined;
 	if( IsSubStr( self.classname, "axis" ) )
 	{
-	colorTeam = self.script_color_axis; 
-	team = "axis"; 
+	colorTeam = self.script_color_axis;
+	team = "axis";
 	}
 
 	if( IsSubStr( self.classname, "ally" ) )
 	{
-	colorTeam = self.script_color_allies; 
-	team = "allies"; 
+	colorTeam = self.script_color_allies;
+	team = "allies";
 	}
 
-	maps\_colors::removeSpawnerFromColorNumberArray(); 	
-	*/ 
+	maps\_colors::removeSpawnerFromColorNumberArray();
+	*/
 
-	self.script_forceColor = color; 
+	self.script_forceColor = color;
 	// 	self.script_color_axis = undefined;
 	// 	self.script_color_allies = undefined;
 	self.old_forceColor = undefined;
@@ -5133,40 +5190,40 @@ set_force_color_spawner( color )
 
 issue_color_orders( color_team, team )
 {
-	colorCodes = Strtok( color_team, " " ); 
-	colors = []; 
-	colorCodesByColorIndex = []; 
+	colorCodes = Strtok( color_team, " " );
+	colors = [];
+	colorCodesByColorIndex = [];
 
-	for( i = 0;i < colorCodes.size;i++ )
+	for ( i = 0; i < colorCodes.size; i++ )
 	{
-		color = undefined; 
-		if( issubstr( colorCodes[ i ], "r" ) )
+		color = undefined;
+		if ( issubstr( colorCodes[ i ], "r" ) )
 		{
-			color = "r"; 
+			color = "r";
 		}
-		else if( issubstr( colorCodes[ i ], "b" ) )
+		else if ( issubstr( colorCodes[ i ], "b" ) )
 		{
-			color = "b"; 
+			color = "b";
 		}
-		else if( issubstr( colorCodes[ i ], "y" ) )
+		else if ( issubstr( colorCodes[ i ], "y" ) )
 		{
-			color = "y"; 
+			color = "y";
 		}
-		else if( issubstr( colorCodes[ i ], "c" ) )
+		else if ( issubstr( colorCodes[ i ], "c" ) )
 		{
-			color = "c"; 
+			color = "c";
 		}
-		else if( issubstr( colorCodes[ i ], "g" ) )
+		else if ( issubstr( colorCodes[ i ], "g" ) )
 		{
-			color = "g"; 
+			color = "g";
 		}
-		else if( issubstr( colorCodes[ i ], "p" ) )
+		else if ( issubstr( colorCodes[ i ], "p" ) )
 		{
-			color = "p"; 
+			color = "p";
 		}
-		else if( issubstr( colorCodes[ i ], "o" ) )
+		else if ( issubstr( colorCodes[ i ], "o" ) )
 		{
-			color = "o"; 
+			color = "o";
 		}
 		else
 		{
@@ -5177,22 +5234,22 @@ issue_color_orders( color_team, team )
 		colors[ colors.size ] = color;
 	}
 
-	assert( colors.size == colorCodes.size ); 
+	assert( colors.size == colorCodes.size );
 
-	for( i = 0;i < colorCodes.size;i++ )
+	for ( i = 0; i < colorCodes.size; i++ )
 	{
 		// remove deleted spawners
 		level.arrays_of_colorCoded_spawners[ team ][ colorCodes[ i ] ] = array_removeUndefined( level.arrays_of_colorCoded_spawners[ team ][ colorCodes[ i ] ] );
 
 		assertex( IsDefined( level.arrays_of_colorCoded_spawners[ team ][ colorCodes[ i ] ] ), "Trigger refer to a color# that does not exist in any node for this team." );
 		// set the .currentColorCode on each appropriate spawner
-		for( p = 0;p < level.arrays_of_colorCoded_spawners[ team ][ colorCodes[ i ] ].size;p ++ )
+		for ( p = 0; p < level.arrays_of_colorCoded_spawners[ team ][ colorCodes[ i ] ].size; p++ )
 		{
 			level.arrays_of_colorCoded_spawners[ team ][ colorCodes[ i ] ][ p ].currentColorCode = colorCodes[ i ];
 		}
 	}
 
-	for( i = 0;i < colors.size;i++ )
+	for ( i = 0; i < colors.size; i++ )
 	{
 		// remove the dead from the color forced ai
 		level.arrays_of_colorForced_ai[ team ][ colors[ i ] ] = array_removeDead( level.arrays_of_colorForced_ai[ team ][ colors[ i ] ] );
@@ -5201,7 +5258,7 @@ issue_color_orders( color_team, team )
 		level.currentColorForced[ team ][ colors[ i ] ] = colorCodesByColorIndex[ colors[ i ] ];
 	}
 
-	for( i = 0;i < colorCodes.size;i++ )
+	for ( i = 0; i < colorCodes.size; i++ )
 	{
 		ai_array = [];
 		ai_array = maps\_colors::issue_leave_node_order_to_ai_and_get_ai( colorCodes[ i ], colors[ i ], team );
@@ -5229,71 +5286,70 @@ disable_replace_on_death()
 
 createLoopEffect( fxid )
 {
-	ent = maps\_createfx::createEffect( "loopfx", fxid ); 
+	ent = maps\_createfx::createEffect( "loopfx", fxid );
 	ent.v[ "delay" ] = 0.5;
-	return ent; 
+	return ent;
 }
 
 createOneshotEffect( fxid )
 {
-	ent = maps\_createfx::createEffect( "oneshotfx", fxid ); 
+	ent = maps\_createfx::createEffect( "oneshotfx", fxid );
 	ent.v[ "delay" ] = -15;
-	return ent; 
+	return ent;
 }
 
 reportExploderIds()
 {
-	if(!IsDefined(level._exploder_ids))
+	if ( !IsDefined( level._exploder_ids ) )
 	{
 		return;
 	}
 
-	keys = GetArrayKeys( level._exploder_ids ); 
+	keys = GetArrayKeys( level._exploder_ids );
 
-	println("Server Exploder dictionary : ");
+	println( "Server Exploder dictionary : " );
 
-	for( i = 0; i < keys.size; i++ )
+	for ( i = 0; i < keys.size; i++ )
 	{
-		println(keys[i] + " : " + level._exploder_ids[keys[i]]);
+		println( keys[ i ] + " : " + level._exploder_ids[ keys[ i ] ] );
 	}
 
 }
 
 getExploderId( ent )
 {
-	if(!IsDefined(level._exploder_ids))
+	if ( !IsDefined( level._exploder_ids ) )
 	{
 		level._exploder_ids = [];
 		level._exploder_id = 1;
 	}
 
-	if(!IsDefined(level._exploder_ids[ent.v["exploder"]]))
+	if ( !IsDefined( level._exploder_ids[ ent.v[ "exploder" ] ] ) )
 	{
-		level._exploder_ids[ent.v["exploder"]] = level._exploder_id;
-		level._exploder_id ++;
+		level._exploder_ids[ ent.v[ "exploder" ] ] = level._exploder_id;
+		level._exploder_id++;
 	}
 
-	return level._exploder_ids[ent.v["exploder"]];
+	return level._exploder_ids[ ent.v[ "exploder" ] ];
 }
-
 
 createExploder( fxid )
 {
 
-	ent = maps\_createfx::createEffect( "exploder", fxid ); 
+	ent = maps\_createfx::createEffect( "exploder", fxid );
 	ent.v[ "delay" ] = 0;
 	ent.v[ "exploder_type" ] = "normal";
 
-	return ent; 
+	return ent;
 }
 
 vehicle_detachfrompath()
 {
-	maps\_vehicle::vehicle_pathDetach(); 
+	maps\_vehicle::vehicle_pathDetach();
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: vehicle_resumepath()"
 "Summary: will resume to the last path a vehicle was on.  Only used for helicopters, ground vehicles don't ever deviate."
@@ -5302,16 +5358,16 @@ vehicle_detachfrompath()
 "Example: helicopter vehicle_resumepath();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
 vehicle_resumepath()
 {
 	thread maps\_vehicle::vehicle_resumepathvehicle();
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: vehicle_land()"
 "Summary: lands a vehicle on the ground, _vehicle scripts take care of offsets and determining where the ground is relative to the origin.  Returns when land is complete"
@@ -5320,17 +5376,17 @@ vehicle_resumepath()
 "Example: helicopter vehicle_land();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
 vehicle_land()
 {
-	maps\_vehicle::vehicle_landvehicle(); 
+	maps\_vehicle::vehicle_landvehicle();
 }
 
 vehicle_liftoff( height )
 {
-	maps\_vehicle::vehicle_liftoffvehicle( height ); 
+	maps\_vehicle::vehicle_liftoffvehicle( height );
 }
 
 vehicle_dynamicpath( node, bwaitforstart )
@@ -5338,8 +5394,8 @@ vehicle_dynamicpath( node, bwaitforstart )
 	maps\_vehicle::vehicle_paths( node, bwaitforstart );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: groundpos( <origin> )"
 "Summary: bullettraces to the ground and returns the position that it hit."
@@ -5349,46 +5405,46 @@ vehicle_dynamicpath( node, bwaitforstart )
 "Example: groundposition = helicopter groundpos( helicopter.origin ); "
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
 groundpos( origin )
 {
 	return bullettrace( origin, ( origin + ( 0, 0, -100000 ) ), 0, self )[ "position" ];
 }
 
-playergroundpos(origin)
+playergroundpos( origin )
 {
-	return playerphysicstrace(origin, ( origin + ( 0, 0, -100000 ) ));
+	return playerphysicstrace( origin, ( origin + ( 0, 0, -100000 ) ) );
 }
 
 // SCRIPTER_MOD: dguzzo: 3/20/2009 : need this anymore?
 //change_player_health_packets( num )
 //{
-//	level.player_health_packets += num; 
-//	level notify( "update_health_packets" ); 
+//	level.player_health_packets += num;
+//	level notify( "update_health_packets" );
 //
 //	if( level.player_health_packets >= 3 )
-//		level.player_health_packets = 3; 
+//		level.player_health_packets = 3;
 //
 ////	if( level.player_health_packets <= 0 )
-////		level.player DoDamage( level.player.health + 1623453, ( 0, 0, 0 ) ); 
+////		level.player DoDamage( level.player.health + 1623453, ( 0, 0, 0 ) );
 //}
 
 getvehiclespawner( targetname )
 {
 	spawner = getent( targetname + "_vehiclespawner", "targetname" );
-	return spawner; 
+	return spawner;
 }
 
 getvehiclespawnerarray( targetname )
 {
 	spawner = getentarray( targetname + "_vehiclespawner", "targetname" );
-	return spawner; 
+	return spawner;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: player_fudge_moveto( <dest> , <moverate> )"
 "Summary: this function is to fudge move the player. Use this as a placeholder for an actual animation. returns when finished"
@@ -5399,34 +5455,35 @@ getvehiclespawnerarray( targetname )
 "Example: player_fudge_moveto( carexitorg );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
 player_fudge_moveto( dest, moverate )
 {
 	//moverate = units/persecond
-	if( !IsDefined( moverate ) )
+	if ( !IsDefined( moverate ) )
 	{
-		moverate = 200; 
+		moverate = 200;
 	}
+
 	//this function is to fudge move the player. I'm using this as a placeholder for an actual animation
 
 	// SCRIPTER_MOD
 	// MikeD (3/23/2007): No more level.player, instead self is the player.
 	org = Spawn( "script_origin", self.origin );
-	org.angles = self.angles; 
-	self LinkTo( org ); 
-	dist = Distance( self.origin, dest ); 
-	movetime = dist/moverate; 
-	org MoveTo( dest, dist/moverate, .05, .05 ); 
-	wait( movetime ); 
-	self UnLink(); 
+	org.angles = self.angles;
+	self LinkTo( org );
+	dist = Distance( self.origin, dest );
+	movetime = dist / moverate;
+	org MoveTo( dest, dist / moverate, .05, .05 );
+	wait( movetime );
+	self UnLink();
 
 	org Delete();
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: add_start( <msg>, <func>, <loc_string> )"
 "Summary: Adds a new start point (skipto) to the level."
@@ -5438,12 +5495,12 @@ player_fudge_moveto( dest, moverate )
 "OptionalArg: <loc_string> : the title of the start (for display purposes only)"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 add_start( msg, func, loc_string )
 {
-	assertex( !IsDefined( level._loadStarted ), "Can't create starts after _load" ); 
-	if( !IsDefined( level.start_functions ) )
+	assertex( !IsDefined( level._loadStarted ), "Can't create starts after _load" );
+	if ( !IsDefined( level.start_functions ) )
 	{
 		level.start_functions = [];
 	}
@@ -5453,9 +5510,9 @@ add_start( msg, func, loc_string )
 
 	// CODER_MOD - JamesS we don't want this quite yet
 	//assertEx( IsDefined( loc_string ), "Starts now require a localize string" );
-	if( IsDefined(loc_string) )
+	if ( IsDefined( loc_string ) )
 	{
-		precachestring(loc_string);
+		precachestring( loc_string );
 		level.start_loc_string[ msg ] = loc_string;
 	}
 	else
@@ -5464,8 +5521,8 @@ add_start( msg, func, loc_string )
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: default_start( <func>, <splash screen bool> )"
 "Summary: Defines the default start into the level. You can also tell the splash screen to play for this level as well."
@@ -5476,12 +5533,12 @@ add_start( msg, func, loc_string )
 "OptionalArg: <splash screen bool> : true/false if you want the splash screen to play"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 default_start( func, bSplash )
 {
 	//TODO: deprecate bSplash variable
-	level.default_start = func; 
+	level.default_start = func;
 }
 
 start_teleport_players( start_name, coop_sort )
@@ -5489,59 +5546,57 @@ start_teleport_players( start_name, coop_sort )
 	players = get_players();
 
 	// Grab the starting points. if this start is the entrypoint into the level or needs each player in a particular spot, sort them for coop placement
-	if( IsDefined( coop_sort ) && coop_sort )
+	if ( IsDefined( coop_sort ) && coop_sort )
 	{
-		starts  = get_sorted_starts( start_name );	
+		starts = get_sorted_starts( start_name );
 	}
 	else
 	{
-		starts = getstructarray( start_name, "targetname" );		
+		starts = getstructarray( start_name, "targetname" );
 	}
 
 	// make sure there are enough points to start from
-	assertex( starts.size >= players.size, "Need more start positions for players!" ); 
+	assertex( starts.size >= players.size, "Need more start positions for players!" );
 
 	// set up each player
-	for (i = 0; i < players.size; i++)
+	for ( i = 0; i < players.size; i++ )
 	{
 		// Set the players' origin to each start point
-		players[i] setOrigin( starts[i].origin );
+		players[ i ] setOrigin( starts[ i ].origin );
 
-		if( IsDefined( starts[i].angles ) )
+		if ( IsDefined( starts[ i ].angles ) )
 		{
 			// Set the players' angles to face the right way.
-			players[i] setPlayerAngles( starts[i].angles );
-		}	
-	}	
+			players[ i ] setPlayerAngles( starts[ i ].angles );
+		}
+	}
 
-	set_breadcrumbs(starts);
+	set_breadcrumbs( starts );
 }
 
 // sort the coop start points based on their script_int value
 get_sorted_starts( start_name )
 {
-	player_starts = getstructarray( start_name, "targetname" ); 
+	player_starts = getstructarray( start_name, "targetname" );
 
-	for( i = 0; i < player_starts.size; i++ )
+	for ( i = 0; i < player_starts.size; i++ )
 	{
-		for( j = i; j < player_starts.size; j++ )
+		for ( j = i; j < player_starts.size; j++ )
 		{
-			assertex( IsDefined( player_starts[j].script_int ), "start at: " + player_starts[j].origin + " must have a script_int set for coop spawning" );
-			assertex( IsDefined( player_starts[i].script_int ), "start at: " + player_starts[i].origin + " must have a script_int set for coop spawning" );
+			assertex( IsDefined( player_starts[ j ].script_int ), "start at: " + player_starts[ j ].origin + " must have a script_int set for coop spawning" );
+			assertex( IsDefined( player_starts[ i ].script_int ), "start at: " + player_starts[ i ].origin + " must have a script_int set for coop spawning" );
 
-			if( player_starts[j].script_int < player_starts[i].script_int )
+			if ( player_starts[ j ].script_int < player_starts[ i ].script_int )
 			{
-				temp = player_starts[i]; 
-				player_starts[i] = player_starts[j]; 
-				player_starts[j] = temp; 
+				temp = player_starts[ i ];
+				player_starts[ i ] = player_starts[ j ];
+				player_starts[ j ] = temp;
 			}
 		}
 	}
 
-	return player_starts; 
+	return player_starts;
 }
-
-
 
 ///////////////////
 //
@@ -5552,20 +5607,20 @@ get_sorted_starts( start_name )
 start_teleport_ai( start_name, ai_names )
 {
 	friendly_ai = get_ai_array( ai_names, "script_noteworthy" );
-	ai_starts = getstructarray( start_name + "_ai", "targetname");
+	ai_starts = getstructarray( start_name + "_ai", "targetname" );
 
-	assertex( ai_starts.size >= friendly_ai.size, "Need more start positions for ai!" ); 
+	assertex( ai_starts.size >= friendly_ai.size, "Need more start positions for ai!" );
 
-	for (i = 0; i < friendly_ai.size; i++)
+	for ( i = 0; i < friendly_ai.size; i++ )
 	{
 		start_i = 0;
-		if (IsDefined(friendly_ai[i].script_int))
+		if ( IsDefined( friendly_ai[ i ].script_int ) )
 		{
-			for (j = 0; j < ai_starts.size; j++)
+			for ( j = 0; j < ai_starts.size; j++ )
 			{
-				if (IsDefined(ai_starts[j].script_int))
+				if ( IsDefined( ai_starts[ j ].script_int ) )
 				{
-					if (ai_starts[j].script_int == friendly_ai[i].script_int)
+					if ( ai_starts[ j ].script_int == friendly_ai[ i ].script_int )
 					{
 						start_i = j;
 						break;
@@ -5574,39 +5629,38 @@ start_teleport_ai( start_name, ai_names )
 			}
 		}
 
-		friendly_ai[i] start_teleport_single_ai(ai_starts[start_i]);
-		ai_starts = array_remove(ai_starts, ai_starts[start_i]);
-	}	
+		friendly_ai[ i ] start_teleport_single_ai( ai_starts[ start_i ] );
+		ai_starts = array_remove( ai_starts, ai_starts[ start_i ] );
+	}
 }
 
-start_teleport_single_ai(ai_start)
+start_teleport_single_ai( ai_start )
 {
-	if( IsDefined( ai_start.angles ) )
+	if ( IsDefined( ai_start.angles ) )
 	{
-		self forceteleport( ai_start.origin, ai_start.angles );		
+		self forceteleport( ai_start.origin, ai_start.angles );
 	}
 	else
 	{
-		self forceteleport( ai_start.origin );	
+		self forceteleport( ai_start.origin );
 	}
 
 	// so they don't run back to their original spot
-	if (IsDefined(ai_start.target))
+	if ( IsDefined( ai_start.target ) )
 	{
-		node = GetNode(ai_start.target, "targetname");
-		if (IsDefined(node))
+		node = GetNode( ai_start.target, "targetname" );
+		if ( IsDefined( node ) )
 		{
-			self SetGoalNode(node);
+			self SetGoalNode( node );
 			return;
 		}
 	}
 
-	self SetGoalPos(ai_start.origin);
+	self SetGoalPos( ai_start.origin );
 }
 
-
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: start_teleport( <start_name>, <ai_names>, <coop_sort> )"
 "Summary: teleports players and ai for starts"
@@ -5618,19 +5672,20 @@ start_teleport_single_ai(ai_start)
 "OptionalArg: <coop_sort> : if the start is set up for coop, players will be placed in accordance with a script_int value on the start structs in radiant"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 start_teleport( start_name, ai_names, coop_sort )
 {
-	if( IsDefined( ai_names ) )
+	if ( IsDefined( ai_names ) )
 	{
-		start_teleport_ai( start_name, ai_names );	
+		start_teleport_ai( start_name, ai_names );
 	}
+
 	start_teleport_players( start_name, coop_sort );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: within_fov( <start_origin> , <start_angles> , <end_origin> , <fov> )"
 "Summary: Returns true if < end_origin > is within the players field of view, otherwise returns false."
@@ -5643,15 +5698,15 @@ start_teleport( start_name, ai_names, coop_sort )
 "Example: qBool = within_fov( level.player.origin, level.player.angles, target1.origin, cos( 45 ) );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 within_fov( start_origin, start_angles, end_origin, fov )
 {
-	normal = VectorNormalize( end_origin - start_origin ); 
-	forward = AnglesToForward( start_angles ); 
-	dot = VectorDot( forward, normal ); 
+	normal = VectorNormalize( end_origin - start_origin );
+	forward = AnglesToForward( start_angles );
+	dot = VectorDot( forward, normal );
 
-	return dot >= fov; 
+	return dot >= fov;
 }
 
 // SCRIPTER_MOD: dguzzo: 3/27/2009 : not used anywhere currently.
@@ -5659,39 +5714,39 @@ within_fov( start_origin, start_angles, end_origin, fov )
 //{
 //	if( !IsDefined( end ) )
 //	{
-//		end = start; 
-//		start = 0; 
+//		end = start;
+//		start = 0;
 //	}
 //	assertEx( IsDefined( start ) && IsDefined( end ), "Waitspread was called without defining amount of time" );
-//	
+//
 //	 // temporarily disabling waitspread until I have time to fix it properly
 //	wait( randomfloatrange( start, end ) );
 //	if( 1 )
 //		return;
-//	
-//	personal_wait_index = undefined; 
-//	
+//
+//	personal_wait_index = undefined;
+//
 //	if( !IsDefined( level.active_wait_spread ) )
 //	{
 //		// the first guy sets it up and runs the master logic. Thread it off in case he dies
-//		
-//		level.active_wait_spread = true; 
-//		level.wait_spreaders = 0; 
-//		personal_wait_index = level.wait_spreaders; 
+//
+//		level.active_wait_spread = true;
+//		level.wait_spreaders = 0;
+//		personal_wait_index = level.wait_spreaders;
 //		level.wait_spreaders ++ ;
-//		thread waitSpread_code( start, end ); 
+//		thread waitSpread_code( start, end );
 //	}
 //	else
 //	{
-//		personal_wait_index = level.wait_spreaders; 
+//		personal_wait_index = level.wait_spreaders;
 //		level.wait_spreaders ++ ;
 //		waittillframeend;// give every other waitspreader in this frame a chance to increment wait_spreaders
 //	}
 //
 //	waittillframeend;// wait for the logic to setup the waits
-//	
-//	wait( level.wait_spreader_allotment[ personal_wait_index ] );	
-//	
+//
+//	wait( level.wait_spreader_allotment[ personal_wait_index ] );
+//
 //}
 
 /*
@@ -5718,7 +5773,6 @@ wait_for_buffer_time_to_pass( last_queue_time, buffer_time )
 	}
 }
 
-
 /*
 =============
 ///ScriptDocBegin
@@ -5738,8 +5792,6 @@ dialogue_queue( msg )
 	self maps\_anim::anim_single_queue( self, msg );
 }
 
-
-
 // SCRIPTER_MOD: dguzzo: 2-24-09 : need this anymore?
 //radio_dialogue( msg )
 //{
@@ -5754,7 +5806,6 @@ dialogue_queue( msg )
 //
 //	level.player_radio_emitter play_sound_on_tag( level.scr_radio[ msg ], undefined, true );
 //}
-
 
 /*
 =============
@@ -5776,7 +5827,6 @@ dialogue_queue( msg )
 //	level.player_radio_emitter delete();
 //}
 
-
 /*
 radio_dialogue_queue( msg )
 {
@@ -5795,54 +5845,52 @@ self waittill( "finished_radio" );
 }
 */
 
-
 // SCRIPTER_MOD: dguzzo: date-date-09 : need this anymore?
 //radio_dialogue_queue( msg )
 //{
 //	level function_stack( ::radio_dialogue, msg );
 //}
 
-
 hint_position_internal( bgAlpha )
 {
-	if( level.console )
+	if ( level.console )
 	{
-		self.elm.fontScale = 2; 
+		self.elm.fontScale = 2;
 	}
 	else
 	{
-		self.elm.fontScale = 1.6; 
+		self.elm.fontScale = 1.6;
 	}
 
-	self.elm.x 			 = 0; 
-	self.elm.y		 	 = -40; 
-	self.elm.alignX 	 = "center"; 
-	self.elm.alignY 	 = "bottom"; 	
-	self.elm.horzAlign 	 = "center"; 
-	self.elm.vertAlign 	 = "middle"; 
-	self.elm.sort		 = 1;
-	self.elm.alpha		 = 0.8;
+	self.elm.x = 0;
+	self.elm.y = -40;
+	self.elm.alignX = "center";
+	self.elm.alignY = "bottom";
+	self.elm.horzAlign = "center";
+	self.elm.vertAlign = "middle";
+	self.elm.sort = 1;
+	self.elm.alpha = 0.8;
 
-	if( !IsDefined( self.bg ) )
+	if ( !IsDefined( self.bg ) )
 	{
-		return; 
+		return;
 	}
 
-	self.bg.x 			 = 0; 
-	self.bg.y 			 = -40; 
-	self.bg.alignX 		 = "center"; 
-	self.bg.alignY 		 = "middle"; 
-	self.bg.horzAlign 	 = "center"; 
-	self.bg.vertAlign 	 = "middle"; 
-	self.bg.sort		 = -1;
+	self.bg.x = 0;
+	self.bg.y = -40;
+	self.bg.alignX = "center";
+	self.bg.alignY = "middle";
+	self.bg.horzAlign = "center";
+	self.bg.vertAlign = "middle";
+	self.bg.sort = -1;
 
-	if( level.console )
+	if ( level.console )
 	{
-		self.bg SetShader( "popmenu_bg", 650, 52 ); 
+		self.bg SetShader( "popmenu_bg", 650, 52 );
 	}
 	else
 	{
-		self.bg SetShader( "popmenu_bg", 650, 42 ); 
+		self.bg SetShader( "popmenu_bg", 650, 42 );
 	}
 
 	if ( !IsDefined( bgAlpha ) )
@@ -5855,11 +5903,11 @@ hint_position_internal( bgAlpha )
 
 string( num )
 {
-	return( "" + num ); 
+	return ( "" + num );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: clear_threatbias( <group1>, <group2> )"
 "Summary: Clears any threatbias between two groups"
@@ -5869,16 +5917,16 @@ string( num )
 "MandatoryArg: <group2> : threatbias group 2"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 clear_threatbias( group1, group2 )
 {
-	SetThreatBias( group1, group2, 0 ); 
-	SetThreatBias( group2, group1, 0 ); 
+	SetThreatBias( group1, group2, 0 );
+	SetThreatBias( group2, group1, 0 );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: add_global_spawn_function( <team> , <func> , <param1> , <param2> , <param3> )"
 "Summary: All spawners of this team will run this function on spawn."
@@ -5891,8 +5939,8 @@ clear_threatbias( group1, group2 )
 "Example: add_global_spawn_function( "axis", ::do_the_amazing_thing, some_amazing_parameter );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
 add_global_spawn_function( team, function, param1, param2, param3 )
 {
@@ -5907,8 +5955,8 @@ add_global_spawn_function( team, function, param1, param2, param3 )
 	level.spawn_funcs[ team ][ level.spawn_funcs[ team ].size ] = func;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: remove_global_spawn_function( <team> , <func> )"
 "Summary: Remove this function from the global spawn functions for this team."
@@ -5918,17 +5966,17 @@ add_global_spawn_function( team, function, param1, param2, param3 )
 "Example: remove_global_spawn_function( "allies", ::do_the_amazing_thing );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
 remove_global_spawn_function( team, function )
 {
 	assertEx( IsDefined( level.spawn_funcs ), "Tried to remove_global_spawn_function before calling _load" );
 
 	array = [];
-	for( i = 0; i < level.spawn_funcs[ team ].size; i++ )
+	for ( i = 0; i < level.spawn_funcs[ team ].size; i++ )
 	{
-		if( level.spawn_funcs[ team ][ i ][ "function" ] != function )
+		if ( level.spawn_funcs[ team ][ i ][ "function" ] != function )
 		{
 			array[ array.size ] = level.spawn_funcs[ team ][ i ];
 		}
@@ -5938,8 +5986,8 @@ remove_global_spawn_function( team, function )
 	level.spawn_funcs[ team ] = array;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: add_spawn_function( <func> , <param1> , <param2> , <param3>, <param4> )"
 "Summary: Anything that spawns from this spawner will run this function. Anything."
@@ -5952,20 +6000,20 @@ remove_global_spawn_function( team, function )
 "Example: spawner add_spawn_function( ::do_the_amazing_thing, some_amazing_parameter );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 add_spawn_function( function, param1, param2, param3, param4 )
 {
 	AssertEx( !IsDefined( level._loadStarted ) || !IsAlive( self ), "Tried to add_spawn_function to a living guy." );
 
-	func = []; 
+	func = [];
 	func[ "function" ] = function;
 	func[ "param1" ] = param1;
 	func[ "param2" ] = param2;
 	func[ "param3" ] = param3;
 	func[ "param4" ] = param4;
 
-	if (!IsDefined(self.spawn_funcs))
+	if ( !IsDefined( self.spawn_funcs ) )
 	{
 		self.spawn_funcs = [];
 	}
@@ -5973,8 +6021,8 @@ add_spawn_function( function, param1, param2, param3, param4 )
 	self.spawn_funcs[ self.spawn_funcs.size ] = func;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: add_spawn_function_veh( <targetname>, <func> , <param1> , <param2> , <param3>, <param4> )"
 "Summary: Anything that spawns from this spawner will run this function. Anything."
@@ -5988,51 +6036,50 @@ add_spawn_function( function, param1, param2, param3, param4 )
 "Example: spawner add_spawn_function_veh( "amazing_vehicle", ::do_the_amazing_thing, some_amazing_parameter );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 add_spawn_function_veh( veh_targetname, function, param1, param2, param3, param4 )
 {
-	assertEx( IsDefined(level.vehicleSpawners), "Tried to add_spawn_function_veh before vehicle spawners were inited");
-	
-	func = []; 
+	assertEx( IsDefined( level.vehicleSpawners ), "Tried to add_spawn_function_veh before vehicle spawners were inited" );
+
+	func = [];
 	func[ "function" ] = function;
 	func[ "param1" ] = param1;
 	func[ "param2" ] = param2;
 	func[ "param3" ] = param3;
 	func[ "param4" ] = param4;
-	
-	
-	func_count_added = 0;	//func_count_added is used because the entries into the array are based on group number so they aren't guaranteed sequential.
-	
+
+	func_count_added = 0; //func_count_added is used because the entries into the array are based on group number so they aren't guaranteed sequential.
+
 	//-- Find the proper entries in level.vehicleSpawners
-	for( i = 0; func_count_added < level.vehicleSpawners.size; i++ )
+	for ( i = 0; func_count_added < level.vehicleSpawners.size; i++ )
 	{
-		if(!IsDefined(level.vehicleSpawners[i]))
+		if ( !IsDefined( level.vehicleSpawners[ i ] ) )
 		{
 			continue;
 		}
 		else
 		{
-			for( j = 0; j < level.vehicleSpawners[i].size; j++ )
+			for ( j = 0; j < level.vehicleSpawners[ i ].size; j++ )
 			{
-				if( IsDefined(level.vehicleSpawners[i][j].targetname) && level.vehicleSpawners[i][j].targetname == veh_targetname + "_vehiclespawner" )
+				if ( IsDefined( level.vehicleSpawners[ i ][ j ].targetname ) && level.vehicleSpawners[ i ][ j ].targetname == veh_targetname + "_vehiclespawner" )
 				{
-					if(!IsDefined( level.vehicleSpawners[i][j].spawn_funcs ))
+					if ( !IsDefined( level.vehicleSpawners[ i ][ j ].spawn_funcs ) )
 					{
-						level.vehicleSpawners[i][j].spawn_funcs = [];
+						level.vehicleSpawners[ i ][ j ].spawn_funcs = [];
 					}
-					
-					level.vehicleSpawners[i][j].spawn_funcs[ level.vehicleSpawners[i][j].spawn_funcs.size ] = func;
+
+					level.vehicleSpawners[ i ][ j ].spawn_funcs[ level.vehicleSpawners[ i ][ j ].spawn_funcs.size ] = func;
 				}
 			}
-			
+
 			func_count_added++;
 		}
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: add_spawn_function_veh_by_type( <vehicle_type>, <func> , <param1> , <param2> , <param3>, <param4> )"
 "Summary: Anything that spawns from this spawner will run this function. Anything."
@@ -6046,51 +6093,50 @@ add_spawn_function_veh( veh_targetname, function, param1, param2, param3, param4
 "Example: spawner add_spawn_function_veh_by_type( "tank_t72", ::do_the_amazing_thing, some_amazing_parameter );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 add_spawn_function_veh_by_type( veh_type, function, param1, param2, param3, param4 )
 {
-	assertEx( IsDefined(level.vehicleSpawners), "Tried to add_spawn_function_veh_by_type before vehicle spawners were inited");
-	
-	func = []; 
+	assertEx( IsDefined( level.vehicleSpawners ), "Tried to add_spawn_function_veh_by_type before vehicle spawners were inited" );
+
+	func = [];
 	func[ "function" ] = function;
 	func[ "param1" ] = param1;
 	func[ "param2" ] = param2;
 	func[ "param3" ] = param3;
 	func[ "param4" ] = param4;
-	
-	
-	func_count_added = 0;	//func_count_added is used because the entries into the array are based on group number so they aren't guaranteed sequential.
-	
+
+	func_count_added = 0; //func_count_added is used because the entries into the array are based on group number so they aren't guaranteed sequential.
+
 	//-- Find the proper entries in level.vehicleSpawners
-	for( i = 0; func_count_added < level.vehicleSpawners.size; i++ )
+	for ( i = 0; func_count_added < level.vehicleSpawners.size; i++ )
 	{
-		if(!IsDefined(level.vehicleSpawners[i]))
+		if ( !IsDefined( level.vehicleSpawners[ i ] ) )
 		{
 			continue;
 		}
 		else
 		{
-			for( j = 0; j < level.vehicleSpawners[i].size; j++ )
+			for ( j = 0; j < level.vehicleSpawners[ i ].size; j++ )
 			{
-				if( IsDefined(level.vehicleSpawners[i][j].vehicletype) && level.vehicleSpawners[i][j].vehicletype == veh_type )
+				if ( IsDefined( level.vehicleSpawners[ i ][ j ].vehicletype ) && level.vehicleSpawners[ i ][ j ].vehicletype == veh_type )
 				{
-					if(!IsDefined( level.vehicleSpawners[i][j].spawn_funcs ))
+					if ( !IsDefined( level.vehicleSpawners[ i ][ j ].spawn_funcs ) )
 					{
-						level.vehicleSpawners[i][j].spawn_funcs = [];
+						level.vehicleSpawners[ i ][ j ].spawn_funcs = [];
 					}
-					
-					level.vehicleSpawners[i][j].spawn_funcs[ level.vehicleSpawners[i][j].spawn_funcs.size ] = func;
+
+					level.vehicleSpawners[ i ][ j ].spawn_funcs[ level.vehicleSpawners[ i ][ j ].spawn_funcs.size ] = func;
 				}
 			}
-			
+
 			func_count_added++;
 		}
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: ignore_triggers( <timer> )"
 "Summary: Makes the entity that this is threaded on not able to set off triggers for a certain length of time."
@@ -6099,26 +6145,27 @@ add_spawn_function_veh_by_type( veh_type, function, param1, param2, param3, para
 "Example: guy thread ignore_triggers( 0.2 );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 ignore_triggers( timer )
 {
 	// ignore triggers for awhile so others can trigger the trigger we're in.
-	self endon( "death" ); 
-	self.ignoreTriggers = true; 
-	if( IsDefined( timer ) )
+	self endon( "death" );
+	self.ignoreTriggers = true;
+	if ( IsDefined( timer ) )
 	{
-		wait( timer ); 
+		wait( timer );
 	}
 	else
 	{
-		wait( 0.5 ); 
+		wait( 0.5 );
 	}
-	self.ignoreTriggers = false; 
+
+	self.ignoreTriggers = false;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: delayThread( <delay> , <function> , <arg1> , <arg2> , <arg3> )"
 "Summary: Delaythread is cool! It saves you from having to write extra script for once off commands. Note you don’t have to thread it off. Delaythread is that smart!"
@@ -6132,8 +6179,8 @@ ignore_triggers( timer )
 "Example: Delaythread( ::flag_set, "player_can_rappel", 3 );
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
 delayThread( timer, func, param1, param2, param3, param4 )
 {
@@ -6185,21 +6232,22 @@ is_hero()
 
 get_ai_number()
 {
-	if( !IsDefined( self.ai_number ) )
+	if ( !IsDefined( self.ai_number ) )
 	{
-		set_ai_number(); 
+		set_ai_number();
 	}
-	return self.ai_number; 
+
+	return self.ai_number;
 }
 
 set_ai_number()
 {
-	self.ai_number = level.ai_number; 
-	level.ai_number ++ ;
+	self.ai_number = level.ai_number;
+	level.ai_number++;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: make_hero()"
 "Summary: Will make the AI a hero.  This will call magic_bullet_shield on them as well as other hero behaviors."
@@ -6208,8 +6256,8 @@ set_ai_number()
 "Example: hero_guy make_hero();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 make_hero()
 {
 	self magic_bullet_shield();
@@ -6224,13 +6272,13 @@ make_hero()
 
 unmake_hero_on_death()
 {
-	self waittill("death");
+	self waittill( "death" );
 
 	level.hero_list[ self.ai_number ] = undefined;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: unmake_hero()"
 "Summary: Removes the AI from the hero list and stops hero behaviors running on the AI such as magic_bullet_shield."
@@ -6239,8 +6287,8 @@ unmake_hero_on_death()
 "Example: hero_guy unmake_hero();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 unmake_hero()
 {
 	self thread stop_magic_bullet_shield();
@@ -6250,8 +6298,8 @@ unmake_hero()
 	self.ikpriority = 0;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: get_heroes()"
 "Summary: Returns an array of all heroes currently in the level."
@@ -6259,15 +6307,15 @@ unmake_hero()
 "Example: heroes = get_heroes();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 get_heroes()
 {
-	return level.hero_list; 
+	return level.hero_list;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: replace_on_death()"
 "Summary: Will replace a color guy after he dies. Good for manually putting a respawnable guy onto a color chain."
@@ -6276,11 +6324,11 @@ get_heroes()
 "Example: new_color_guy thread replace_on_death();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 replace_on_death()
 {
-	maps\_colors::colorNode_replace_on_death(); 
+	maps\_colors::colorNode_replace_on_death();
 }
 
 spawn_reinforcement( classname, color )
@@ -6290,42 +6338,42 @@ spawn_reinforcement( classname, color )
 
 clear_promotion_order()
 {
-	level.current_color_order = []; 
+	level.current_color_order = [];
 }
 
 set_promotion_order( deadguy, replacer )
 {
-	if( !IsDefined( level.current_color_order ) )
+	if ( !IsDefined( level.current_color_order ) )
 	{
-		level.current_color_order = []; 
+		level.current_color_order = [];
 	}
 
-	deadguy = shortenColor( deadguy ); 
-	replacer = shortenColor( replacer ); 
+	deadguy = shortenColor( deadguy );
+	replacer = shortenColor( replacer );
 
 	level.current_color_order[ deadguy ] = replacer;
 
 	// if there is no color order for the replacing color than
 	// let script assume that it is meant to be replaced by
 	// respawning guys
-	if( !IsDefined( level.current_color_order[ replacer ] ) )
+	if ( !IsDefined( level.current_color_order[ replacer ] ) )
 	{
-		set_empty_promotion_order( replacer ); 
+		set_empty_promotion_order( replacer );
 	}
 }
 
 set_empty_promotion_order( deadguy )
 {
-	if( !IsDefined( level.current_color_order ) )
+	if ( !IsDefined( level.current_color_order ) )
 	{
-		level.current_color_order = []; 
+		level.current_color_order = [];
 	}
 
 	level.current_color_order[ deadguy ] = "none";
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: remove_dead_from_array( <array> )"
 "Summary: Takes an array, removes any dead entities, and returns the rest as a new array."
@@ -6334,37 +6382,42 @@ set_empty_promotion_order( deadguy )
 "MandatoryArg: <array> : the array to search through"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 remove_dead_from_array( array )
 {
 	newarray = [];
-	for( i = 0; i < array.size; i++ )
+	for ( i = 0; i < array.size; i++ )
 	{
-		if( !isalive( array[ i ] ) )
+		if ( !isalive( array[ i ] ) )
 		{
 			continue;
 		}
+
 		newarray[ newarray.size ] = array[ i ];
 	}
+
 	return newarray;
 }
 
 remove_heroes_from_array( array )
 {
 	newarray = [];
-	for( i = 0; i < array.size; i++ )
+	for ( i = 0; i < array.size; i++ )
 	{
-		if( array[ i ] is_hero() )
+		if ( array[ i ] is_hero() )
 		{
 			continue;
 		}
+
 		newarray[ newarray.size ] = array[ i ];
 	}
+
 	return newarray;
 }
-/* 
-============= 
+
+/*
+=============
 ///ScriptDocBegin
 "Name: remove_all_animnamed_guys_from_array( <array> )"
 "Summary: Takes an array, removes the entities with an animname, and returns the rest as a new array."
@@ -6373,43 +6426,48 @@ remove_heroes_from_array( array )
 "MandatoryArg: <array> : the array to search through"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 remove_all_animnamed_guys_from_array( array )
 {
 	newarray = [];
-	for( i = 0; i < array.size; i++ )
+	for ( i = 0; i < array.size; i++ )
 	{
-		if( IsDefined( array[ i ].animname ) )
+		if ( IsDefined( array[ i ].animname ) )
 		{
 			continue;
 		}
+
 		newarray[ newarray.size ] = array[ i ];
 	}
+
 	return newarray;
 }
 
 remove_color_from_array( array, color )
 {
 	newarray = [];
-	for( i = 0; i < array.size; i++ )
+	for ( i = 0; i < array.size; i++ )
 	{
 		guy = array[ i ];
-		if( !IsDefined( guy.script_forceColor ) )
+		if ( !IsDefined( guy.script_forceColor ) )
 		{
 			continue;
 		}
-		if( guy.script_forceColor == color )
+
+		if ( guy.script_forceColor == color )
 		{
 			continue;
 		}
+
 		newarray[ newarray.size ] = guy;
 	}
+
 	return newarray;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: remove_noteworthy_from_array( <array>, <noteworthy> )"
 "Summary: Takes an array, removes the entities with the specified script_noteworthy value, and returns the rest as a new array."
@@ -6419,158 +6477,160 @@ remove_color_from_array( array, color )
 "MandatoryArg: <noteworthy> : the noteworthy value you want to filter out"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 remove_noteworthy_from_array( array, noteworthy )
 {
 	newarray = [];
-	for( i = 0; i < array.size; i++ )
+	for ( i = 0; i < array.size; i++ )
 	{
 		guy = array[ i ];
 		// SCRIPTER_MOD: dguzzo: 3/23/2009 : this makes no sense to do
 		//		if( !IsDefined( guy.script_noteworthy ) )
 		//			continue;
-		if( IsDefined( guy.script_noteworthy ) && guy.script_noteworthy == noteworthy )
+		if ( IsDefined( guy.script_noteworthy ) && guy.script_noteworthy == noteworthy )
 		{
 			continue;
 		}
+
 		newarray[ newarray.size ] = guy;
 	}
+
 	return newarray;
 }
 
 get_closest_colored_friendly( color, origin )
 {
-	allies = get_force_color_guys( "allies", color ); 
-	allies = remove_heroes_from_array( allies ); 
+	allies = get_force_color_guys( "allies", color );
+	allies = remove_heroes_from_array( allies );
 
-	if( !IsDefined( origin ) )
+	if ( !IsDefined( origin ) )
 	{
 		// SCRIPTER_MOD
 		// MikeD (3/23/2007): No more level.player, TODO: we may want to think of a better solution.
 		// For now, using players[0]
-		//		friendly_origin = level.player.origin; 
+		//		friendly_origin = level.player.origin;
 		players = get_players();
-		friendly_origin = players[0].origin; 
+		friendly_origin = players[ 0 ].origin;
 	}
 	else
 	{
-		friendly_origin = origin; 
+		friendly_origin = origin;
 	}
 
-	return getclosest( friendly_origin, allies ); 
+	return getclosest( friendly_origin, allies );
 }
 
 remove_without_classname( array, classname )
 {
-	newarray = []; 
-	for( i = 0; i < array.size; i++ )
+	newarray = [];
+	for ( i = 0; i < array.size; i++ )
 	{
-		if( !issubstr( array[ i ].classname, classname ) )
+		if ( !issubstr( array[ i ].classname, classname ) )
 		{
 			continue;
 		}
+
 		newarray[ newarray.size ] = array[ i ];
 	}
+
 	return newarray;
 }
 
 remove_without_model( array, model )
 {
 	newarray = [];
-	for( i = 0; i < array.size; i++ )
+	for ( i = 0; i < array.size; i++ )
 	{
-		if( !issubstr( array[ i ].model, model ) )
+		if ( !issubstr( array[ i ].model, model ) )
 		{
-			continue; 
+			continue;
 		}
+
 		newarray[ newarray.size ] = array[ i ];
 	}
-	return newarray; 
-}
 
+	return newarray;
+}
 
 get_closest_colored_friendly_with_classname( color, classname, origin )
 {
-	allies = get_force_color_guys( "allies", color ); 
-	allies = remove_heroes_from_array( allies ); 
+	allies = get_force_color_guys( "allies", color );
+	allies = remove_heroes_from_array( allies );
 
-	if( !IsDefined( origin ) )
+	if ( !IsDefined( origin ) )
 	{
 		// SCRIPTER_MOD
 		// MikeD (3/23/2007): No more level.player, TODO: we may want to think of a better solution.
 		// For now, using players[0]
-		//		friendly_origin = level.player.origin; 
+		//		friendly_origin = level.player.origin;
 		players = get_players();
-		friendly_origin = players[0].origin; 
+		friendly_origin = players[ 0 ].origin;
 	}
 	else
 	{
-		friendly_origin = origin; 
+		friendly_origin = origin;
 	}
 
-	allies = remove_without_classname( allies, classname ); 
+	allies = remove_without_classname( allies, classname );
 
-	return getclosest( friendly_origin, allies ); 
+	return getclosest( friendly_origin, allies );
 }
-
-
-
 
 promote_nearest_friendly( colorFrom, colorTo )
 {
-	for( ;; )
+	for ( ;; )
 	{
-		friendly = get_closest_colored_friendly( colorFrom ); 
-		if( !IsAlive( friendly ) )
+		friendly = get_closest_colored_friendly( colorFrom );
+		if ( !IsAlive( friendly ) )
 		{
-			wait( 1 ); 
-			continue; 
+			wait( 1 );
+			continue;
 		}
 
-		friendly set_force_color( colorTo ); 
-		return; 
+		friendly set_force_color( colorTo );
+		return;
 	}
 }
 
 instantly_promote_nearest_friendly( colorFrom, colorTo )
 {
-	for( ;; )
+	for ( ;; )
 	{
-		friendly = get_closest_colored_friendly( colorFrom ); 
-		if( !IsAlive( friendly ) )
+		friendly = get_closest_colored_friendly( colorFrom );
+		if ( !IsAlive( friendly ) )
 		{
-			assertex( 0, "Instant promotion from " + colorFrom + " to " + colorTo + " failed!" ); 
-			return; 
+			assertex( 0, "Instant promotion from " + colorFrom + " to " + colorTo + " failed!" );
+			return;
 		}
 
-		friendly set_force_color( colorTo ); 
-		return; 
+		friendly set_force_color( colorTo );
+		return;
 	}
 }
 
 instantly_promote_nearest_friendly_with_classname( colorFrom, colorTo, classname )
 {
-	for( ;; )
+	for ( ;; )
 	{
-		friendly = get_closest_colored_friendly_with_classname( colorFrom, classname ); 
-		if( !IsAlive( friendly ) )
+		friendly = get_closest_colored_friendly_with_classname( colorFrom, classname );
+		if ( !IsAlive( friendly ) )
 		{
-			assertex( 0, "Instant promotion from " + colorFrom + " to " + colorTo + " failed!" ); 
-			return; 
+			assertex( 0, "Instant promotion from " + colorFrom + " to " + colorTo + " failed!" );
+			return;
 		}
 
-		friendly set_force_color( colorTo ); 
-		return; 
+		friendly set_force_color( colorTo );
+		return;
 	}
 }
 
 promote_nearest_friendly_with_classname( colorFrom, colorTo, classname )
 {
-	for( ;; )
+	for ( ;; )
 	{
 		friendly = get_closest_colored_friendly_with_classname( colorFrom, classname );
-		if( !isalive( friendly ) )
+		if ( !isalive( friendly ) )
 		{
 			wait( 1 );
 			continue;
@@ -6586,10 +6646,10 @@ instantly_set_color_from_array_with_classname( array, color, classname )
 	// the guy is removed from the array so the function can be run on the array again
 	foundGuy = false;
 	newArray = [];
-	for( i = 0; i < array.size; i++ )
+	for ( i = 0; i < array.size; i++ )
 	{
 		guy = array[ i ];
-		if( foundGuy || !isSubstr( guy.classname, classname ) )
+		if ( foundGuy || !isSubstr( guy.classname, classname ) )
 		{
 			newArray[ newArray.size ] = guy;
 			continue;
@@ -6598,6 +6658,7 @@ instantly_set_color_from_array_with_classname( array, color, classname )
 		foundGuy = true;
 		guy set_force_color( color );
 	}
+
 	return newArray;
 }
 
@@ -6606,10 +6667,10 @@ instantly_set_color_from_array( array, color )
 	// the guy is removed from the array so the function can be run on the array again
 	foundGuy = false;
 	newArray = [];
-	for( i = 0; i < array.size; i++ )
+	for ( i = 0; i < array.size; i++ )
 	{
 		guy = array[ i ];
-		if( foundGuy  )
+		if ( foundGuy )
 		{
 			newArray[ newArray.size ] = guy;
 			continue;
@@ -6618,25 +6679,25 @@ instantly_set_color_from_array( array, color )
 		foundGuy = true;
 		guy set_force_color( color );
 	}
+
 	return newArray;
 }
 
 wait_for_flag_or_timeout( msg, timer )
 {
-	if( flag( msg ) )
+	if ( flag( msg ) )
 	{
-		return; 
+		return;
 	}
 
-	ent = SpawnStruct(); 
-	ent thread ent_waits_for_level_notify( msg ); 
-	ent thread ent_times_out( timer ); 
-	ent waittill( "done" ); 
+	ent = SpawnStruct();
+	ent thread ent_waits_for_level_notify( msg );
+	ent thread ent_times_out( timer );
+	ent waittill( "done" );
 }
 
-
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: wait_for_trigger_or_timeout( <timer> )"
 "Summary: Waits until a trigger with the targetname"
@@ -6646,28 +6707,28 @@ wait_for_flag_or_timeout( msg, timer )
 "Example: wait_for_trigger_or_timeout( 10 );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 wait_for_trigger_or_timeout( timer )
 {
-	ent = SpawnStruct(); 
-	ent thread ent_waits_for_trigger( self ); 
-	ent thread ent_times_out( timer ); 
-	ent waittill( "done" ); 
+	ent = SpawnStruct();
+	ent thread ent_waits_for_trigger( self );
+	ent thread ent_times_out( timer );
+	ent waittill( "done" );
 }
 
 wait_for_either_trigger( msg1, msg2 )
-{	
-	ent = SpawnStruct(); 
-	array = []; 
-	array = array_combine( array, GetEntArray( msg1, "targetname" ) ); 
-	array = array_combine( array, GetEntArray( msg2, "targetname" ) ); 
-	for( i = 0; i < array.size; i++ )
+{
+	ent = SpawnStruct();
+	array = [];
+	array = array_combine( array, GetEntArray( msg1, "targetname" ) );
+	array = array_combine( array, GetEntArray( msg2, "targetname" ) );
+	for ( i = 0; i < array.size; i++ )
 	{
 		ent thread ent_waits_for_trigger( array[ i ] );
 	}
 
-	ent waittill( "done" ); 
+	ent waittill( "done" );
 }
 
 dronespawn( spawner )
@@ -6680,31 +6741,31 @@ dronespawn( spawner )
 
 make_real_ai( drone )
 {
-	return maps\_spawner::spawner_make_real_ai( drone ); 
+	return maps\_spawner::spawner_make_real_ai( drone );
 }
 
-get_trigger_flag(flag_name_override)
+get_trigger_flag( flag_name_override )
 {
-	if (IsDefined(flag_name_override))
+	if ( IsDefined( flag_name_override ) )
 	{
 		return flag_name_override;
 	}
 
-	if( IsDefined( self.script_flag ) )
+	if ( IsDefined( self.script_flag ) )
 	{
-		return self.script_flag; 
+		return self.script_flag;
 	}
 
-	if( IsDefined( self.script_noteworthy ) )
+	if ( IsDefined( self.script_noteworthy ) )
 	{
-		return self.script_noteworthy; 
+		return self.script_noteworthy;
 	}
 
-	assertex( 0, "Flag trigger at " + self.origin + " has no script_flag set." ); 
+	assertex( 0, "Flag trigger at " + self.origin + " has no script_flag set." );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: is_spawner()"
 "Summary: Checks if an entity is a spawner, returns true or false"
@@ -6713,26 +6774,27 @@ get_trigger_flag(flag_name_override)
 "Example: if( guy is_spawner() )..."
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 is_spawner()
 {
-	return (is_true(self.is_spawner)); 
+	return ( is_true( self.is_spawner ) );
 }
 
 set_default_pathenemy_settings()
 {
-	if( self.team == "allies" )
+	if ( self.team == "allies" )
 	{
-		self.pathEnemyLookAhead = 350; 
-		self.pathEnemyFightDist = 350; 
-		return; 
+		self.pathEnemyLookAhead = 350;
+		self.pathEnemyFightDist = 350;
+		return;
 	}
-	if( self.team == "axis" )
+
+	if ( self.team == "axis" )
 	{
-		self.pathEnemyLookAhead = 350; 
-		self.pathEnemyFightDist = 350; 
-		return; 
+		self.pathEnemyLookAhead = 350;
+		self.pathEnemyFightDist = 350;
+		return;
 	}
 }
 
@@ -6750,9 +6812,8 @@ set_default_pathenemy_settings()
 //	}
 //}
 
-
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: enable_heat()"
 "Summary: Puts an AI into heat mode."
@@ -6761,16 +6822,15 @@ set_default_pathenemy_settings()
 "Example: guy enable_heat();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 enable_heat()
 {
 	self thread call_overloaded_func( "animscripts\anims_table", "setup_heat_anim_array" );
 }
 
-
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: disable_heat()"
 "Summary: turn off heat mode."
@@ -6779,15 +6839,15 @@ enable_heat()
 "Example: guy disable_heat();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 disable_heat()
 {
 	self thread call_overloaded_func( "animscripts\anims_table", "reset_heat_anim_array" );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: enable_cqbwalk()"
 "Summary: Puts an AI into CQB walk."
@@ -6796,8 +6856,8 @@ disable_heat()
 "Example: guy enable_cqbwalk();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 enable_cqbwalk()
 {
 	self.cqbwalking = true;
@@ -6805,12 +6865,12 @@ enable_cqbwalk()
 	self thread call_overloaded_func( "animscripts\anims_table", "setup_cqb_anim_array" );
 
 	/#
-		self thread call_overloaded_func( "animscripts\cqb", "CQBDebug" );
-	#/ 
+	self thread call_overloaded_func( "animscripts\cqb", "CQBDebug" );
+	#/
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: disable_cqbwalk()"
 "Summary: Takes an AI out of CQB walk."
@@ -6819,30 +6879,28 @@ enable_cqbwalk()
 "Example: guy disable_cqbwalk();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 disable_cqbwalk()
 {
-	if(!IsDefined(self) && (!IsAlive(self)) )
+	if ( !IsDefined( self ) && ( !IsAlive( self ) ) )
 	{
 		return;
-	}	
-		
-	self.cqbwalking				= false;
-	self.sprint					= false;
-	self.cqb_point_of_interest	= undefined;
+	}
+
+	self.cqbwalking = false;
+	self.sprint = false;
+	self.cqb_point_of_interest = undefined;
 
 	self thread call_overloaded_func( "animscripts\anims_table", "reset_cqb_anim_array" );
 
 	/#
-		self notify( "end_cqb_debug" );
-	#/ 
+	self notify( "end_cqb_debug" );
+	#/
 }
 
-
-
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: enable_cqbsprint()"
 "Summary: Puts an AI into CQB sprint."
@@ -6851,20 +6909,19 @@ disable_cqbwalk()
 "Example: guy enable_cqbsprint();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 enable_cqbsprint()
 {
 	// if not CQB walking before then turn it on
-	if( !( self animscripts\utility::isCQBWalking() ) )
+	if ( !( self animscripts\utility::isCQBWalking() ) )
 		self enable_cqbwalk();
-	
+
 	self.sprint = true;
 }
 
-
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: disable_cqbsprint()"
 "Summary: Set the CQB speed back to run."
@@ -6873,15 +6930,15 @@ enable_cqbsprint()
 "Example: guy disable_cqbsprint();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 disable_cqbsprint()
 {
 	self.sprint = false;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: cqb_aim(the_target)"
 "Summary: Sets a tartget when doing CQB walk."
@@ -6890,27 +6947,27 @@ disable_cqbsprint()
 "Example: guy cqb_aim(the_target);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 cqb_aim( the_target )
 {
-	if( !IsDefined( the_target ) )
+	if ( !IsDefined( the_target ) )
 	{
 		self.cqb_target = undefined;
 	}
 	else
 	{
-		self.cqb_target = the_target;	
+		self.cqb_target = the_target;
 
-		if( !IsDefined( the_target.origin ) )
+		if ( !IsDefined( the_target.origin ) )
 		{
 			assertmsg( "target passed into cqb_aim does not have an origin!" );
 		}
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: set_force_cover( <val> )"
 "Summary: Sets how an actor behaves in cover. 'hide' makes them never peak out, 'show' makes them always peak out, and 'none' is default."
@@ -6920,17 +6977,17 @@ cqb_aim( the_target )
 "MandatoryArg: <val> : The type of cover to force. Can be 'hide', 'none', or 'show'."
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 set_force_cover( val )
 {
-	assertex( val == "hide" || val == "none" || val == "show", "invalid force cover set on guy" ); 
-	assertex( IsAlive( self ), "Tried to set force cover on a dead guy" ); 
-	self.a.forced_cover = val; 
+	assertex( val == "hide" || val == "none" || val == "show", "invalid force cover set on guy" );
+	assertex( IsAlive( self ), "Tried to set force cover on a dead guy" );
+	self.a.forced_cover = val;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: waittill_notify_or_timeout( <msg>, <timer> )"
 "Summary: Waits until the owner receives the specified notify message or the specified time runs out. Do not thread this!"
@@ -6941,16 +6998,16 @@ set_force_cover( val )
 "MandatoryArg: <timer> : The amount of time to wait until overriding the wait statement."
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 waittill_notify_or_timeout( msg, timer )
 {
-	self endon( msg ); 
-	wait( timer ); 
+	self endon( msg );
+	wait( timer );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: waittill_any_or_timeout( <timer>, <msg1>, <msg2>, <msg3>, <msg4>, <msg5> )"
 "Summary: Waits until the owner receives the specified notify message or the specified time runs out. Do not thread this!"
@@ -6965,14 +7022,14 @@ waittill_notify_or_timeout( msg, timer )
 "MandatoryArg: <msg5> : The notify to wait for."
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
-waittill_any_or_timeout( timer, string1, string2, string3, string4, string5  )
+waittill_any_or_timeout( timer, string1, string2, string3, string4, string5 )
 {
 	assert( IsDefined( string1 ) );
-	
+
 	self endon( string1 );
-	
+
 	if ( IsDefined( string2 ) )
 	{
 		self endon( string2 );
@@ -6992,81 +7049,81 @@ waittill_any_or_timeout( timer, string1, string2, string3, string4, string5  )
 	{
 		self endon( string5 );
 	}
-			
-	wait( timer ); 
+
+	wait( timer );
 }
 
 scrub_guy()
 {
 	// -- sets an AI to default settings, ignoring the .script_ values on him. -- //
 
-	self SetThreatBiasGroup( self.team ); 
+	self SetThreatBiasGroup( self.team );
 	self.script_accuracy = 1;
 	self.perfectAim = false;
-	set_default_pathenemy_settings(); 
-	maps\_gameskill::grenadeAwareness(); 
-	self clear_force_color(); 
+	set_default_pathenemy_settings();
+	maps\_gameskill::grenadeAwareness();
+	self clear_force_color();
 	maps\_spawner::set_default_covering_fire();
-	self.interval = 96; 
+	self.interval = 96;
 	self.disableArrivals = undefined;
-	self.ignoreme = false; 
-	self.threatbias = 0; 
-	self.pacifist = false; 
-	self.pacifistWait = 20; 
-	self.IgnoreRandomBulletDamage = false; 
-	self.playerPushable = true; 
-	self.precombatrunEnabled = true; 
-	self.accuracystationarymod = 1; 
-	self.allowdeath = false; 
-	self.anglelerprate = 540; 
-	self.badplaceawareness = 0.75; 
-	self.chainfallback = 0; 
-	self.dontavoidplayer = 0; 
-	self.drawoncompass = 1; 
+	self.ignoreme = false;
+	self.threatbias = 0;
+	self.pacifist = false;
+	self.pacifistWait = 20;
+	self.IgnoreRandomBulletDamage = false;
+	self.playerPushable = true;
+	self.precombatrunEnabled = true;
+	self.accuracystationarymod = 1;
+	self.allowdeath = false;
+	self.anglelerprate = 540;
+	self.badplaceawareness = 0.75;
+	self.chainfallback = 0;
+	self.dontavoidplayer = 0;
+	self.drawoncompass = 1;
 	self.activatecrosshair = true;
-	self.dropweapon = 1; 
-	self.goalradius = level.default_goalradius; 
-	self.goalheight = level.default_goalheight; 
-	self.ignoresuppression = 0; 
+	self.dropweapon = 1;
+	self.goalradius = level.default_goalradius;
+	self.goalheight = level.default_goalheight;
+	self.ignoresuppression = 0;
 	self PushPlayer( false );
 
 	if ( IsDefined( self.magic_bullet_shield ) && self.magic_bullet_shield )
 	{
-		stop_magic_bullet_shield(); 
+		stop_magic_bullet_shield();
 	}
 
 	self disable_replace_on_death();
-	self.maxsightdistsqrd = 8192*8192; 
+	self.maxsightdistsqrd = 8192 * 8192;
 
-	if( WeaponClass( self.weapon ) == "gas" )
+	if ( WeaponClass( self.weapon ) == "gas" )
 	{
-		self.maxSightDistSqrd = 1024 * 1024; 
+		self.maxSightDistSqrd = 1024 * 1024;
 	}
 
-	self.script_forceGrenade = 0; 
-	self.walkdist = 16; 
-	self unmake_hero(); 
+	self.script_forceGrenade = 0;
+	self.walkdist = 16;
+	self unmake_hero();
 	self.pushable = true;
-	call_overloaded_func( "animscripts\init", "set_anim_playback_rate" ); 
+	call_overloaded_func( "animscripts\init", "set_anim_playback_rate" );
 
 	// allies use fixednode by default
 	self.fixednode = self.team == "allies";
 
 	// Gives AI grenades
-	if( IsDefined( self.script_grenades ) )
+	if ( IsDefined( self.script_grenades ) )
 	{
-		self.grenadeAmmo = self.script_grenades; 
+		self.grenadeAmmo = self.script_grenades;
 	}
 	else
 	{
-		self.grenadeAmmo = 3; 
+		self.grenadeAmmo = 3;
 	}
 }
 
 send_notify( msg )
 {
 	// functionalized so it can be function pointer'd
-	self notify( msg ); 
+	self notify( msg );
 }
 
 getfx( fx )
@@ -7077,7 +7134,7 @@ getfx( fx )
 
 getanim( anime )
 {
-	assertex( IsDefined( self.animname ), "Called getanim on a guy with no animname" ); 
+	assertex( IsDefined( self.animname ), "Called getanim on a guy with no animname" );
 	assertEx( IsDefined( level.scr_anim[ self.animname ][ anime ] ), "Called getanim on an inexistent anim" );
 	return level.scr_anim[ self.animname ][ anime ];
 }
@@ -7097,13 +7154,13 @@ getanim_generic( anime )
 
 add_hint_string( name, string, optionalFunc )
 {
-	assertex( IsDefined( level.trigger_hint_string ), "Tried to add a hint string before _load was called." ); 
-	assertex( IsDefined( name ), "Set a name for the hint string. This should be the same as the script_hint on the trigger_hint." ); 
-	assertex( IsDefined( string ), "Set a string for the hint string. This is the string you want to appear when the trigger is hit." ); 
+	assertex( IsDefined( level.trigger_hint_string ), "Tried to add a hint string before _load was called." );
+	assertex( IsDefined( name ), "Set a name for the hint string. This should be the same as the script_hint on the trigger_hint." );
+	assertex( IsDefined( string ), "Set a string for the hint string. This is the string you want to appear when the trigger is hit." );
 
 	level.trigger_hint_string[ name ] = string;
 	precachestring( string );
-	if( IsDefined( optionalFunc ) )
+	if ( IsDefined( optionalFunc ) )
 	{
 		level.trigger_hint_func[ name ] = optionalFunc;
 	}
@@ -7115,31 +7172,30 @@ ThrowGrenadeAtPlayerASAP()
 	players = get_players();
 	if ( players.size > 0 )
 	{
-		best_target	= undefined;
-		closest_dist	= 99999999;	
-		for (i=0;i<players.size;i++)
+		best_target = undefined;
+		closest_dist = 99999999;
+		for ( i = 0; i < players.size; i++ )
 		{
-			if ( IsDefined(players[i]) )
+			if ( IsDefined( players[ i ] ) )
 			{
-				dist = DistanceSquared( self.origin, players[i].origin );
+				dist = DistanceSquared( self.origin, players[ i ].origin );
 				if ( dist < closest_dist )
 				{
-					best_target	= players[i];
-					closest_dist	= dist;
+					best_target = players[ i ];
+					closest_dist = dist;
 				}
 			}
 		}
 
-		if ( IsDefined(best_target) )
+		if ( IsDefined( best_target ) )
 		{
-			animscripts\combat_utility::ThrowGrenadeAtPlayerASAP_combat_utility(best_target);
+			animscripts\combat_utility::ThrowGrenadeAtPlayerASAP_combat_utility( best_target );
 		}
 	}
 }
 
-
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: is_ai_in_revive "
 "Summary:  AI Feature - Sumeet - returns true if AI is in revive process, such as bleeding or reviving other AI, can be used to avoid this guys in scripted sequence if needed."
@@ -7150,21 +7206,21 @@ ThrowGrenadeAtPlayerASAP()
 "OptionalArg: "
 "SP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
 is_ai_in_revive()
 {
-	assertEX(IsAI(self), "Can only call this function on an AI character");
+	assertEX( IsAI( self ), "Can only call this function on an AI character" );
 
-	if( IsAlive(self) )
+	if ( IsAlive( self ) )
 	{
 		return animscripts\revive::isReviverOrBleeder();
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: disable_ai_revive"
 "Summary:  AI Feature - Sumeet - Turn off revive feature."
@@ -7175,18 +7231,18 @@ is_ai_in_revive()
 "OptionalArg: "
 "SP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
 disable_ai_revive()
 {
-	Assert(IsDefined(level.reviveFeature), "level.reviveFeature is not defined, call this function after maps\_load::main().");
+	Assert( IsDefined( level.reviveFeature ), "level.reviveFeature is not defined, call this function after maps\_load::main()." );
 
 	level.reviveFeature = false;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: enable_ai_revive"
 "Summary:  AI Feature - Sumeet - Turn on revive feature."
@@ -7197,19 +7253,19 @@ disable_ai_revive()
 "OptionalArg: "
 "SP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
 enable_ai_revive()
 {
-	Assert(IsDefined(level.reviveFeature), "level.reviveFeature is not defined, call this function after maps\_load::main().");
-	Assert((level.reviveFeature == false), "Revive Feature is already enabled.");
+	Assert( IsDefined( level.reviveFeature ), "level.reviveFeature is not defined, call this function after maps\_load::main()." );
+	Assert( ( level.reviveFeature == false ), "Revive Feature is already enabled." );
 
 	level.reviveFeature = true;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: disable_ai_bleeder()"
 "Summary:  AI Feature - Sumeet - Turn off bleeding of a specific AI."
@@ -7220,19 +7276,19 @@ enable_ai_revive()
 "OptionalArg: "
 "SP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
 disable_ai_bleeder()
 {
-	assertEX(IsAI(self), "Can only call this function on an AI character");
-	assertEX(IsDefined(self.a.canBleed), "Can only call this function on an AI character");
+	assertEX( IsAI( self ), "Can only call this function on an AI character" );
+	assertEX( IsDefined( self.a.canBleed ), "Can only call this function on an AI character" );
 
 	self.a.canBleed = false;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: enable_ai_bleeder()"
 "Summary:  AI Feature - Sumeet - Turn on bleeding of a specific AI."
@@ -7243,19 +7299,19 @@ disable_ai_bleeder()
 "OptionalArg: "
 "SP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
 enable_ai_bleeder()
 {
-	assertEX(IsAI(self), "Can only call this function on an AI character");
-	assertEX(IsDefined(self.a.canBleed), "Can only call this function on an AI character");
+	assertEX( IsAI( self ), "Can only call this function on an AI character" );
+	assertEX( IsDefined( self.a.canBleed ), "Can only call this function on an AI character" );
 
 	self.a.canBleed = true;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: disable_ai_reviver()"
 "Summary:  AI Feature - Sumeet - This AI will not be selected as a reviver."
@@ -7266,19 +7322,19 @@ enable_ai_bleeder()
 "OptionalArg: "
 "SP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
 disable_ai_reviver()
 {
-	assertEX(IsAI(self), "Can only call this function on an AI character");
-	assertEX(IsDefined(self.a.canRevive), "Can only call this function on an AI character");
+	assertEX( IsAI( self ), "Can only call this function on an AI character" );
+	assertEX( IsDefined( self.a.canRevive ), "Can only call this function on an AI character" );
 
 	self.a.canRevive = false;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: enable_ai_reviver()"
 "Summary:  AI Feature - Sumeet - This AI will be selected as a reviver."
@@ -7289,19 +7345,19 @@ disable_ai_reviver()
 "OptionalArg: "
 "SP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
 enable_ai_reviver()
 {
-	assertEX(IsAI(self), "Can only call this function on an AI character");
-	assertEX(IsDefined(self.a.canRevive), "Can only call this function on an AI character");
+	assertEX( IsAI( self ), "Can only call this function on an AI character" );
+	assertEX( IsDefined( self.a.canRevive ), "Can only call this function on an AI character" );
 
 	self.a.canRevive = true;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: switch_weapon_ASAP "
 "Summary:  AI Feature - Sumeet - Will force an AI to switch the weapon ASAP. This function will send "weapon_switched" notification once weapon switching is done. "
@@ -7312,81 +7368,81 @@ enable_ai_reviver()
 "OptionalArg: "
 "SP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
 switch_weapon_ASAP()
 {
-	assertEX(IsAI(self), "Can only call this function on an AI character");
+	assertEX( IsAI( self ), "Can only call this function on an AI character" );
 
 	// Check if AI is alive and weapon switching is not already being processed.
-	if( IsAlive(self) && !self.a.weapon_switch_ASAP )	
-		self.a.weapon_switch_ASAP = true;	
+	if ( IsAlive( self ) && !self.a.weapon_switch_ASAP )
+		self.a.weapon_switch_ASAP = true;
 }
 
 // scriptgen precache wrapper commands - Nathan
 // This will enable automatic zone source CSV exports if approved
 
-/* 
-It's important that when you write scripts with sg_precache in 
+/*
+It's important that when you write scripts with sg_precache in
 them that you halt the scripts that use these assets when a scriptgen dump is required.
 
-If done currectly before the scriptgen dump call all of of the sg_precache commands will happen 
+If done currectly before the scriptgen dump call all of of the sg_precache commands will happen
 and you won't have to run the game again to catch new sg_precaches;
 
 Do this to wait untill the sg_precache dump has been called( now it's ok to continue );
 
 sg_wait_dump();
 
-sg_precache lines should go before _load but in the case of tools they can go after.   
+sg_precache lines should go before _load but in the case of tools they can go after.
 IE in effectsEd somebody could initiate a dump after specifying some new assets to load.
 
-*/ 
+*/
 
 sg_precachemodel( model )
 {
-	script_gen_dump_addline( "precachemodel( \"" + model + "\" );", "xmodel_" + model );// adds to scriptgendump
+	script_gen_dump_addline( "precachemodel( \"" + model + "\" );", "xmodel_" + model ); // adds to scriptgendump
 
 }
 
 sg_precacheitem( item )
 {
-	script_gen_dump_addline( "precacheitem( \"" + item + "\" );", "item_" + item );// adds to scriptgendump
+	script_gen_dump_addline( "precacheitem( \"" + item + "\" );", "item_" + item ); // adds to scriptgendump
 }
 
 sg_precachemenu( menu )
 {
-	script_gen_dump_addline( "precachemenu( \"" + menu + "\" );", "menu_" + menu );// adds to scriptgendump
+	script_gen_dump_addline( "precachemenu( \"" + menu + "\" );", "menu_" + menu ); // adds to scriptgendump
 }
 
 sg_precacherumble( rumble )
 {
-	script_gen_dump_addline( "precacherumble( \"" + rumble + "\" );", "rumble_" + rumble );// adds to scriptgendump
+	script_gen_dump_addline( "precacherumble( \"" + rumble + "\" );", "rumble_" + rumble ); // adds to scriptgendump
 }
 
 sg_precacheshader( shader )
 {
-	script_gen_dump_addline( "precacheshader( \"" + shader + "\" );", "shader_" + shader );// adds to scriptgendump
+	script_gen_dump_addline( "precacheshader( \"" + shader + "\" );", "shader_" + shader ); // adds to scriptgendump
 }
 
 sg_precacheshellshock( shock )
 {
-	script_gen_dump_addline( "precacheshellshock( \"" + shock + "\" );", "shock_" + shock );// adds to scriptgendump
+	script_gen_dump_addline( "precacheshellshock( \"" + shock + "\" );", "shock_" + shock ); // adds to scriptgendump
 }
 
 sg_precachestring( string )
 {
-	script_gen_dump_addline( "precachestring( \"" + string + "\" );", "string_" + string );// adds to scriptgendump
+	script_gen_dump_addline( "precachestring( \"" + string + "\" );", "string_" + string ); // adds to scriptgendump
 }
 
 sg_precacheturret( turret )
 {
-	script_gen_dump_addline( "precacheturret( \"" + turret + "\" );", "turret_" + turret );// adds to scriptgendump
+	script_gen_dump_addline( "precacheturret( \"" + turret + "\" );", "turret_" + turret ); // adds to scriptgendump
 }
 
 sg_precachevehicle( vehicle )
 {
-	script_gen_dump_addline( "precachevehicle( \"" + vehicle + "\" );", "vehicle_" + vehicle );// adds to scriptgendump
+	script_gen_dump_addline( "precachevehicle( \"" + vehicle + "\" );", "vehicle_" + vehicle ); // adds to scriptgendump
 }
 
 sg_getanim( animation )
@@ -7399,17 +7455,16 @@ sg_getanimtree( animtree )
 	return level.sg_animtree[ animtree ];
 }
 
-
-
 sg_precacheanim( animation, animtree )
 {
-	if( !IsDefined( animtree ) )
+	if ( !IsDefined( animtree ) )
 	{
 		animtree = "generic_human";
 	}
-	/* 
+
+	/*
 	this is where the money is at.  we no longer have to seperate scripts that have animations in them
-	this eliminates the need for seperate vehiclescript calls, gags with animations, etc. 
+	this eliminates the need for seperate vehiclescript calls, gags with animations, etc.
 	animations are a string value when sg_precacheanim is called this writes them to the script gen and the CSV as animations
 	usage is something like this
 
@@ -7421,23 +7476,22 @@ sg_precacheanim( animation, animtree )
 
 	this will get the animation from scriptgen.
 
-	*/ 
+	*/
 	// 	script_gen_dump_addline( "level.sg_anim[ \"" + animation + "\" ] = %" + animation + ";", "animation_" + animation );// adds to scriptgendump
 
 	sg_csv_addtype( "xanim", animation );
-	if( !IsDefined( level.sg_precacheanims ) )
+	if ( !IsDefined( level.sg_precacheanims ) )
 	{
 		level.sg_precacheanims = [];
 	}
-	if( !IsDefined( level.sg_precacheanims[ animtree ] ) )
+
+	if ( !IsDefined( level.sg_precacheanims[ animtree ] ) )
 	{
 		level.sg_precacheanims[ animtree ] = [];
 	}
 
-	level.sg_precacheanims[ animtree ][ animation ] = true;// no sence setting it to anything else if the string is already in array key. beh.
+	level.sg_precacheanims[ animtree ][ animation ] = true; // no sence setting it to anything else if the string is already in array key. beh.
 }
-
-
 
 sg_getfx( fx )
 {
@@ -7446,7 +7500,7 @@ sg_getfx( fx )
 
 sg_precachefx( fx )
 {
-	/* 
+	/*
 
 	effects require an id returned from loadfx. it's a little bit different kind of asset but will work the same as animations
 
@@ -7454,8 +7508,8 @@ sg_precachefx( fx )
 
 	sg_getfx( fx ); to get the effects id for the specified effect string
 
-	*/ 
-	script_gen_dump_addline( "level.sg_effect[ \"" + fx + "\" ] = loadfx( \"" + fx + "\" );", "fx_" + fx );// adds to scriptgendump
+	*/
+	script_gen_dump_addline( "level.sg_effect[ \"" + fx + "\" ] = loadfx( \"" + fx + "\" );", "fx_" + fx ); // adds to scriptgendump
 }
 
 sg_wait_dump()
@@ -7473,8 +7527,8 @@ sg_standard_includes()
 	sg_csv_addtype( "rawfile", "maps/" + tolower( GetDvar( #"mapname" ) ) + ".gsc" );
 	sg_csv_addtype( "rawfile", "maps / scriptgen/" + tolower( GetDvar( #"mapname" ) ) + "_scriptgen.gsc" );
 
-	sg_csv_soundadd( "us_battlechatter", "all_sp" );// todo. find this automagically by ai's
-	sg_csv_soundadd( "ab_battlechatter", "all_sp" );// 
+	sg_csv_soundadd( "us_battlechatter", "all_sp" ); // todo. find this automagically by ai's
+	sg_csv_soundadd( "ab_battlechatter", "all_sp" ); //
 
 	sg_csv_soundadd( "voiceovers", "all_sp" );
 	sg_csv_soundadd( "common", "all_sp" );
@@ -7491,31 +7545,33 @@ sg_standard_includes()
 	// 	sound, ab_battlechatter, rallypoint, all_sp
 	// 	sound, common, rallypoint, all_sp
 	// 	sound, generic, rallypoint, all_sp
-	// 	sound, requests, rallypoint, all_sp	
+	// 	sound, requests, rallypoint, all_sp
 
 }
 
 sg_csv_soundadd( type, loadspec )
 {
-	script_gen_dump_addline( "nowrite Sound CSV entry: " + type, "sound_" + type + ", " + tolower( GetDvar( #"mapname" ) ) + ", " + loadspec );// adds to scriptgendump
+	script_gen_dump_addline( "nowrite Sound CSV entry: " + type, "sound_" + type + ", " + tolower( GetDvar( #"mapname" ) ) + ", " + loadspec ); // adds to scriptgendump
 }
 
 sg_csv_addtype( type, string )
 {
-	script_gen_dump_addline( "nowrite CSV entry: " + type + ", " + string, type + "_" + string );// adds to scriptgendump
+	script_gen_dump_addline( "nowrite CSV entry: " + type + ", " + string, type + "_" + string ); // adds to scriptgendump
 }
 
-array_combine_keys( array1, array2 )// mashes them in. array 2 will overwrite like keys, this works for what I'm using it for - Nate.
+array_combine_keys( array1, array2 ) // mashes them in. array 2 will overwrite like keys, this works for what I'm using it for - Nate.
 {
-	if( !array1.size )
+	if ( !array1.size )
 	{
 		return array2;
 	}
+
 	keys = getarraykeys( array2 );
-	for( i = 0;i < keys.size;i++ )
+	for ( i = 0; i < keys.size; i++ )
 	{
 		array1[ keys[ i ] ] = array2[ keys[ i ] ];
 	}
+
 	return array1;
 }
 
@@ -7534,8 +7590,8 @@ set_allowdeath( val )
 	self.allowdeath = val;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: set_run_anim( <anime>, <alwaysRunForward> )"
 "Summary: Sets an actor's run anim, based on their animname."
@@ -7546,8 +7602,8 @@ set_allowdeath( val )
 "OptionalArg: <alwaysRunForward> : Boolean : Sets the actor's .alwaysRunForward value."
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 set_run_anim( anime, alwaysRunForward )
 {
 	assertEx( IsDefined( anime ), "Tried to set run anim but didn't specify which animation to ues" );
@@ -7555,7 +7611,7 @@ set_run_anim( anime, alwaysRunForward )
 	assertEx( IsDefined( level.scr_anim[ self.animname ][ anime ] ), "Tried to set run anim but the anim was not defined in the maps _anim file" );
 
 	//this is good for slower run animations like patrol walks
-	if( IsDefined( alwaysRunForward ) )
+	if ( IsDefined( alwaysRunForward ) )
 	{
 		self.alwaysRunForward = alwaysRunForward;
 	}
@@ -7571,8 +7627,8 @@ set_run_anim( anime, alwaysRunForward )
 	self.preCombatRunEnabled = false;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: set_generic_run_anim( <anime>, <alwaysRunForward> )"
 "Summary: Sets an actor's run anim, based on the "generic" animname in level.scr_anim."
@@ -7583,8 +7639,8 @@ set_run_anim( anime, alwaysRunForward )
 "OptionalArg: <alwaysRunForward> : Boolean : Sets the actor's .alwaysRunForward value."
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 set_generic_run_anim( anime, alwaysRunForward )
 {
 	assertEx( IsDefined( anime ), "Tried to set generic run anim but didn't specify which animation to ues" );
@@ -7614,8 +7670,8 @@ set_generic_run_anim( anime, alwaysRunForward )
 	self.preCombatRunEnabled = false;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: clear_run_anim()"
 "Summary: Clears any set run anims "
@@ -7624,8 +7680,8 @@ set_generic_run_anim( anime, alwaysRunForward )
 "Example: guy clear_run_anim();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 clear_run_anim()
 {
 	self.alwaysRunForward = undefined;
@@ -7643,11 +7699,11 @@ physicsjolt_proximity( outer_radius, inner_radius, force )
 	self endon( "death" );
 	self endon( "stop_physicsjolt" );
 
-	if( !IsDefined( outer_radius ) || !IsDefined( inner_radius ) || !IsDefined( force ) )
+	if ( !IsDefined( outer_radius ) || !IsDefined( inner_radius ) || !IsDefined( force ) )
 	{
 		outer_radius = 400;
 		inner_radius = 256;
-		force = ( 0, 0, 0.075 );	 // no direction on this one.
+		force = ( 0, 0, 0.075 ); // no direction on this one.
 	}
 
 	fade_distance = outer_radius * outer_radius;
@@ -7655,29 +7711,31 @@ physicsjolt_proximity( outer_radius, inner_radius, force )
 	fade_speed = 3;
 	base_force = force;
 
-	while( true )
+	while ( true )
 	{
-		wait 0.1; 
+		wait 0.1;
 
 		force = base_force;
 
-		if( self.classname == "script_vehicle" )
+		if ( self.classname == "script_vehicle" )
 		{
 			speed = self getspeedMPH();
-			if( speed < fade_speed )
+			if ( speed < fade_speed )
 			{
 				scale = speed / fade_speed;
 				force = vector_scale( base_force, scale );
 			}
 		}
+
 		// SCRIPTER_MOD: dguzzo: 3-19-09 : no more level.player
 		//		dist = distancesquared( self.origin, level.player.origin );
-		dist = distancesquared( self.origin, get_players()[0].origin );
+		dist = distancesquared( self.origin, get_players()[ 0 ].origin );
 		scale = fade_distance / dist;
-		if( scale > 1 )
+		if ( scale > 1 )
 		{
 			scale = 1;
 		}
+
 		force = vector_scale( force, scale );
 		total_force = force[ 0 ] + force[ 1 ] + force[ 2 ];
 
@@ -7691,20 +7749,19 @@ set_goal_entity( ent )
 	self setGoalEntity( ent );
 }
 
-
 activate_trigger()
 {
 	assertEx( !IsDefined( self.trigger_off ), "Tried to activate trigger that is OFF( either from trigger_off or from flags set on it through shift - G menu" );
 
-	if( IsDefined( self.script_color_allies ) )
+	if ( IsDefined( self.script_color_allies ) )
 	{
 		// so we don't run activate_color_trigger twice, we set this var
 		self.activated_color_trigger = true;
 		maps\_colors::activate_color_trigger( "allies" );
 	}
 
-	if( IsDefined( self.script_color_axis ) )
-	{ 
+	if ( IsDefined( self.script_color_axis ) )
+	{
 		// so we don't run activate_color_trigger twice, we set this var
 		self.activated_color_trigger = true;
 		maps\_colors::activate_color_trigger( "axis" );
@@ -7721,8 +7778,8 @@ activate_trigger()
 	//	level.player setfriendlychain( node );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: self_delete()"
 "Summary: Just calls the delete() script command on self. Reason for this is so that we can use array_thread to delete entities"
@@ -7731,11 +7788,11 @@ activate_trigger()
 "Example: ai[ 0 ] thread self_delete();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 self_delete()
 {
-	if (IsDefined(self))
+	if ( IsDefined( self ) )
 	{
 		self delete();
 	}
@@ -7744,10 +7801,10 @@ self_delete()
 remove_noColor_from_array( ai )
 {
 	newarray = [];
-	for( i = 0; i < ai.size; i++ )
+	for ( i = 0; i < ai.size; i++ )
 	{
 		guy = ai[ i ];
-		if( guy has_color() )
+		if ( guy has_color() )
 		{
 			newarray[ newarray.size ] = guy;
 		}
@@ -7759,7 +7816,7 @@ remove_noColor_from_array( ai )
 has_color()
 {
 	// can lose color during the waittillframeend in left_color_node
-	if( self.team == "axis" )
+	if ( self.team == "axis" )
 	{
 		return IsDefined( self.script_color_axis ) || IsDefined( self.script_forceColor );
 	}
@@ -7784,7 +7841,6 @@ clear_team_colors( team )
 	level.currentColorForced[ team ][ "g" ] = undefined;
 }
 
-
 get_script_palette()
 {
 	rgb = [];
@@ -7798,8 +7854,8 @@ get_script_palette()
 	return rgb;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: notify_delay( <notify_string> , <delay> )"
 "Summary: Notifies self the string after waiting the specified delay time"
@@ -7810,8 +7866,8 @@ get_script_palette()
 "Example: vehicle notify_delay( "start_to_smoke", 3.5 );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 notify_delay( sNotifyString, fDelay )
 {
 	assert( IsDefined( self ) );
@@ -7820,21 +7876,22 @@ notify_delay( sNotifyString, fDelay )
 	//assert( fDelay > 0 ); //GLocke: changed to just not wait if passed in a 0 so that this function is friendly in loops where some need to be notified right away.
 
 	self endon( "death" );
-	
-	if( fDelay > 0 )
+
+	if ( fDelay > 0 )
 	{
 		wait fDelay;
 	}
-	
-	if( !IsDefined( self ) )
+
+	if ( !IsDefined( self ) )
 	{
 		return;
 	}
+
 	self notify( sNotifyString );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: gun_remove()"
 "Summary: Removed the gun from the given AI. Often used for scripted sequences where you dont want the AI to carry a weapon."
@@ -7843,15 +7900,15 @@ notify_delay( sNotifyString, fDelay )
 "Example: level.price gun_remove();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 gun_remove()
 {
 	self animscripts\shared::placeWeaponOn( self.weapon, "none" );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: gun_switchto()"
 "Summary: Switches the given AI's gun to the one specified."
@@ -7862,15 +7919,15 @@ gun_remove()
 "Example: level.zeitzev gun_switchto( "ppsh", "right" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 gun_switchto( weaponName, whichHand )
 {
 	self animscripts\shared::placeWeaponOn( weaponName, whichHand );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: gun_recall()"
 "Summary: Give the AI his gun back."
@@ -7879,15 +7936,15 @@ gun_switchto( weaponName, whichHand )
 "Example: level.price gun_recall();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 gun_recall()
 {
 	self animscripts\shared::placeWeaponOn( self.weapon, "right" );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: custom_ai_weapon_loadout()"
 "Summary: Override the GDT settings for this particular AI."
@@ -7899,40 +7956,40 @@ gun_recall()
 "Example: level.price custom_ai_weapon_loadout("ak47_sp", "rpg_sp");"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 custom_ai_weapon_loadout( primary, secondary, sidearm )
 {
 	// remove everything
 	self animscripts\shared::detachAllWeaponModels();
 
-	if( IsDefined(self.primaryweapon) && self.primaryweapon != "" )
+	if ( IsDefined( self.primaryweapon ) && self.primaryweapon != "" )
 	{
-		self animscripts\shared::detachWeapon(self.primaryweapon);
+		self animscripts\shared::detachWeapon( self.primaryweapon );
 	}
 
-	if( IsDefined(self.secondaryweapon) && self.secondaryweapon != "" )
+	if ( IsDefined( self.secondaryweapon ) && self.secondaryweapon != "" )
 	{
-		self animscripts\shared::detachWeapon(self.secondaryweapon);
+		self animscripts\shared::detachWeapon( self.secondaryweapon );
 	}
 
-	if( IsDefined(self.sideArm) && self.sideArm != "" )
+	if ( IsDefined( self.sideArm ) && self.sideArm != "" )
 	{
-		self animscripts\shared::detachWeapon(self.sideArm);
+		self animscripts\shared::detachWeapon( self.sideArm );
 	}
 
-	self.primaryweapon		= "";
-	self.secondaryweapon	= "";
-	self.sidearm			= "";
+	self.primaryweapon = "";
+	self.secondaryweapon = "";
+	self.sidearm = "";
 
 	// set up the primary
-	if( IsDefined(primary) )
+	if ( IsDefined( primary ) )
 	{
-		if( GetWeaponModel(primary) != "" )
+		if ( GetWeaponModel( primary ) != "" )
 		{
 			self.primaryweapon = primary;
 			self call_overloaded_func( "animscripts\init", "initWeapon", self.primaryweapon );
-			self animscripts\shared::placeWeaponOn( self.primaryweapon, "right");
+			self animscripts\shared::placeWeaponOn( self.primaryweapon, "right" );
 		}
 		else
 		{
@@ -7941,13 +7998,13 @@ custom_ai_weapon_loadout( primary, secondary, sidearm )
 	}
 
 	// set up the secondary
-	if( IsDefined(secondary) )
+	if ( IsDefined( secondary ) )
 	{
-		if( GetWeaponModel(secondary) != "" )
+		if ( GetWeaponModel( secondary ) != "" )
 		{
 			self.secondaryweapon = secondary;
 			self call_overloaded_func( "animscripts\init", "initWeapon", self.secondaryweapon );
-			self animscripts\shared::placeWeaponOn( self.secondaryweapon, "back");
+			self animscripts\shared::placeWeaponOn( self.secondaryweapon, "back" );
 		}
 		else
 		{
@@ -7956,9 +8013,9 @@ custom_ai_weapon_loadout( primary, secondary, sidearm )
 	}
 
 	// set up the sidearm
-	if( IsDefined(sidearm) )
+	if ( IsDefined( sidearm ) )
 	{
-		if( GetWeaponModel(sidearm) != "" )
+		if ( GetWeaponModel( sidearm ) != "" )
 		{
 			self.sidearm = sidearm;
 			self call_overloaded_func( "animscripts\init", "initWeapon", self.sidearm );
@@ -7977,8 +8034,8 @@ custom_ai_weapon_loadout( primary, secondary, sidearm )
 	self.isSniper = animscripts\combat_utility::isSniperRifle( self.weapon );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: lerp_player_view_to_tag( <tag> , <lerptime> , <fraction> , <right_arc> , <left_arc> , <top_arc> , <bottom_arc> )"
 "Summary: Lerps the player's view to the tag on the entity that calls the function.."
@@ -7995,13 +8052,13 @@ custom_ai_weapon_loadout( primary, secondary, sidearm )
 "Example: players[0] lerp_player_view_to_tag( car, "tag_windshield", 1 );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
 // MikeD (11/12/2007): Modified to support co-op. No more level.player
 lerp_player_view_to_tag( ent, tag, lerptime, fraction, right_arc, left_arc, top_arc, bottom_arc )
 {
-	if( IsPlayer( self ) )
+	if ( IsPlayer( self ) )
 	{
 		self endon( "disconnect" );
 	}
@@ -8009,8 +8066,8 @@ lerp_player_view_to_tag( ent, tag, lerptime, fraction, right_arc, left_arc, top_
 	lerp_player_view_to_tag_internal( ent, tag, lerptime, fraction, right_arc, left_arc, top_arc, bottom_arc, undefined );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: lerp_player_view_to_tag_and_hit_geo( <tag> , <lerptime> , <fraction> , <right_arc> , <left_arc> , <top_arc> , <bottom_arc> )"
 "Summary: Lerps the player's view to the tag on the entity that calls the function. Geo will block the player."
@@ -8026,12 +8083,12 @@ lerp_player_view_to_tag( ent, tag, lerptime, fraction, right_arc, left_arc, top_
 "Example: car lerp_player_view_to_tag_and_hit_geo( "tag_windshield", 1 );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
 lerp_player_view_to_tag_and_hit_geo( ent, tag, lerptime, fraction, right_arc, left_arc, top_arc, bottom_arc )
 {
-	if( IsPlayer( self ) )
+	if ( IsPlayer( self ) )
 	{
 		self endon( "disconnect" );
 	}
@@ -8039,8 +8096,8 @@ lerp_player_view_to_tag_and_hit_geo( ent, tag, lerptime, fraction, right_arc, le
 	lerp_player_view_to_tag_internal( ent, tag, lerptime, fraction, right_arc, left_arc, top_arc, bottom_arc, true );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: lerp_player_view_to_position( <origin> , <angles> , <lerptime> , <fraction> , <right_arc> , <left_arc> , <top_arc> , <bottom_arc>, <hit_geo> )"
 "Summary: Lerps the player's view to an origin and angles. See lerp_player_view_to_tag."
@@ -8057,12 +8114,12 @@ lerp_player_view_to_tag_and_hit_geo( ent, tag, lerptime, fraction, right_arc, le
 "Example: lerp_player_view_to_position( org.origin, org.angles );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
 lerp_player_view_to_position( origin, angles, lerptime, fraction, right_arc, left_arc, top_arc, bottom_arc, hit_geo )
 {
-	if( IsPlayer( self ) )
+	if ( IsPlayer( self ) )
 	{
 		self endon( "disconnect" );
 	}
@@ -8071,15 +8128,15 @@ lerp_player_view_to_position( origin, angles, lerptime, fraction, right_arc, lef
 	linker.origin = self.origin;
 	linker.angles = self getplayerangles();
 
-	if( IsDefined( hit_geo ) )
+	if ( IsDefined( hit_geo ) )
 	{
 		self playerlinkto( linker, "", fraction, right_arc, left_arc, top_arc, bottom_arc, hit_geo );
 	}
-	else if( IsDefined( right_arc ) )
+	else if ( IsDefined( right_arc ) )
 	{
 		self playerlinkto( linker, "", fraction, right_arc, left_arc, top_arc, bottom_arc );
 	}
-	else if( IsDefined( fraction ) )
+	else if ( IsDefined( fraction ) )
 	{
 		self playerlinkto( linker, "", fraction );
 	}
@@ -8095,9 +8152,8 @@ lerp_player_view_to_position( origin, angles, lerptime, fraction, right_arc, lef
 	linker delete();
 }
 
-
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: lerp_player_view_to_tag_oldstyle( <tag> , <lerptime> , <fraction> , <right_arc> , <left_arc> , <top_arc> , <bottom_arc> )"
 "Summary: Lerps the player's view to the tag on the entity that calls the function, using the oldstyle link which moves the player's view when the tag rotates."
@@ -8113,15 +8169,15 @@ lerp_player_view_to_position( origin, angles, lerptime, fraction, right_arc, lef
 "Example: car lerp_player_view_to_tag_oldstyle( "tag_windshield", 1 );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 lerp_player_view_to_tag_oldstyle( tag, lerptime, fraction, right_arc, left_arc, top_arc, bottom_arc )
 {
 	lerp_player_view_to_tag_oldstyle_internal( tag, lerptime, fraction, right_arc, left_arc, top_arc, bottom_arc, false );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: lerp_player_view_to_position_oldstyle( <origin> , <angles> , <lerptime> , <fraction> , <right_arc> , <left_arc> , <top_arc> , <bottom_arc>, <hit_geo> )"
 "Summary: Lerps the player's view to an origin and angles. See lerp_player_view_to_tag_oldstyle. Oldstyle means that you're going to move to the point where the player's feet would be, rather than directly below the point where the view would be."
@@ -8138,12 +8194,12 @@ lerp_player_view_to_tag_oldstyle( tag, lerptime, fraction, right_arc, left_arc, 
 "Example: lerp_player_view_to_position_oldstyle( org.origin, org.angles );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
 lerp_player_view_to_position_oldstyle( origin, angles, lerptime, fraction, right_arc, left_arc, top_arc, bottom_arc, hit_geo )
 {
-	if( IsPlayer( self ) )
+	if ( IsPlayer( self ) )
 	{
 		self endon( "disconnect" );
 	}
@@ -8152,15 +8208,15 @@ lerp_player_view_to_position_oldstyle( origin, angles, lerptime, fraction, right
 	linker.origin = get_player_feet_from_view();
 	linker.angles = self getplayerangles();
 
-	if( IsDefined( hit_geo ) )
+	if ( IsDefined( hit_geo ) )
 	{
 		self playerlinktodelta( linker, "", fraction, right_arc, left_arc, top_arc, bottom_arc, hit_geo );
 	}
-	else if( IsDefined( right_arc ) )
+	else if ( IsDefined( right_arc ) )
 	{
 		self playerlinktodelta( linker, "", fraction, right_arc, left_arc, top_arc, bottom_arc );
 	}
-	else if( IsDefined( fraction ) )
+	else if ( IsDefined( fraction ) )
 	{
 		self playerlinktodelta( linker, "", fraction );
 	}
@@ -8176,8 +8232,8 @@ lerp_player_view_to_position_oldstyle( origin, angles, lerptime, fraction, right
 	linker delete();
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: lerp_player_view_to_moving_position_oldstyle( <origin> , <angles> , <lerptime> , <fraction> , <right_arc> , <left_arc> , <top_arc> , <bottom_arc>, <hit_geo> )"
 "Summary: Lerps the player's view to an origin and angles. See lerp_player_view_to_tag_oldstyle. Oldstyle means that you're going to move to the point where the player's feet would be, rather than directly below the point where the view would be."
@@ -8194,12 +8250,12 @@ lerp_player_view_to_position_oldstyle( origin, angles, lerptime, fraction, right
 "Example: lerp_player_view_to_position_oldstyle( org.origin, org.angles );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
 lerp_player_view_to_moving_position_oldstyle( ent, tag, lerptime, fraction, right_arc, left_arc, top_arc, bottom_arc, hit_geo )
 {
-	if( IsPlayer( self ) )
+	if ( IsPlayer( self ) )
 	{
 		self endon( "disconnect" );
 	}
@@ -8208,15 +8264,15 @@ lerp_player_view_to_moving_position_oldstyle( ent, tag, lerptime, fraction, righ
 	linker.origin = self.origin;
 	linker.angles = self getplayerangles();
 
-	if( IsDefined( hit_geo ) )
+	if ( IsDefined( hit_geo ) )
 	{
 		self playerlinktodelta( linker, "", fraction, right_arc, left_arc, top_arc, bottom_arc, hit_geo );
 	}
-	else if( IsDefined( right_arc ) )
+	else if ( IsDefined( right_arc ) )
 	{
 		self playerlinktodelta( linker, "", fraction, right_arc, left_arc, top_arc, bottom_arc );
 	}
-	else if( IsDefined( fraction ) )
+	else if ( IsDefined( fraction ) )
 	{
 		self playerlinktodelta( linker, "", fraction );
 	}
@@ -8225,18 +8281,19 @@ lerp_player_view_to_moving_position_oldstyle( ent, tag, lerptime, fraction, righ
 		self playerlinktodelta( linker );
 	}
 
-	max_count=lerptime/0.0167;
-	count=0;
-	while (count < max_count)
-	{		
+	max_count = lerptime / 0.0167;
+	count = 0;
+	while ( count < max_count )
+	{
 		origin = ent gettagorigin( tag );
 		angles = ent gettagangles( tag );
 
-		linker moveto( origin, 0.0167*(max_count-count) );
-		linker rotateto( angles, 0.0167*(max_count-count) );
+		linker moveto( origin, 0.0167 * ( max_count - count ) );
+		linker rotateto( angles, 0.0167 * ( max_count - count ) );
 		wait( 0.0167 );
 		count++;
 	}
+
 	linker delete();
 }
 
@@ -8246,8 +8303,8 @@ timer( time )
 	wait( time );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: waittill_either_function( <func1> , <parm1> , <func2> , <parm2> )"
 "Summary: Returns when either func1 or func2 have returned."
@@ -8259,8 +8316,8 @@ timer( time )
 "Example: player_moves( 500 );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
 waittill_either_function( func1, parm1, func2, parm2 )
 {
@@ -8272,7 +8329,7 @@ waittill_either_function( func1, parm1, func2, parm2 )
 
 waittill_msg( msg )
 {
-	if( IsPlayer( self ) )
+	if ( IsPlayer( self ) )
 	{
 		self endon( "disconnect" );
 	}
@@ -8280,9 +8337,8 @@ waittill_msg( msg )
 	self waittill( msg );
 }
 
-
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: display_hint( <hint> )"
 "Summary: Displays a hint created with add_hint_string."
@@ -8291,8 +8347,8 @@ waittill_msg( msg )
 "Example: display_hint( "huzzah" )"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 display_hint( hint )
 {
 	if ( GetDvar( #"chaplincheat" ) == "1" )
@@ -8302,9 +8358,9 @@ display_hint( hint )
 
 	// hint triggers have an optional function they can boolean off of to determine if the hint will occur
 	// such as not doing the NVG hint if the player is using NVGs already
-	if( IsDefined( level.trigger_hint_func[ hint ] ) )
+	if ( IsDefined( level.trigger_hint_func[ hint ] ) )
 	{
-		if( [[ level.trigger_hint_func[ hint ] ]]() )
+		if ( [[ level.trigger_hint_func[ hint ] ]]() )
 		{
 			return;
 		}
@@ -8323,8 +8379,8 @@ getGenericAnim( anime )
 	return level.scr_anim[ "generic" ][ anime ];
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: enable_careful()"
 "Summary: Makes an AI not advance into his fixednode safe radius if an enemy enters it."
@@ -8332,16 +8388,16 @@ getGenericAnim( anime )
 "Example: guy enable_careful()"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 enable_careful()
 {
 	assertex( isai( self ), "Tried to make an ai careful but it wasn't called on an AI" );
 	self.script_careful = true;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: disable_careful()"
 "Summary: Turns off careful mode for this AI."
@@ -8349,8 +8405,8 @@ enable_careful()
 "Example: guy disable_careful()"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 disable_careful()
 {
 	assertex( isai( self ), "Tried to unmake an ai careful but it wasn't called on an AI" );
@@ -8368,8 +8424,8 @@ set_fixednode_false()
 	self.fixednode = true;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: spawn_ai()"
 "Summary: Spawns an AI from an AI spawner. Handles force spawning based on 'script_forcespawn' value."
@@ -8377,32 +8433,32 @@ set_fixednode_false()
 "Example: guy = spawner spawn_ai();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 spawn_ai()
 {
 	ai = undefined;
 
-	// SUMEET - This check is to avoid script errors due to spawning two AI's from the same spawner on the 
+	// SUMEET - This check is to avoid script errors due to spawning two AI's from the same spawner on the
 	// same frame.
-	if( IsDefined( self.lastSpawnTime ) && self.lastSpawnTime >= GetTime() )
+	if ( IsDefined( self.lastSpawnTime ) && self.lastSpawnTime >= GetTime() )
 	{
 		// Just wait for a frame before spawning the next AI
-		wait(0.05);
+		wait( 0.05 );
 	}
 
-	no_enemy_info = is_true(self.script_noenemyinfo);
+	no_enemy_info = is_true( self.script_noenemyinfo );
 	if ( IsDefined( self.script_forcespawn ) )
 	{
-		ai = self StalingradSpawn(no_enemy_info);
+		ai = self StalingradSpawn( no_enemy_info );
 	}
 	else
 	{
-		ai = self DoSpawn(no_enemy_info);
+		ai = self DoSpawn( no_enemy_info );
 	}
 
 	// Store the last spawned time on the spawner
-	if( IsDefined( ai ) )
+	if ( IsDefined( ai ) )
 	{
 		self.lastSpawnTime = GetTime();
 	}
@@ -8410,45 +8466,45 @@ spawn_ai()
 	return ai;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: kill_spawnernum( <num> )"
 "Summary: Kill spawners with script_killspawner value of <num>."
 "Module: Utility"
-"MandatoryArg: <num> : The killspawner number" 
+"MandatoryArg: <num> : The killspawner number"
 "Example: kill_spawnernum(4);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 kill_spawnernum( number )
 {
-	spawners = GetSpawnerArray(); 
-	for( i = 0; i < spawners.size; i++ )
+	spawners = GetSpawnerArray();
+	for ( i = 0; i < spawners.size; i++ )
 	{
-		if( !IsDefined( spawners[i].script_killspawner ) )
+		if ( !IsDefined( spawners[ i ].script_killspawner ) )
 		{
-			continue; 
+			continue;
 		}
 
-		if( number != spawners[i].script_killspawner )
+		if ( number != spawners[ i ].script_killspawner )
 		{
-			continue; 
+			continue;
 		}
 
-		spawners[i] Delete(); 
+		spawners[ i ] Delete();
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: function_stack( <function>, <param1>, <param2>, <param3>, <param4> )"
 "Summary: function stack is used to thread off multiple functions one after another an insure that they get called in the order you sent them in (like a FIFO queue or stack). function_stack will wait for the function to finish before continuing the next line of code, but since it internally threads the function off, the function will not end if the parent function which called function_stack() ends.  function_stack is also local to the entity that called it, if you call it on nothing it will use level and all functions sent to the stack will wait on the previous one sent to level.  The same works for entities.  This way you can have 2 AI's that thread off multiple functions but those functions are in individual stacks for each ai"
 "Module: Utility"
 "CallOn: level or an entity."
-"MandatoryArg: <function> : the function to send to the stack" 
+"MandatoryArg: <function> : the function to send to the stack"
 "OptionalArg: <param1> : An optional parameter for <function>."
 "OptionalArg: <param2> : An optional parameter for <function>."
 "OptionalArg: <param3> : An optional parameter for <function>."
@@ -8456,8 +8512,8 @@ kill_spawnernum( number )
 "Example: level thread function_stack(::radio_dialogue, "scoutsniper_mcm_okgo" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 function_stack( func, param1, param2, param3, param4 )
 {
 	self endon( "death" );
@@ -8466,8 +8522,8 @@ function_stack( func, param1, param2, param3, param4 )
 	localentity waittill_either( "function_done", "death" );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: set_goal_node( <node> )"
 "Summary: calls script command setgoalnode( <node> ), but also sets self.last_set_goalnode to <node>"
@@ -8477,19 +8533,19 @@ function_stack( func, param1, param2, param3, param4 )
 "Example: guy set_goal_node( node );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 set_goal_node( node )
 {
-	self.last_set_goalnode 	= node;
-	self.last_set_goalpos 	= undefined;
-	self.last_set_goalent 	= undefined;
+	self.last_set_goalnode = node;
+	self.last_set_goalpos = undefined;
+	self.last_set_goalent = undefined;
 
 	self SetGoalNode( node );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: set_goal_pos( <origin> )"
 "Summary: calls script command setgoalpos( <origin> ), but also sets self.last_set_goalpos to <origin>"
@@ -8499,13 +8555,13 @@ set_goal_node( node )
 "Example: guy set_goal_pos( vector );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 set_goal_pos( origin )
 {
-	self.last_set_goalnode 	= undefined;
-	self.last_set_goalpos 	= origin;
-	self.last_set_goalent 	= undefined;
+	self.last_set_goalnode = undefined;
+	self.last_set_goalpos = origin;
+	self.last_set_goalent = undefined;
 
 	self SetGoalPos( origin );
 }
@@ -8521,12 +8577,12 @@ set_goal_pos( origin )
 "Example: guy set_goal_ent( script_origin );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 set_goal_ent( target )
 {
 	set_goal_pos( target.origin );
-	self.last_set_goalent 	= target;
+	self.last_set_goalent = target;
 }
 
 /*
@@ -8546,7 +8602,6 @@ set_goal_ent( target )
 //	objective_state( obj, "done" );
 //	level notify( "objective_complete" + obj );
 //}
-
 
 /*
 =============
@@ -8571,7 +8626,6 @@ run_thread_on_targetname( msg, func, param1, param2, param3 )
 	array_thread( array, func, param1, param2, param3 );
 }
 
-
 /*
 =============
 ///ScriptDocBegin
@@ -8589,15 +8643,12 @@ run_thread_on_targetname( msg, func, param1, param2, param3 )
 =============
 */
 
-
 run_thread_on_noteworthy( msg, func, param1, param2, param3 )
 {
 	array = getentarray( msg, "script_noteworthy" );
 
 	array_thread( array, func, param1, param2, param3 );
 }
-
-
 
 /*
 =============
@@ -8620,28 +8671,28 @@ handsignal( action, end_on, wait_till )
 	{
 		level endon( end_on );
 	}
-		
+
 	if ( IsDefined( wait_till ) )
 	{
 		level waittill( wait_till );
 	}
-	
+
 	switch ( action )
 	{
 		case "go":
-			self maps\_anim::anim_generic(self, "signal_go");
-			break;	
+			self maps\_anim::anim_generic( self, "signal_go" );
+			break;
 		case "onme":
-			self maps\_anim::anim_generic(self, "signal_onme");
+			self maps\_anim::anim_generic( self, "signal_onme" );
 			break;
 		case "stop":
-			self maps\_anim::anim_generic(self, "signal_stop");
+			self maps\_anim::anim_generic( self, "signal_stop" );
 			break;
 		case "moveup":
-			self maps\_anim::anim_generic(self, "signal_moveup");
+			self maps\_anim::anim_generic( self, "signal_moveup" );
 			break;
 		case "moveout":
-			self maps\_anim::anim_generic(self, "signal_moveout");
+			self maps\_anim::anim_generic( self, "signal_moveout" );
 			break;
 	}
 }
@@ -8664,22 +8715,22 @@ add_dialogue_line( name, msg, blocking )
 {
 	// ALiu: This text should not appear on ship exe
 	/#
-	if(IsDefined(blocking))
+	if ( IsDefined( blocking ) )
 	{
-		add_dialogue_line_internal(name, msg);
+		add_dialogue_line_internal( name, msg );
 	}
 	else
 	{
-		level thread add_dialogue_line_internal(name, msg);
+		level thread add_dialogue_line_internal( name, msg );
 	}
 	#/
 }
 
 add_dialogue_line_internal( name, msg )
 {
-	if( GetDvarInt( #"loc_warnings") )
+	if ( GetDvarInt( #"loc_warnings" ) )
 	{
-		return;  // I'm not localizing your damn temp dialog lines - Nate.
+		return; // I'm not localizing your damn temp dialog lines - Nate.
 	}
 
 	if ( !IsDefined( level.dialogue_huds ) )
@@ -8710,7 +8761,7 @@ add_dialogue_line_internal( name, msg )
 	hudelem.x = 40;
 	hudelem.y = 260 + index * 18;
 	hudelem.label = "<" + name + "> " + msg;
-	hudelem.color = (1,1,0);
+	hudelem.color = ( 1, 1, 0 );
 
 	wait( 2 );
 	timer = 2 * 20;
@@ -8727,7 +8778,7 @@ add_dialogue_line_internal( name, msg )
 
 	hudelem destroy();
 
-	level.dialogue_huds[ index ] = undefined;	
+	level.dialogue_huds[ index ] = undefined;
 }
 
 alphabetize( array )
@@ -8735,7 +8786,8 @@ alphabetize( array )
 	if ( array.size <= 1 )
 	{
 		return array;
-	}		
+	}
+
 	count = 0;
 	for ( ;; )
 	{
@@ -8778,7 +8830,7 @@ get_player_feet_from_view()
 	upvec = anglestoup( self getplayerangles() );
 	height = self GetPlayerViewHeight();
 
-	player_eye = tagorigin + (0,0,height);
+	player_eye = tagorigin + ( 0, 0, height );
 	player_eye_fake = tagorigin + vector_scale( upvec, height );
 
 	diff_vec = player_eye - player_eye_fake;
@@ -8790,8 +8842,8 @@ get_player_feet_from_view()
 set_console_status()
 {
 	/#
-		debug_replay("File: _utility.gsc. Function: set_console_status()\n");
-#/
+	debug_replay( "File: _utility.gsc. Function: set_console_status()\n" );
+	#/
 
 	if ( !IsDefined( level.Console ) )
 	{
@@ -8812,8 +8864,8 @@ set_console_status()
 	}
 
 	/#
-		debug_replay("File: _utility.gsc. Function: set_console_status() - COMPLETE\n");
-#/
+	debug_replay( "File: _utility.gsc. Function: set_console_status() - COMPLETE\n" );
+	#/
 }
 
 autosave_now( optional_useless_string, suppress_print )
@@ -8853,27 +8905,28 @@ clear_deathanim()
 
 lerp_fov_overtime( time, destfov, use_camera_tween )
 {
-	level endon("stop_lerping_thread");
+	level endon( "stop_lerping_thread" );
 
-	if( !IsDefined( use_camera_tween ) )
-	{	
+	if ( !IsDefined( use_camera_tween ) )
+	{
 		basefov = GetDvarFloat( #"cg_fov" );
-		incs = int( time/.05 );
-		incfov = (  destfov  -  basefov  ) / incs ;
+		incs = int( time / .05 );
+		incfov = ( destfov - basefov ) / incs;
 		currentfov = basefov;
-		
+
 		// AE 9-17-09: if incfov is 0 we should move on without looping
-		if(incfov == 0)
+		if ( incfov == 0 )
 		{
 			return;
 		}
-	
+
 		for ( i = 0; i < incs; i++ )
 		{
 			currentfov += incfov;
 			self SetClientDvar( "cg_fov", currentfov );
 			wait .05;
 		}
+
 		//fix up the little bit of rounding error. not that it matters much .002, heh
 		self SetClientDvar( "cg_fov", destfov );
 	}
@@ -8930,25 +8983,25 @@ apply_end_fog()
 ///ScriptDocEnd
 =============
 */
-anim_stopanimscripted(blend_time)
+anim_stopanimscripted( blend_time )
 {
 	anim_ent = get_anim_ent();
-	anim_ent StopAnimScripted(blend_time);
-					
+	anim_ent StopAnimScripted( blend_time );
+
 	anim_ent notify( "single anim", "end" );
 	anim_ent notify( "looping anim", "end" );
 
-	if (IsDefined(anim_ent.anim_loop_ender))
+	if ( IsDefined( anim_ent.anim_loop_ender ) )
 	{
 		anim_ent notify( anim_ent.anim_loop_ender );
 	}
 
-	anim_ent notify("_anim_stopped");
+	anim_ent notify( "_anim_stopped" );
 }
 
 get_anim_ent()
 {
-	if (IsDefined(self.anim_link))
+	if ( IsDefined( self.anim_link ) )
 	{
 		self.anim_link.animname = self.animname;
 		return self.anim_link;
@@ -9015,7 +9068,6 @@ enable_pain()
 	self.allowPain = true;
 }
 
-
 /*
 =============
 ///ScriptDocBegin
@@ -9034,7 +9086,6 @@ disable_react()
 	self.a.disableReact = true;
 	self.allowReact = false;
 }
-
 
 /*
 =============
@@ -9069,7 +9120,7 @@ enable_react()
 */
 enable_rambo()
 {
-	if( IsDefined( level.norambo ) )
+	if ( IsDefined( level.norambo ) )
 	{
 		level.norambo = undefined;
 	}
@@ -9106,7 +9157,7 @@ disable_rambo()
 */
 die()
 {
-	self dodamage( self.health + 150, (0,0,0) );
+	self dodamage( self.health + 150, ( 0, 0, 0 ) );
 }
 
 /*
@@ -9155,7 +9206,7 @@ isADS( player )
 =============
 */
 
-enable_auto_adjust_threatbias(player)
+enable_auto_adjust_threatbias( player )
 {
 	level.auto_adjust_threatbias = true;
 
@@ -9172,14 +9223,14 @@ enable_auto_adjust_threatbias(player)
 
 	// get the scalar value for threat bias
 	players = get_players();
-	level.coop_player_threatbias_scalar = maps\_gameskill::getCoopValue( "coopFriendlyThreatBiasScalar", players.size  );	
+	level.coop_player_threatbias_scalar = maps\_gameskill::getCoopValue( "coopFriendlyThreatBiasScalar", players.size );
 
-	if (!IsDefined(level.coop_player_threatbias_scalar))
+	if ( !IsDefined( level.coop_player_threatbias_scalar ) )
 	{
 		level.coop_player_threatbias_scalar = 1;
-	}	
+	}
 
-	player.threatbias = int( maps\_gameskill::get_blended_difficulty( "threatbias", current_frac ) * level.coop_player_threatbias_scalar);
+	player.threatbias = int( maps\_gameskill::get_blended_difficulty( "threatbias", current_frac ) * level.coop_player_threatbias_scalar );
 }
 
 /*
@@ -9199,7 +9250,6 @@ disable_auto_adjust_threatbias()
 	level.auto_adjust_threatbias = false;
 }
 
-
 /*
 =============
 ///ScriptDocBegin
@@ -9215,9 +9265,9 @@ disable_auto_adjust_threatbias()
 ///ScriptDocEnd
 =============
 */
-waittill_player_looking_at(origin, dot, do_trace)
+waittill_player_looking_at( origin, dot, do_trace )
 {
-	while (!is_player_looking_at(origin, dot, do_trace))
+	while ( !is_player_looking_at( origin, dot, do_trace ) )
 	{
 		wait .05;
 	}
@@ -9238,29 +9288,29 @@ waittill_player_looking_at(origin, dot, do_trace)
 ///ScriptDocEnd
 =============
 */
-is_player_looking_at(origin, dot, do_trace)
+is_player_looking_at( origin, dot, do_trace )
 {
-	AssertEx(IsPlayer(self), "player_looking_at must be called on a player.");
+	AssertEx( IsPlayer( self ), "player_looking_at must be called on a player." );
 
-	if (!IsDefined(dot))
+	if ( !IsDefined( dot ) )
 	{
 		dot = .7;
 	}
 
-	if (!IsDefined(do_trace))
+	if ( !IsDefined( do_trace ) )
 	{
 		do_trace = true;
 	}
 
 	eye = self get_eye();
 
-	delta_vec = AnglesToForward(VectorToAngles(origin - eye));
-	view_vec = AnglesToForward(self GetPlayerAngles());
-		
+	delta_vec = AnglesToForward( VectorToAngles( origin - eye ) );
+	view_vec = AnglesToForward( self GetPlayerAngles() );
+
 	new_dot = VectorDot( delta_vec, view_vec );
 	if ( new_dot >= dot )
 	{
-		if (do_trace)
+		if ( do_trace )
 		{
 			return BulletTracePassed( origin, eye, false, undefined );
 		}
@@ -9269,7 +9319,7 @@ is_player_looking_at(origin, dot, do_trace)
 			return true;
 		}
 	}
-	
+
 	return false;
 }
 
@@ -9289,32 +9339,32 @@ is_player_looking_at(origin, dot, do_trace)
 ///ScriptDocEnd
 =============
 */
-look_at(origin_or_ent, tween, force, tag, offset)
+look_at( origin_or_ent, tween, force, tag, offset )
 {
-	if (is_true(force))
+	if ( is_true( force ) )
 	{
-		self FreezeControls(true);
+		self FreezeControls( true );
 	}
 
-	if (IsDefined(tween))
+	if ( IsDefined( tween ) )
 	{
-		self StartCameraTween(tween);
+		self StartCameraTween( tween );
 	}
 
-	self notify("look_at_begin");
+	self notify( "look_at_begin" );
 
 	origin = origin_or_ent;
 
-	if (!IsVec(origin_or_ent))
+	if ( !IsVec( origin_or_ent ) )
 	{
 		ent = origin_or_ent;
 
-		if (IsDefined(tag))
+		if ( IsDefined( tag ) )
 		{
 			// use tag position is tag is specified
-			origin = ent GetTagOrigin(tag);
+			origin = ent GetTagOrigin( tag );
 		}
-		else if (IsAI(origin_or_ent) && !IsDefined(offset))
+		else if ( IsAI( origin_or_ent ) && !IsDefined( offset ) )
 		{
 			// use eye pos by default for AI unless an offset is specified
 			origin = ent get_eye();
@@ -9326,23 +9376,23 @@ look_at(origin_or_ent, tween, force, tag, offset)
 		}
 	}
 
-	if (IsDefined(offset))
+	if ( IsDefined( offset ) )
 	{
 		origin = origin + offset;
 	}
 
 	player_org = self get_eye();
 	vec_to_pt = origin - player_org;
-	self SetPlayerAngles(VectorToAngles(vec_to_pt));
+	self SetPlayerAngles( VectorToAngles( vec_to_pt ) );
 
 	wait tween;
 
-	if (is_true(force))
+	if ( is_true( force ) )
 	{
-		self FreezeControls(false);
+		self FreezeControls( false );
 	}
 
-	self notify("look_at_end");
+	self notify( "look_at_end" );
 }
 
 /*
@@ -9371,10 +9421,12 @@ add_wait( func, parm1, parm2, parm3 )
 	{
 		ent.parms[ ent.parms.size ] = parm1;
 	}
+
 	if ( IsDefined( parm2 ) )
 	{
 		ent.parms[ ent.parms.size ] = parm2;
 	}
+
 	if ( IsDefined( parm3 ) )
 	{
 		ent.parms[ ent.parms.size ] = parm3;
@@ -9419,7 +9471,6 @@ do_wait( count_to_reach )
 		count_to_reach = 0;
 	}
 
-
 	assertex( IsDefined( level.wait_any_func_array ), "Tried to do a do_wait without addings funcs first" );
 	ent = spawnstruct();
 	array = level.wait_any_func_array;
@@ -9431,18 +9482,20 @@ do_wait( count_to_reach )
 	level.do_wait_endons_array = [];
 
 	ent.count = array.size;
-	ent array_levelthread( array, ::waittill_func_ends, endons );
+	ent array_levelthread( array,::waittill_func_ends, endons );
 	for ( ;; )
 	{
 		if ( ent.count <= count_to_reach )
 		{
 			break;
 		}
+
 		ent waittill( "func_ended" );
 	}
+
 	ent notify( "all_funcs_ended" );
 
-	array_levelthread( after_array, ::exec_func, [] );
+	array_levelthread( after_array,::exec_func, [] );
 }
 
 /*
@@ -9469,11 +9522,12 @@ waterfx( endflag )
 		flag_assert( endflag );
 		level endon( endflag );
 	}
+
 	for ( ;; )
 	{
 		wait( randomfloatrange( 0.15, 0.3 ) );
-		start = self.origin + (0,0,150);
-		end = self.origin - (0,0,150);
+		start = self.origin + ( 0, 0, 150 );
+		end = self.origin - ( 0, 0, 150 );
 		trace = BulletTrace( start, end, false, undefined );
 		if ( trace[ "surfacetype" ] != "water" )
 		{
@@ -9483,7 +9537,7 @@ waterfx( endflag )
 		fx = "water_movement";
 		if ( self == level.player )
 		{
-			if ( distance( level.player getvelocity(), (0,0,0) ) < 5 )
+			if ( distance( level.player getvelocity(), ( 0, 0, 0 ) ) < 5 )
 			{
 				fx = "water_stop";
 			}
@@ -9493,7 +9547,7 @@ waterfx( endflag )
 			fx = "water_" + self.a.movement;
 		}
 
-		playfx( getfx( fx ), trace[ "position" ], trace[ "normal" ] );			
+		playfx( getfx( fx ), trace[ "position" ], trace[ "normal" ] );
 	}
 }
 
@@ -9514,7 +9568,8 @@ fail_on_friendly_fire()
 	{
 		level.friendlyfire_friendly_kill_points = level.friendlyfire[ "friend_kill_points" ];
 	}
-	level.friendlyfire[ "friend_kill_points" ] 	= -60000;
+
+	level.friendlyfire[ "friend_kill_points" ] = -60000;
 }
 
 /*
@@ -9543,19 +9598,19 @@ giveachievement_wrapper( achievement, all_players )
 		return;
 	}
 
-	if( !( maps\_cheat::is_cheating() ) && ! ( flag("has_cheated") ) )
+	if ( !( maps\_cheat::is_cheating() ) && !( flag( "has_cheated" ) ) )
 	{
-		if( IsDefined( all_players ) && all_players )
+		if ( IsDefined( all_players ) && all_players )
 		{
 			players = get_players();
-			for( i = 0; i < players.size; i++ )
+			for ( i = 0; i < players.size; i++ )
 			{
-				players[i] GiveAchievement( achievement );
+				players[ i ] GiveAchievement( achievement );
 			}
 		}
 		else
 		{
-			if( !IsPlayer( self ) )
+			if ( !IsPlayer( self ) )
 			{
 				println( "^1self needs to be a player for _utility::giveachievement_wrapper()" );
 				return;
@@ -9574,12 +9629,12 @@ slowmo_start()
 slowmo_end()
 {
 	maps\_cheat::slowmo_system_defaults();
-	flag_clear( "disable_slowmo_cheat" );	
+	flag_clear( "disable_slowmo_cheat" );
 }
 
 slowmo_setspeed_slow( speed )
 {
-	if( !maps\_cheat::slowmo_check_system() )
+	if ( !maps\_cheat::slowmo_check_system() )
 	{
 		return;
 	}
@@ -9589,7 +9644,7 @@ slowmo_setspeed_slow( speed )
 
 slowmo_setspeed_norm( speed )
 {
-	if( !maps\_cheat::slowmo_check_system() )
+	if ( !maps\_cheat::slowmo_check_system() )
 	{
 		return;
 	}
@@ -9599,7 +9654,7 @@ slowmo_setspeed_norm( speed )
 
 slowmo_setlerptime_in( time )
 {
-	if( !maps\_cheat::slowmo_check_system() )
+	if ( !maps\_cheat::slowmo_check_system() )
 	{
 		return;
 	}
@@ -9609,7 +9664,7 @@ slowmo_setlerptime_in( time )
 
 slowmo_setlerptime_out( time )
 {
-	if( !maps\_cheat::slowmo_check_system() )
+	if ( !maps\_cheat::slowmo_check_system() )
 	{
 		return;
 	}
@@ -9619,18 +9674,18 @@ slowmo_setlerptime_out( time )
 
 slowmo_lerp_in()
 {
-	if( !flag( "disable_slowmo_cheat" ) )
+	if ( !flag( "disable_slowmo_cheat" ) )
 	{
 		return;
 	}
 
-	level.slowmo thread maps\_cheat::gamespeed_set( level.slowmo.speed_slow, level.slowmo.speed_current, level.slowmo.lerp_time_in );	
+	level.slowmo thread maps\_cheat::gamespeed_set( level.slowmo.speed_slow, level.slowmo.speed_current, level.slowmo.lerp_time_in );
 	//level.slowmo thread maps\_cheat::gamespeed_slowmo();
 }
 
 slowmo_lerp_out()
 {
-	if( !flag( "disable_slowmo_cheat" ) )
+	if ( !flag( "disable_slowmo_cheat" ) )
 	{
 		return;
 	}
@@ -9658,31 +9713,32 @@ arcademode_assignpoints( amountDvar, player )
 	{
 		return;
 	}
+
 	//thread call_overloaded_func( "maps\_arcademode", "arcademode_assignpoints_toplayer", amountDvar, player );
 }
-
 
 arcadeMode()
 {
 	/#
-		debug_replay("File: _utility.gsc. Function: arcadeMode()\n");
-#/
+	debug_replay( "File: _utility.gsc. Function: arcadeMode()\n" );
+	#/
 	isArcadeMode = GetDvar( #"arcademode" ) == "1";
 	/#
-		debug_replay("File: _utility.gsc. Function: arcadeMode() - COMPLETE\n");
-#/
+	debug_replay( "File: _utility.gsc. Function: arcadeMode() - COMPLETE\n" );
+	#/
 	//CZ MM (09/17/09) Temp fix until we get Zombie Mode in the menus
 	if ( GetDvar( #"zombiemode" ) == "1" )
 	{
 		isArcadeMode = false;
 	}
+
 	return isArcadeMode;
 
 }
 
 coopGame()
 {
-	return (( GetDvar( #"systemlink" ) == "1" ) || (GetDvar( #"onlinegame" ) == "1" ) || IsSplitScreen() );
+	return ( ( GetDvar( #"systemlink" ) == "1" ) || ( GetDvar( #"onlinegame" ) == "1" ) || IsSplitScreen() );
 	//	players = GetPlayers();
 	//	return ( players.size > 1);
 }
@@ -9695,13 +9751,13 @@ player_is_near_live_grenade()
 		grenade = grenades[ i ];
 
 		players = get_players();
-		for( j = 0; j < players.size; j++ )
+		for ( j = 0; j < players.size; j++ )
 		{
-			if( DistanceSquared( grenade.origin, players[j].origin ) < 250 * 250 )	// grenade radius is 220
+			if ( DistanceSquared( grenade.origin, players[ j ].origin ) < 250 * 250 ) // grenade radius is 220
 			{
-				/# 
-					maps\_autosave::auto_save_print( "autosave failed: live grenade too close to player " + j ); 
-#/
+				/#
+				maps\_autosave::auto_save_print( "autosave failed: live grenade too close to player " + j );
+				#/
 
 				return true;
 			}
@@ -9738,67 +9794,67 @@ player_died_recently()
 */
 set_splitscreen_fog( start_dist, halfway_dist, halfway_height, base_height, red, green, blue, trans_time, cull_dist )
 {
-	if( !IsSplitScreen() )
+	if ( !IsSplitScreen() )
 	{
-		return; 
+		return;
 	}
 
 	/#
-		if( !IsDefined( start_dist ) && !IsDefined( halfway_dist ) && !IsDefined( halfway_height ) && !IsDefined( base_height ) && !IsDefined( red ) && !IsDefined( green ) && !IsDefined( blue ) )
-		{
-			level thread default_fog_print();
-		}
-#/
+	if ( !IsDefined( start_dist ) && !IsDefined( halfway_dist ) && !IsDefined( halfway_height ) && !IsDefined( base_height ) && !IsDefined( red ) && !IsDefined( green ) && !IsDefined( blue ) )
+	{
+		level thread default_fog_print();
+	}
+	#/
 
-		if( !IsDefined( start_dist ) )
-		{
-			start_dist = 0;
-		}
+	if ( !IsDefined( start_dist ) )
+	{
+		start_dist = 0;
+	}
 
-		if( !IsDefined( halfway_dist ) )
-		{
-			halfway_dist = 200;
-		}
+	if ( !IsDefined( halfway_dist ) )
+	{
+		halfway_dist = 200;
+	}
 
-		if( !IsDefined( base_height ) )
-		{
-			base_height = -2000;
-		}
+	if ( !IsDefined( base_height ) )
+	{
+		base_height = -2000;
+	}
 
-		if( !IsDefined( red ) )
-		{
-			red = 1;
-		}
+	if ( !IsDefined( red ) )
+	{
+		red = 1;
+	}
 
-		if( !IsDefined( green ) )
-		{
-			green = 1;
-		}
+	if ( !IsDefined( green ) )
+	{
+		green = 1;
+	}
 
-		if( !IsDefined( blue ) )
-		{
-			blue = 0;
-		}
+	if ( !IsDefined( blue ) )
+	{
+		blue = 0;
+	}
 
-		if( !IsDefined( trans_time ) )
-		{
-			trans_time = 0;
-		}
+	if ( !IsDefined( trans_time ) )
+	{
+		trans_time = 0;
+	}
 
-		if( !IsDefined( cull_dist ) )
-		{
-			cull_dist = 2000;
-		}
+	if ( !IsDefined( cull_dist ) )
+	{
+		cull_dist = 2000;
+	}
 
-		halfway_height = base_height + 2000;
+	halfway_height = base_height + 2000;
 
-		// This is used to make sure we set it up properly, if not _load should check this var and set the fog again.
-		level.splitscreen_fog = true;
+	// This is used to make sure we set it up properly, if not _load should check this var and set the fog again.
+	level.splitscreen_fog = true;
 
-		SetVolFog( start_dist, halfway_dist, halfway_height, base_height, red, green, blue, 0 );
-		//this not working
-		//setVolFog( 0, 11.5, 46, 0, .62, .68, .57, 0);
-		SetCullDist( cull_dist ); 
+	SetVolFog( start_dist, halfway_dist, halfway_height, base_height, red, green, blue, 0 );
+	//this not working
+	//setVolFog( 0, 11.5, 46, 0, .62, .68, .57, 0);
+	SetCullDist( cull_dist );
 }
 
 default_fog_print()
@@ -9810,7 +9866,7 @@ default_fog_print()
 	wait( 8 );
 	iprintlnbold( "^3USING DEFAULT FOG SETTINGS FOR SPLITSCREEN" );
 	wait( 8 );
-	iprintlnbold( "^3USING DEFAULT FOG SETTINGS FOR SPLITSCREEN" );	
+	iprintlnbold( "^3USING DEFAULT FOG SETTINGS FOR SPLITSCREEN" );
 	#/
 }
 
@@ -9834,14 +9890,14 @@ default_fog_print()
 */
 share_screen( player, toggle, instant )
 {
-	if( !IsSplitscreen() )
+	if ( !IsSplitscreen() )
 	{
 		return;
 	}
 
 	time = 1;
 
-	if( IsDefined( instant ) && instant )
+	if ( IsDefined( instant ) && instant )
 	{
 		time = 0.1;
 	}
@@ -9864,15 +9920,15 @@ share_screen( player, toggle, instant )
 ///ScriptDocEnd
 =============
 */
-get_players(t)
+get_players( t )
 {
-	if(IsDefined(t))
+	if ( IsDefined( t ) )
 	{
-		return(GetPlayers(t));
+		return ( GetPlayers( t ) );
 	}
 	else
 	{
-		return(GetPlayers());
+		return ( GetPlayers() );
 	}
 }
 
@@ -9889,13 +9945,13 @@ get_players(t)
 */
 get_host()
 {
-	players = get_players("all"); 
+	players = get_players( "all" );
 
-	for( i = 0; i < players.size; i++ )
+	for ( i = 0; i < players.size; i++ )
 	{
-		if( players[i] GetEntityNumber() == 0 )
+		if ( players[ i ] GetEntityNumber() == 0 )
 		{
-			return players[i];
+			return players[ i ];
 		}
 	}
 }
@@ -9913,8 +9969,8 @@ get_host()
 */
 is_coop()
 {
-	players = get_players("all");
-	if( players.size > 1 )
+	players = get_players( "all" );
+	if ( players.size > 1 )
 	{
 		return true;
 	}
@@ -9938,24 +9994,24 @@ any_player_IsTouching( ent, t )
 {
 	players = [];
 
-	if(IsDefined(t))
+	if ( IsDefined( t ) )
 	{
-		players = get_players(t); 
+		players = get_players( t );
 	}
 	else
 	{
 		players = get_players();
 	}
 
-	for( i = 0; i < players.size; i++ )
+	for ( i = 0; i < players.size; i++ )
 	{
-		if( IsAlive( players[i] ) && players[i] IsTouching( ent ) )
+		if ( IsAlive( players[ i ] ) && players[ i ] IsTouching( ent ) )
 		{
-			return true; 
+			return true;
 		}
 	}
 
-	return false; 
+	return false;
 }
 
 /*
@@ -9974,24 +10030,24 @@ get_player_touching( ent, t )
 {
 	players = [];
 
-	if(IsDefined(t))
+	if ( IsDefined( t ) )
 	{
-		players = get_players(t); 
+		players = get_players( t );
 	}
 	else
 	{
-		players = get_players(); 
+		players = get_players();
 	}
 
-	for( i = 0; i < players.size; i++ )
+	for ( i = 0; i < players.size; i++ )
 	{
-		if( IsAlive( players[i] ) && players[i] IsTouching( ent ) )
+		if ( IsAlive( players[ i ] ) && players[ i ] IsTouching( ent ) )
 		{
-			return players[i]; 
+			return players[ i ];
 		}
 	}
 
-	return undefined; 
+	return undefined;
 }
 
 /*
@@ -10010,38 +10066,37 @@ get_closest_player( org, t )
 {
 	players = [];
 
-	if(IsDefined(t))
+	if ( IsDefined( t ) )
 	{
-		players = get_players(t); 
+		players = get_players( t );
 	}
 	else
 	{
-		players = get_players(); 
+		players = get_players();
 	}
 
-	return GetClosest( org, players ); 
+	return GetClosest( org, players );
 }
 
 clear_player_spawnpoints()
 {
-	level.player_spawnpoints = []; 
+	level.player_spawnpoints = [];
 }
 
 freezecontrols_all( toggle, delay )
 {
-	if( IsDefined( delay ) )
+	if ( IsDefined( delay ) )
 	{
 		wait( delay );
 	}
 
-	players = get_players("all"); 
+	players = get_players( "all" );
 
-	for( i = 0; i < players.size; i++ )
+	for ( i = 0; i < players.size; i++ )
 	{
-		players[i] FreezeControls( toggle ); 
+		players[ i ] FreezeControls( toggle );
 	}
 }
-
 
 /*
 =============
@@ -10061,10 +10116,10 @@ set_all_players_blur( amount, time )
 	wait_for_first_player();
 	flag_wait( "all_players_connected" );
 
-	players = get_players("all"); 
-	for( i = 0; i < players.size; i++ )
+	players = get_players( "all" );
+	for ( i = 0; i < players.size; i++ )
 	{
-		players[i] SetBlur( amount, time ); 
+		players[ i ] SetBlur( amount, time );
 	}
 }
 
@@ -10086,10 +10141,10 @@ set_all_players_double_vision( amount, time )
 	wait_for_first_player();
 	flag_wait( "all_players_connected" );
 
-	players = get_players("all"); 
-	for( i = 0; i < players.size; i++ )
+	players = get_players( "all" );
+	for ( i = 0; i < players.size; i++ )
 	{
-		players[i] SetDoubleVision( amount, time );
+		players[ i ] SetDoubleVision( amount, time );
 	}
 }
 
@@ -10111,10 +10166,10 @@ set_all_players_shock( shellshock_file, time )
 	wait_for_first_player();
 	flag_wait( "all_players_connected" );
 
-	players = get_players("all"); 
-	for( i = 0; i < players.size; i++ )
+	players = get_players( "all" );
+	for ( i = 0; i < players.size; i++ )
 	{
-		players[i] Shellshock( shellshock_file, time ); 
+		players[ i ] Shellshock( shellshock_file, time );
 	}
 }
 
@@ -10136,10 +10191,10 @@ set_all_players_visionset( vision_file, time )
 	wait_for_first_player();
 	flag_wait( "all_players_connected" );
 
-	players = get_players("all"); 
-	for( i = 0; i < players.size; i++ )
+	players = get_players( "all" );
+	for ( i = 0; i < players.size; i++ )
 	{
-		players[i] VisionSetNaked( vision_file, time ); 
+		players[ i ] VisionSetNaked( vision_file, time );
 	}
 }
 
@@ -10148,90 +10203,90 @@ set_all_players_visionset( vision_file, time )
 // TODO: Covert trigger based flag setting
 player_flag_wait( msg )
 {
-	while( !self.flag[msg] )
+	while ( !self.flag[ msg ] )
 	{
-		self waittill( msg ); 
+		self waittill( msg );
 	}
 }
 
 player_flag_wait_either( flag1, flag2 )
 {
-	for( ;; )
+	for ( ;; )
 	{
-		if( flag( flag1 ) )
+		if ( flag( flag1 ) )
 		{
-			return; 
+			return;
 		}
 
-		if( flag( flag2 ) )
+		if ( flag( flag2 ) )
 		{
-			return; 
+			return;
 		}
 
-		self waittill_either( flag1, flag2 ); 
+		self waittill_either( flag1, flag2 );
 	}
 }
 
 player_flag_waitopen( msg )
 {
-	while( self.flag[msg] )
+	while ( self.flag[ msg ] )
 	{
-		self waittill( msg ); 
+		self waittill( msg );
 	}
 }
 
 player_flag_init( message, trigger )
 {
-	if( !IsDefined( self.flag ) )
+	if ( !IsDefined( self.flag ) )
 	{
-		self.flag = []; 
-		self.flags_lock = []; 
+		self.flag = [];
+		self.flags_lock = [];
 	}
 
-	assertex( !IsDefined( self.flag[message] ), "Attempt to reinitialize existing message: " + message ); 
-	self.flag[message] = false; 
+	assertex( !IsDefined( self.flag[ message ] ), "Attempt to reinitialize existing message: " + message );
+	self.flag[ message ] = false;
 	/#
-		self.flags_lock[message] = false; 
-#/
+	self.flags_lock[ message ] = false;
+	#/
 }
 
 player_flag_set_delayed( message, delay )
 {
-	wait( delay ); 
-	player_flag_set( message ); 
+	wait( delay );
+	player_flag_set( message );
 }
 
 player_flag_set( message )
 {
 	/#
-		assertex( IsDefined( self.flag[message] ), "Attempt to set a flag before calling flag_init: " + message ); 
-	assert( self.flag[message] == self.flags_lock[message] ); 
-	self.flags_lock[message] = true; 
-#/	
-	self.flag[message] = true; 
-	self notify( message ); 
+	assertex( IsDefined( self.flag[ message ] ), "Attempt to set a flag before calling flag_init: " + message );
+	assert( self.flag[ message ] == self.flags_lock[ message ] );
+	self.flags_lock[ message ] = true;
+	#/
+	self.flag[ message ] = true;
+	self notify( message );
 }
 
 player_flag_clear( message )
 {
 	/#
-		assertex( IsDefined( self.flag[message] ), "Attempt to set a flag before calling flag_init: " + message ); 
-	assert( self.flag[message] == self.flags_lock[message] ); 
-	self.flags_lock[message] = false; 
-#/	
-	self.flag[message] = false; 
-	self notify( message ); 
+	assertex( IsDefined( self.flag[ message ] ), "Attempt to set a flag before calling flag_init: " + message );
+	assert( self.flag[ message ] == self.flags_lock[ message ] );
+	self.flags_lock[ message ] = false;
+	#/
+	self.flag[ message ] = false;
+	self notify( message );
 }
 
 player_flag( message )
 {
-	assertex( IsDefined( message ), "Tried to check flag but the flag was not defined." ); 
-	if( !self.flag[message] )
+	assertex( IsDefined( message ), "Tried to check flag but the flag was not defined." );
+	if ( !self.flag[ message ] )
 	{
-		return false; 
+		return false;
 	}
 
-	return true; 
+	return true;
 }
 
 /*
@@ -10247,8 +10302,8 @@ player_flag( message )
 */
 wait_for_first_player()
 {
-	players = get_players("all");
-	if( !IsDefined( players ) || players.size == 0 )
+	players = get_players( "all" );
+	if ( !IsDefined( players ) || players.size == 0 )
 	{
 		level waittill( "first_player_ready" );
 	}
@@ -10274,46 +10329,52 @@ findBoxCenter( mins, maxs )
 {
 	center = ( 0, 0, 0 );
 	center = maxs - mins;
-	center = ( center[0]/2, center[1]/2, center[2]/2 ) + mins;
+	center = ( center[ 0 ] / 2, center[ 1 ] / 2, center[ 2 ] / 2 ) + mins;
 	return center;
 }
 
 expandMins( mins, point )
 {
-	if ( mins[0] > point[0] )
+	if ( mins[ 0 ] > point[ 0 ] )
 	{
-		mins = ( point[0], mins[1], mins[2] );
+		mins = ( point[ 0 ], mins[ 1 ], mins[ 2 ] );
 	}
-	if ( mins[1] > point[1] )
+
+	if ( mins[ 1 ] > point[ 1 ] )
 	{
-		mins = ( mins[0], point[1], mins[2] );
+		mins = ( mins[ 0 ], point[ 1 ], mins[ 2 ] );
 	}
-	if ( mins[2] > point[2] )
+
+	if ( mins[ 2 ] > point[ 2 ] )
 	{
-		mins = ( mins[0], mins[1], point[2] );
+		mins = ( mins[ 0 ], mins[ 1 ], point[ 2 ] );
 	}
+
 	return mins;
 }
 
 expandMaxs( maxs, point )
 {
-	if ( maxs[0] < point[0] )
+	if ( maxs[ 0 ] < point[ 0 ] )
 	{
-		maxs = ( point[0], maxs[1], maxs[2] );
+		maxs = ( point[ 0 ], maxs[ 1 ], maxs[ 2 ] );
 	}
-	if ( maxs[1] < point[1] )
+
+	if ( maxs[ 1 ] < point[ 1 ] )
 	{
-		maxs = ( maxs[0], point[1], maxs[2] );
+		maxs = ( maxs[ 0 ], point[ 1 ], maxs[ 2 ] );
 	}
-	if ( maxs[2] < point[2] )
+
+	if ( maxs[ 2 ] < point[ 2 ] )
 	{
-		maxs = ( maxs[0], maxs[1], point[2] );
+		maxs = ( maxs[ 0 ], maxs[ 1 ], point[ 2 ] );
 	}
+
 	return maxs;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: get_ai_touching_volume( <team>, <volume_name>, <volume> )"
 "Summary: Returns ai that are touching the specified volume"
@@ -10325,87 +10386,87 @@ expandMaxs( maxs, point )
 "Example: enemies_in_warehouse = get_ai_touching_volume( "axis", undefined, warehouse_volume );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 get_ai_touching_volume( team, volume_name, volume )
 {
 	if ( !IsDefined( volume ) )
 	{
 		volume = getent( volume_name, "targetname" );
-		assertEx( IsDefined( volume ), volume_name + " does not exist" );		
+		assertEx( IsDefined( volume ), volume_name + " does not exist" );
 	}
 
 	guys = getaiarray( team );
 	guys_touching_volume = [];
 
-	for( i=0; i < guys.size; i++ )
+	for ( i = 0; i < guys.size; i++ )
 	{
-		if ( guys[i] isTouching( volume ) )
+		if ( guys[ i ] isTouching( volume ) )
 		{
-			guys_touching_volume[guys_touching_volume.size] = guys[i];
+			guys_touching_volume[ guys_touching_volume.size ] = guys[ i ];
 		}
 	}
 
-	return guys_touching_volume;	
+	return guys_touching_volume;
 }
 
 // CODER_MOD
 // DSL 01/15/08 - Functions for dealing with client side script systems.
 
-registerClientSys(sSysName)
+registerClientSys( sSysName )
 {
-	if(!IsDefined(level._clientSys))
+	if ( !IsDefined( level._clientSys ) )
 	{
 		level._clientSys = [];
 	}
 
-	if(level._clientSys.size >= 32)	
+	if ( level._clientSys.size >= 32 )
 	{
-		error("Max num client systems exceeded.");
+		error( "Max num client systems exceeded." );
 		return;
 	}
 
-	if(IsDefined(level._clientSys[sSysName]))
+	if ( IsDefined( level._clientSys[ sSysName ] ) )
 	{
-		error("Attempt to re-register client system : " + sSysName);
+		error( "Attempt to re-register client system : " + sSysName );
 		return;
 	}
 	else
 	{
-		level._clientSys[sSysName] = spawnstruct();
-		level._clientSys[sSysName].sysID = ClientSysRegister(sSysName);
+		level._clientSys[ sSysName ] = spawnstruct();
+		level._clientSys[ sSysName ].sysID = ClientSysRegister( sSysName );
 		/#
-			println("registered client system "+sSysName+" to id "+level._clientSys[sSysName].sysID );
-#/
+		println( "registered client system " + sSysName + " to id " + level._clientSys[ sSysName ].sysID );
+		#/
 
-	}	
+	}
 }
 
-setClientSysState(sSysName, sSysState, player)
+setClientSysState( sSysName, sSysState, player )
 {
-	if(!IsDefined(level._clientSys))
+	if ( !IsDefined( level._clientSys ) )
 	{
-		error("setClientSysState called before registration of any systems.");
+		error( "setClientSysState called before registration of any systems." );
 		return;
 	}
 
-	if(!IsDefined(level._clientSys[sSysName]))
+	if ( !IsDefined( level._clientSys[ sSysName ] ) )
 	{
-		error("setClientSysState called on unregistered system " + sSysName);
+		error( "setClientSysState called on unregistered system " + sSysName );
 		return;
 	}
 
-	if(IsDefined(player))
+	if ( IsDefined( player ) )
 	{
-		player ClientSysSetState(level._clientSys[sSysName].sysID, sSysState);
+		player ClientSysSetState( level._clientSys[ sSysName ].sysID, sSysState );
 	}
 	else
 	{
-		ClientSysSetState(level._clientSys[sSysName].sysID, sSysState);
-		level._clientSys[sSysName].sysState = sSysState;
+		ClientSysSetState( level._clientSys[ sSysName ].sysID, sSysState );
+		level._clientSys[ sSysName ].sysState = sSysState;
 		/#
-			println("set client system "+sSysName+"("+level._clientSys[sSysName].sysID+")"+" to "+sSysState);
-#/
+		println( "set client system " + sSysName + "(" + level._clientSys[ sSysName ].sysID + ")" + " to " + sSysState );
+		#/
 
 	}
 }
@@ -10413,8 +10474,8 @@ setClientSysState(sSysName, sSysState, player)
 // CODER_MOD GMJ 05/19/08 - Wait until a snapshot is acknowledged.
 //                          Can help control having too many spawns in one frame.
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: wait_network_frame()"
 "Summary: Wait until a snapshot is acknowledged.  Can help control having too many spawns in one frame."
@@ -10422,43 +10483,43 @@ setClientSysState(sSysName, sSysState, player)
 "Example: wait_network_frame();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 wait_network_frame()
 {
 	//    snapshot_ids = getsnapshotindexarray();
 	/#
-	debug_replay("wait_network_frame()");
+	debug_replay( "wait_network_frame()" );
 	#/
-	if(NumRemoteClients())
+	if ( NumRemoteClients() )
 	{
-    snapshot_ids = getsnapshotindexarray();
+		snapshot_ids = getsnapshotindexarray();
 
-    acked = undefined;
-    while (!IsDefined(acked))
-    {
-        level waittill("snapacknowledged");
-        acked = snapshotacknowledged(snapshot_ids);
-    } 
+		acked = undefined;
+		while ( !IsDefined( acked ) )
+		{
+			level waittill( "snapacknowledged" );
+			acked = snapshotacknowledged( snapshot_ids );
+		}
 	}
 	else
 	{
-		wait(0.1);
+		wait( 0.1 );
 	}
 }
 
 // SCRIPTER_MOD: JesseS (5/15/200): For sending notifies to the client.
-clientNotify(event)
+clientNotify( event )
 {
-	if(level.clientscripts)
+	if ( level.clientscripts )
 	{
-		if(IsPlayer(self))
+		if ( IsPlayer( self ) )
 		{
-			maps\_utility::setClientSysState("levelNotify", event, self);
+			maps\_utility::setClientSysState( "levelNotify", event, self );
 		}
 		else
 		{
-			maps\_utility::setClientSysState("levelNotify", event);
+			maps\_utility::setClientSysState( "levelNotify", event );
 		}
 	}
 }
@@ -10468,8 +10529,8 @@ clientNotify(event)
 // 1) it is ok to spawn according to the network (best-guess).
 // 2) max_wait_seconds elapse.
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: ok_to_spawn( <max_wait_seconds> )"
 "Summary: wait until 1)it is ok to spawn according to the network (best-guess). 2) max_wait_seconds elapse."
@@ -10478,48 +10539,48 @@ clientNotify(event)
 "Example: ok_to_spawn( 5 );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
 ok_to_spawn( max_wait_seconds )
 {
-	if( IsDefined( max_wait_seconds ) )
+	if ( IsDefined( max_wait_seconds ) )
 	{
 		timer = GetTime() + max_wait_seconds * 1000;
 
-		while( GetTime() < timer && !OkToSpawn() )
+		while ( GetTime() < timer && !OkToSpawn() )
 		{
 			wait( 0.05 );
 		}
 	}
 	else
 	{
-		while( !OkToSpawn() )
+		while ( !OkToSpawn() )
 		{
 			wait( 0.05 );
 		}
 	}
 }
 
-set_breadcrumbs(starts)
+set_breadcrumbs( starts )
 {
-	if(!IsDefined(level._player_breadcrumbs))
+	if ( !IsDefined( level._player_breadcrumbs ) )
 	{
-		maps\_callbackglobal::Player_BreadCrumb_Reset((0,0,0));
+		maps\_callbackglobal::Player_BreadCrumb_Reset( ( 0, 0, 0 ) );
 	}
 
-	for(i = 0; i < starts.size; i++)
+	for ( i = 0; i < starts.size; i++ )
 	{
-		for(j = 0; j < starts.size; j++)
+		for ( j = 0; j < starts.size; j++ )
 		{
-			level._player_breadcrumbs[i][j].pos = starts[j].origin;
-			if(IsDefined(starts[j].angles))
+			level._player_breadcrumbs[ i ][ j ].pos = starts[ j ].origin;
+			if ( IsDefined( starts[ j ].angles ) )
 			{
-				level._player_breadcrumbs[i][j].ang = starts[j].angles;
+				level._player_breadcrumbs[ i ][ j ].ang = starts[ j ].angles;
 			}
 			else
 			{
-				level._player_breadcrumbs[i][j].ang = (0,0,0);
+				level._player_breadcrumbs[ i ][ j ].ang = ( 0, 0, 0 );
 			}
 		}
 	}
@@ -10527,24 +10588,22 @@ set_breadcrumbs(starts)
 
 set_breadcrumbs_player_positions()
 {
-	if(!IsDefined(level._player_breadcrumbs))
+	if ( !IsDefined( level._player_breadcrumbs ) )
 	{
-		maps\_callbackglobal::Player_BreadCrumb_Reset((0,0,0));
-	}	
+		maps\_callbackglobal::Player_BreadCrumb_Reset( ( 0, 0, 0 ) );
+	}
 
 	players = get_players();
 
-	for(i = 0; i < players.size; i++)
+	for ( i = 0; i < players.size; i++ )
 	{
-		level._player_breadcrumbs[i][0].pos = players[i].origin;
-		level._player_breadcrumbs[i][0].ang = players[i].angles;
+		level._player_breadcrumbs[ i ][ 0 ].pos = players[ i ].origin;
+		level._player_breadcrumbs[ i ][ 0 ].ang = players[ i ].angles;
 	}
 }
 
-
-
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: spread_array_thread( <entities> , <process> , <var1> , <var2> , <var3> )"
 "Summary: Threads the < process > function on every entity in the < entities > array. The entity will become "self" in the specified function.  Each thread is started 1 network frame apart from the next."
@@ -10558,8 +10617,8 @@ set_breadcrumbs_player_positions()
 "Example: array_thread( getaiarray( "allies" ), ::set_ignoreme, false );"
 "SPMP: both"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
 spread_array_thread( entities, process, var1, var2, var3 )
 {
@@ -10567,7 +10626,7 @@ spread_array_thread( entities, process, var1, var2, var3 )
 
 	if ( IsDefined( var3 ) )
 	{
-		for( i = 0 ; i < keys.size ; i++ )
+		for ( i = 0; i < keys.size; i++ )
 		{
 			entities[ keys[ i ] ] thread [[ process ]]( var1, var2, var3 );
 			wait_network_frame();
@@ -10578,7 +10637,7 @@ spread_array_thread( entities, process, var1, var2, var3 )
 
 	if ( IsDefined( var2 ) )
 	{
-		for( i = 0 ; i < keys.size ; i++ )
+		for ( i = 0; i < keys.size; i++ )
 		{
 			entities[ keys[ i ] ] thread [[ process ]]( var1, var2 );
 			wait_network_frame();
@@ -10589,7 +10648,7 @@ spread_array_thread( entities, process, var1, var2, var3 )
 
 	if ( IsDefined( var1 ) )
 	{
-		for( i = 0 ; i < keys.size ; i++ )
+		for ( i = 0; i < keys.size; i++ )
 		{
 			entities[ keys[ i ] ] thread [[ process ]]( var1 );
 			wait_network_frame();
@@ -10598,15 +10657,15 @@ spread_array_thread( entities, process, var1, var2, var3 )
 		return;
 	}
 
-	for( i = 0 ; i < keys.size ; i++ )
+	for ( i = 0; i < keys.size; i++ )
 	{
 		entities[ keys[ i ] ] thread [[ process ]]();
 		wait_network_frame();
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: simple_floodspawn( <name>, <spawn_func>, <spawn_func_2>)"
 "Module: Utility"
@@ -10617,46 +10676,46 @@ spread_array_thread( entities, process, var1, var2, var3 )
 "Example: simple_floodspawn( "defend_guys", ::defend_guys_strategy, ::defend_guys_retreat_strategy );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 simple_floodspawn( name, spawn_func, spawn_func_2 )
 {
 	spawners = getEntArray( name, "targetname" );
-	assertex( spawners.size, "no spawners with targetname " + name + " found!" );	
+	assertex( spawners.size, "no spawners with targetname " + name + " found!" );
 
 	// add spawn function to each spawner if specified
-	if( IsDefined( spawn_func ) )
+	if ( IsDefined( spawn_func ) )
 	{
-		for( i  = 0; i < spawners.size; i++ )
+		for ( i = 0; i < spawners.size; i++ )
 		{
-			spawners[i] add_spawn_function( spawn_func );
+			spawners[ i ] add_spawn_function( spawn_func );
 		}
 	}
 
-	if( IsDefined( spawn_func_2 ) )
+	if ( IsDefined( spawn_func_2 ) )
 	{
-		for( i  = 0; i < spawners.size; i++ )
+		for ( i = 0; i < spawners.size; i++ )
 		{
-			spawners[i] add_spawn_function( spawn_func_2 );
+			spawners[ i ] add_spawn_function( spawn_func_2 );
 		}
 	}
 
-	for( i = 0; i < spawners.size; i++ )
+	for ( i = 0; i < spawners.size; i++ )
 	{
-		if( i % 2 )
+		if ( i % 2 )
 		{
 			//wait for a new network frame to be sent out before spawning in another guy
 			wait_network_frame();
 		}
 
 		// same behavior in _spawner's flood_spawner_scripted() function
-		spawners[i] thread maps\_spawner::flood_spawner_init();
-		spawners[i] thread maps\_spawner::flood_spawner_think();
-	}		
+		spawners[ i ] thread maps\_spawner::flood_spawner_init();
+		spawners[ i ] thread maps\_spawner::flood_spawner_think();
+	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: simple_spawn( <name_or_spawners>, <spawn_func>, <param1>, <param2>, <param3>, <param4>, <param5>)"
 "Module: Utility"
@@ -10671,59 +10730,59 @@ simple_floodspawn( name, spawn_func, spawn_func_2 )
 "Example: simple_spawn( "bunker_guys", ::bunker_guys_strategy );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 simple_spawn( name_or_spawners, spawn_func, param1, param2, param3, param4, param5 )
 {
 	spawners = [];
-	if (IsString(name_or_spawners))
+	if ( IsString( name_or_spawners ) )
 	{
 		spawners = GetEntArray( name_or_spawners, "targetname" );
 		AssertEx( spawners.size, "no spawners with targetname " + name_or_spawners + " found!" );
 	}
 	else
 	{
-		if (IsArray(name_or_spawners))
+		if ( IsArray( name_or_spawners ) )
 		{
 			spawners = name_or_spawners;
 		}
 		else
 		{
-			spawners[0] = name_or_spawners;
+			spawners[ 0 ] = name_or_spawners;
 		}
 	}
 
 	ai_array = [];
 
-	for( i = 0; i < spawners.size; i++ )
+	for ( i = 0; i < spawners.size; i++ )
 	{
-		spawners[i].spawning = true;
+		spawners[ i ].spawning = true;
 
-		if( i % 2 )
+		if ( i % 2 )
 		{
 			//wait for a new network frame to be sent out before spawning in another guy
 			wait_network_frame();
-		}		
+		}
 
-		ai = spawners[i] spawn_ai();
-		if(!spawn_failed( ai ))
+		ai = spawners[ i ] spawn_ai();
+		if ( !spawn_failed( ai ) )
 		{
-			if (IsDefined( spawn_func ))
+			if ( IsDefined( spawn_func ) )
 			{
-				single_thread(ai, spawn_func, param1, param2, param3, param4, param5);
+				single_thread( ai, spawn_func, param1, param2, param3, param4, param5 );
 			}
 
 			ai_array = add_to_array( ai_array, ai );
 		}
 
-		spawners[i].spawning = undefined;
+		spawners[ i ].spawning = undefined;
 	}
 
 	return ai_array;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: simple_spawn_single( <name_or_spawner>, <spawn_func>, <param1>, <param2>, <param3>, <param4>, <param5>)"
 "Module: Utility"
@@ -10737,73 +10796,70 @@ simple_spawn( name_or_spawners, spawn_func, param1, param2, param3, param4, para
 "OptionalArg: <param5> : argument to pass to the spawn function"
 "Example: simple_spawn( "ambush_guy", ::ambush_guy_strategy );"
 "SPMP: singleplayer"
-///ScriptDocEnd	
-============= 
+///ScriptDocEnd
+=============
 */
 simple_spawn_single( name_or_spawner, spawn_func, param1, param2, param3, param4, param5 )
 {
-	if (IsString(name_or_spawner))
+	if ( IsString( name_or_spawner ) )
 	{
 		spawner = GetEnt( name_or_spawner, "targetname" );
 		AssertEx( IsDefined( spawner ), "no spawner with targetname " + name_or_spawner + " found!" );
 	}
-	else if (IsArray(name_or_spawner))
+	else if ( IsArray( name_or_spawner ) )
 	{
-		AssertMsg("simple_spawn_single cannot be used on an array of spawners.  use simple_spawn instead.");
+		AssertMsg( "simple_spawn_single cannot be used on an array of spawners.  use simple_spawn instead." );
 	}
-	
-	ai = simple_spawn(name_or_spawner, spawn_func, param1, param2, param3, param4, param5);
+
+	ai = simple_spawn( name_or_spawner, spawn_func, param1, param2, param3, param4, param5 );
 	AssertEx( ai.size <= 1, "simple_spawn called from simple_spawn_single somehow spawned more than one guy!" );
-	
-	if (ai.size)
+
+	if ( ai.size )
 	{
-		return ai[0];
+		return ai[ 0 ];
 	}
 }
-
 
 CanSpawnThink()
 {
 	level.canSpawnInOneFrame = 3;
-	for(;;)
+	for ( ;; )
 	{
 		level.canSpawnCount = 0;
 		wait_network_frame();
 	}
 }
 
-
 CanSpawn()
 {
-	if(!isdefined(level.canSpawnInOneFrame))
+	if ( !isdefined( level.canSpawnInOneFrame ) )
 	{
 		thread CanSpawnThink();
 	}
 
-	return true;	// TFLAME 7/22/09 - TEMP for Stephen McCaul to look at issues of Canspawn
+	return true; // TFLAME 7/22/09 - TEMP for Stephen McCaul to look at issues of Canspawn
 	//return OkToSpawn() && (level.canSpawnCount < level.canSpawnInOneFrame);
 }
 
-
 SpawnThrottleEnableThread()
 {
-	level notify ("spawn_throttle_enable_thread_ender");
-	level endon ("spawn_throttle_enable_thread_ender");
-	if (isdefined(level.flag["all_players_connected"]))
+	level notify( "spawn_throttle_enable_thread_ender" );
+	level endon( "spawn_throttle_enable_thread_ender" );
+	if ( isdefined( level.flag[ "all_players_connected" ] ) )
 	{
-		flag_wait("all_players_connected");
-		level.spawnThrottleEnable = true;	 
+		flag_wait( "all_players_connected" );
+		level.spawnThrottleEnable = true;
 	}
 }
 
-
 SpawnThrottleEnable()
 {
-	if(!isdefined(level.spawnThrottleEnable) || (isdefined(level.spawnThrottleEnable) && level.spawnThrottleEnable == false) )
+	if ( !isdefined( level.spawnThrottleEnable ) || ( isdefined( level.spawnThrottleEnable ) && level.spawnThrottleEnable == false ) )
 	{
 		level.spawnThrottleEnable = false;
 		thread SpawnThrottleEnableThread();
 	}
+
 	return level.spawnThrottleEnable;
 }
 
@@ -10819,32 +10875,32 @@ SpawnThrottleEnable()
 "SPMP: singleplayer"
 ///ScriptDocEnd
 */
-DoSpawn(no_enemy_info, targetname)
+DoSpawn( no_enemy_info, targetname )
 {
-	if(SpawnThrottleEnable())
+	if ( SpawnThrottleEnable() )
 	{
-		while(!CanSpawn())
+		while ( !CanSpawn() )
 		{
 			wait_network_frame();
 		}
 	}
 
-	if(isdefined(level.canSpawnCount))
+	if ( isdefined( level.canSpawnCount ) )
 	{
 		level.canSpawnCount += 1;
 	}
- 
-	if(!IsDefined(no_enemy_info))
+
+	if ( !IsDefined( no_enemy_info ) )
 	{
 		return self CodeSpawnerSpawn();
 	}
-	else if(!IsDefined(targetname))
+	else if ( !IsDefined( targetname ) )
 	{
-		return self CodeSpawnerSpawn(no_enemy_info);
+		return self CodeSpawnerSpawn( no_enemy_info );
 	}
-	else 
+	else
 	{
-		return self CodeSpawnerSpawn(no_enemy_info, targetname);
+		return self CodeSpawnerSpawn( no_enemy_info, targetname );
 	}
 }
 
@@ -10860,32 +10916,32 @@ DoSpawn(no_enemy_info, targetname)
 "SPMP: singleplayer"
 ///ScriptDocEnd
 */
-StalingradSpawn(no_enemy_info, targetname)
+StalingradSpawn( no_enemy_info, targetname )
 {
-	if(SpawnThrottleEnable())
+	if ( SpawnThrottleEnable() )
 	{
-		while(!CanSpawn())
+		while ( !CanSpawn() )
 		{
 			wait_network_frame();
 		}
 	}
 
-	if(isdefined(level.canSpawnCount))
+	if ( isdefined( level.canSpawnCount ) )
 	{
 		level.canSpawnCount += 1;
 	}
 
-	if(!IsDefined(no_enemy_info))
+	if ( !IsDefined( no_enemy_info ) )
 	{
 		return self CodeSpawnerForceSpawn();
 	}
-	else if(!IsDefined(targetname))
+	else if ( !IsDefined( targetname ) )
 	{
-		return self CodeSpawnerForceSpawn(no_enemy_info);
+		return self CodeSpawnerForceSpawn( no_enemy_info );
 	}
-	else 
+	else
 	{
-		return self CodeSpawnerForceSpawn(no_enemy_info, targetname);
+		return self CodeSpawnerForceSpawn( no_enemy_info, targetname );
 	}
 }
 
@@ -10904,67 +10960,65 @@ StalingradSpawn(no_enemy_info, targetname)
 "SPMP: both"
 ///ScriptDocEnd
 */
-Spawn(classname, origin, flags, radius, height, destructibledef)
+Spawn( classname, origin, flags, radius, height, destructibledef )
 {
-	if(SpawnThrottleEnable())
+	if ( SpawnThrottleEnable() )
 	{
-		while(!CanSpawn())
+		while ( !CanSpawn() )
 		{
 			wait_network_frame();
 		}
 	}
 
-	if(isdefined(level.canSpawnCount))
+	if ( isdefined( level.canSpawnCount ) )
 	{
 		level.canSpawnCount += 1;
 	}
 
-
-	if(IsDefined(destructibledef))
+	if ( IsDefined( destructibledef ) )
 	{
-		return CodeSpawn(classname, origin, flags, radius, height, destructibledef);
+		return CodeSpawn( classname, origin, flags, radius, height, destructibledef );
 	}
-	else if(IsDefined(height))
+	else if ( IsDefined( height ) )
 	{
-		return CodeSpawn(classname, origin, flags, radius, height);
+		return CodeSpawn( classname, origin, flags, radius, height );
 	}
-	else if(IsDefined(radius))
+	else if ( IsDefined( radius ) )
 	{
-		return CodeSpawn(classname, origin, flags, radius);
+		return CodeSpawn( classname, origin, flags, radius );
 	}
-	else if(IsDefined(flags))
+	else if ( IsDefined( flags ) )
 	{
-		return CodeSpawn(classname, origin, flags);
+		return CodeSpawn( classname, origin, flags );
 	}
 	else
 	{
-		return CodeSpawn(classname, origin);
+		return CodeSpawn( classname, origin );
 	}
 }
 
 // pass in undefined for modelname if you want the model to be the same as what's in the GDT for your vehicletype
 SpawnVehicle( modelname, targetname, vehicletype, origin, angles, destructibledef )
 {
-	if(SpawnThrottleEnable())
+	if ( SpawnThrottleEnable() )
 	{
-		while(!CanSpawn())
+		while ( !CanSpawn() )
 		{
 			wait_network_frame();
 		}
 	}
 
-	if(isdefined(level.canSpawnCount))
+	if ( isdefined( level.canSpawnCount ) )
 	{
 		level.canSpawnCount += 1;
 	}
 
+	assert( IsDefined( targetname ) );
+	assert( IsDefined( vehicletype ) );
+	assert( IsDefined( origin ) );
+	assert( IsDefined( angles ) );
 
-	assert(IsDefined(targetname));
-	assert(IsDefined(vehicletype));
-	assert(IsDefined(origin));
-	assert(IsDefined(angles));
-
-	if(IsDefined(destructibledef))
+	if ( IsDefined( destructibledef ) )
 	{
 		return CodeSpawnVehicle( modelname, targetname, vehicletype, origin, angles, destructibledef );
 	}
@@ -10974,64 +11028,56 @@ SpawnVehicle( modelname, targetname, vehicletype, origin, angles, destructiblede
 	}
 }
 
-
-
 SpawnTurret( classname, origin, weaponinfoname )
 {
-	if(SpawnThrottleEnable())
+	if ( SpawnThrottleEnable() )
 	{
-		while(!CanSpawn())
+		while ( !CanSpawn() )
 		{
 			wait_network_frame();
 		}
 	}
 
-	if(isdefined(level.canSpawnCount))
+	if ( isdefined( level.canSpawnCount ) )
 	{
 		level.canSpawnCount += 1;
 	}
 
-
-	return CodeSpawnTurret(classname, origin, weaponinfoname);
+	return CodeSpawnTurret( classname, origin, weaponinfoname );
 }
-
-
 
 PlayLoopedFX( effectid, repeat, position, cull, forward, up )
 {
-	if(SpawnThrottleEnable())
+	if ( SpawnThrottleEnable() )
 	{
-		while(!CanSpawn())
+		while ( !CanSpawn() )
 		{
 			wait_network_frame();
 		}
 	}
 
-	if(isdefined(level.canSpawnCount))
+	if ( isdefined( level.canSpawnCount ) )
 	{
 		level.canSpawnCount += 1;
 	}
 
-
-	if(IsDefined(up))
+	if ( IsDefined( up ) )
 	{
-		return CodePlayLoopedFX(effectid, repeat, position, cull, forward, up);
+		return CodePlayLoopedFX( effectid, repeat, position, cull, forward, up );
 	}
-	else if(IsDefined(forward))
+	else if ( IsDefined( forward ) )
 	{
-		return CodePlayLoopedFX(effectid, repeat, position, cull, forward);
+		return CodePlayLoopedFX( effectid, repeat, position, cull, forward );
 	}
-	else if(IsDefined(cull))
+	else if ( IsDefined( cull ) )
 	{
-		return CodePlayLoopedFX(effectid, repeat, position, cull);
+		return CodePlayLoopedFX( effectid, repeat, position, cull );
 	}
 	else
 	{
-		return CodePlayLoopedFX(effectid, repeat, position);
+		return CodePlayLoopedFX( effectid, repeat, position );
 	}
 }
-
-
 
 /*
 ///ScriptDocBegin
@@ -11048,36 +11094,35 @@ PlayLoopedFX( effectid, repeat, position, cull, forward, up )
 */
 SpawnFx( effect, position, forward, up )
 {
-	if(SpawnThrottleEnable())
+	if ( SpawnThrottleEnable() )
 	{
-		while(!CanSpawn())
+		while ( !CanSpawn() )
 		{
 			wait_network_frame();
 		}
 	}
 
-	if(isdefined(level.canSpawnCount))
+	if ( isdefined( level.canSpawnCount ) )
 	{
 		level.canSpawnCount += 1;
 	}
 
-
-	if(IsDefined(up))
+	if ( IsDefined( up ) )
 	{
-		return CodeSpawnFx(effect, position, forward, up);
+		return CodeSpawnFx( effect, position, forward, up );
 	}
-	else if(IsDefined(forward))
+	else if ( IsDefined( forward ) )
 	{
-		return CodeSpawnFx(effect, position, forward);
+		return CodeSpawnFx( effect, position, forward );
 	}
 	else
 	{
-		return CodeSpawnFx(effect, position);
+		return CodeSpawnFx( effect, position );
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: spawn_model(<model_name>, [origin], [angles])"
 "Summary: Spawns a model at an origin and angles."
@@ -11088,19 +11133,19 @@ SpawnFx( effect, position, forward, up )
 "Example: fx_model = spawn_model("tag_origin", org, ang);"
 "SPMP: both"
 ///ScriptDocEnd
-============= 
-*/ 
-spawn_model(model_name, origin, angles)
+=============
+*/
+spawn_model( model_name, origin, angles )
 {
-	if (!IsDefined(origin))
+	if ( !IsDefined( origin ) )
 	{
-		origin = (0, 0, 0);
+		origin = ( 0, 0, 0 );
 	}
 
 	model = Spawn( "script_model", origin );
 	model SetModel( model_name );
 
-	if( IsDefined( angles ) )
+	if ( IsDefined( angles ) )
 	{
 		model.angles = angles;
 	}
@@ -11109,8 +11154,8 @@ spawn_model(model_name, origin, angles)
 }
 
 // AE 5-15-09: moved these is_"vehicle" functions from _vehicle
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: is_plane()"
 "Module: Vehicle"
@@ -11118,21 +11163,22 @@ spawn_model(model_name, origin, angles)
 "Summary: Returns a bool for if the vehicle is a plane."
 "Example: if( vehicle is_plane() )"
 "SPMP: singleplayer"
-///ScriptDocEnd	
-============= 
-*/ 
+///ScriptDocEnd
+=============
+*/
 is_plane() // self == vehicle
 {
 	// this is an exposed value from the gdt entry for the vehicle
-	if(self.vehicleclass == "plane")
+	if ( self.vehicleclass == "plane" )
 	{
 		return true;
 	}
+
 	return false;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: is_boat()"
 "Module: Vehicle"
@@ -11140,21 +11186,22 @@ is_plane() // self == vehicle
 "Summary: Returns a bool for if the vehicle is a boat."
 "Example: if( vehicle is_boat() )"
 "SPMP: singleplayer"
-///ScriptDocEnd	
-============= 
-*/ 
+///ScriptDocEnd
+=============
+*/
 is_boat() // self == vehicle
 {
 	// this is an exposed value from the gdt entry for the vehicle
-	if(self.vehicleclass == "boat")
+	if ( self.vehicleclass == "boat" )
 	{
 		return true;
 	}
+
 	return false;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: is_helicopter()"
 "Module: Vehicle"
@@ -11162,21 +11209,22 @@ is_boat() // self == vehicle
 "Summary: Returns a bool for if the vehicle is a helicopter."
 "Example: if( vehicle is_helicopter() )"
 "SPMP: singleplayer"
-///ScriptDocEnd	
-============= 
-*/ 
+///ScriptDocEnd
+=============
+*/
 is_helicopter() // self == vehicle
 {
 	// this is an exposed value from the gdt entry for the vehicle
-	if(self.vehicleclass == "helicopter")
+	if ( self.vehicleclass == "helicopter" )
 	{
 		return true;
 	}
+
 	return false;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: is_tank()"
 "Module: Vehicle"
@@ -11184,21 +11232,22 @@ is_helicopter() // self == vehicle
 "Summary: Returns a bool for if the vehicle is a tank."
 "Example: if( vehicle is_tank() )"
 "SPMP: singleplayer"
-///ScriptDocEnd	
-============= 
-*/ 
+///ScriptDocEnd
+=============
+*/
 is_tank() // self == vehicle
 {
 	// this is an exposed value from the gdt entry for the vehicle
-	if(self.vehicleclass == "tank")
+	if ( self.vehicleclass == "tank" )
 	{
 		return true;
 	}
+
 	return false;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: is_artillery()"
 "Module: Vehicle"
@@ -11206,21 +11255,22 @@ is_tank() // self == vehicle
 "Summary: Returns a bool for if the vehicle is an artillery."
 "Example: if( vehicle is_artillery() )"
 "SPMP: singleplayer"
-///ScriptDocEnd	
-============= 
-*/ 
+///ScriptDocEnd
+=============
+*/
 is_artillery() // self == vehicle
 {
 	// this is an exposed value from the gdt entry for the vehicle
-	if(self.vehicleclass == "artillery")
+	if ( self.vehicleclass == "artillery" )
 	{
 		return true;
 	}
+
 	return false;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: is_4wheel()"
 "Module: Vehicle"
@@ -11228,21 +11278,22 @@ is_artillery() // self == vehicle
 "Summary: Returns a bool for if the vehicle is a 4 wheel."
 "Example: if( vehicle is_4wheel() )"
 "SPMP: singleplayer"
-///ScriptDocEnd	
-============= 
-*/ 
+///ScriptDocEnd
+=============
+*/
 is_4wheel() // self == vehicle
 {
 	// this is an exposed value from the gdt entry for the vehicle
-	if(self.vehicleclass == "4 wheel")
+	if ( self.vehicleclass == "4 wheel" )
 	{
 		return true;
 	}
+
 	return false;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: is_vehicle()"
 "Module: Vehicle"
@@ -11250,16 +11301,16 @@ is_4wheel() // self == vehicle
 "Summary: Returns a bool for if the entity is a vehicle or not."
 "Example: if( ent is_vehicle() )"
 "SPMP: singleplayer"
-///ScriptDocEnd	
-============= 
-*/ 
+///ScriptDocEnd
+=============
+*/
 is_vehicle()
 {
-	return (IsDefined(self.classname) && (self.classname == "script_vehicle"));
+	return ( IsDefined( self.classname ) && ( self.classname == "script_vehicle" ) );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: go_path( <path_start> )"
 "Module: Vehicle"
@@ -11268,20 +11319,20 @@ is_vehicle()
 "Summary: Attach and start the vehicle on its path."
 "Example: vehicle thread go_path(path_start)"
 "SPMP: singleplayer"
-///ScriptDocEnd	
-============= 
-*/ 
-go_path(path_start) // self == vehicle
+///ScriptDocEnd
+=============
+*/
+go_path( path_start ) // self == vehicle
 {
 	// getonpath will attach us to the path and allow us to get script_noteworthy notifies from nodes
-	self maps\_vehicle::getonpath(path_start);
+	self maps\_vehicle::getonpath( path_start );
 
 	// gopath starts us on the path
 	self maps\_vehicle::gopath();
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: disable_driver_turret()"
 "Module: Vehicle"
@@ -11289,16 +11340,16 @@ go_path(path_start) // self == vehicle
 "Summary: Disables the main turret of a vehicle.  This is the primary fire of the driver."
 "Example: vehicle disable_turret()"
 "SPMP: singleplayer"
-///ScriptDocEnd	
-============= 
-*/ 
+///ScriptDocEnd
+=============
+*/
 disable_driver_turret() // self == vehicle
 {
-	self notify( "stop_turret_shoot");
+	self notify( "stop_turret_shoot" );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: enable_driver_turret()"
 "Module: Vehicle"
@@ -11306,17 +11357,17 @@ disable_driver_turret() // self == vehicle
 "Summary: Enables the main turret of a vehicle.  This is the primary fire of the driver."
 "Example: vehicle enable_driver_turret()"
 "SPMP: singleplayer"
-///ScriptDocEnd	
-============= 
-*/ 
+///ScriptDocEnd
+=============
+*/
 enable_driver_turret() // self == vehicle
 {
-	self notify( "stop_turret_shoot");
+	self notify( "stop_turret_shoot" );
 	self thread maps\_vehicle::turret_attack_think();
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: set_switch_node( <source_node>, <destination_node> )"
 "Module: Vehicle"
@@ -11326,22 +11377,22 @@ enable_driver_turret() // self == vehicle
 "Summary: Switches from one path to another."
 "Example: vehicle thread set_switch_node(src_node_name, dst_node_name);"
 "SPMP: singleplayer"
-///ScriptDocEnd	
-============= 
-*/ 
-set_switch_node(src_node, dst_node) // self == vehicle
+///ScriptDocEnd
+=============
+*/
+set_switch_node( src_node, dst_node ) // self == vehicle
 {
-	assert(IsDefined(src_node));
-	assert(IsDefined(dst_node));
+	assert( IsDefined( src_node ) );
+	assert( IsDefined( dst_node ) );
 
 	// _vehicle::vehicle_paths will be checking for this bool and the dst_node
 	self.bSwitchingNodes = true;
 	self.dst_node = dst_node;
-	self SetSwitchNode(src_node, dst_node);
+	self SetSwitchNode( src_node, dst_node );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: create_billboard()"
 "Module: Level"
@@ -11349,11 +11400,11 @@ set_switch_node(src_node, dst_node) // self == vehicle
 "Example: create_billboard();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 create_billboard()
 {
-	// create black border  
+	// create black border
 	level.billboardBlack = newHudElem();
 	level.billboardBlack.x = 268;
 	level.billboardBlack.y = 20;
@@ -11361,9 +11412,9 @@ create_billboard()
 	level.billboardBlack.vertAlign = "fullscreen";
 	level.billboardBlack.sort = 0;
 	level.billboardBlack.alpha = .3;
-	level.billboardBlack setShader("black", 120, 55);
+	level.billboardBlack setShader( "black", 120, 55 );
 
-	// create white inside black border  
+	// create white inside black border
 	level.billboardWhite = newHudElem();
 	level.billboardWhite.x = 270;
 	level.billboardWhite.y = 22;
@@ -11371,11 +11422,11 @@ create_billboard()
 	level.billboardWhite.vertAlign = "fullscreen";
 	level.billboardWhite.sort = 1;
 	level.billboardWhite.alpha = .3;
-	level.billboardWhite setShader("white", 116, 50);
+	level.billboardWhite setShader( "white", 116, 50 );
 
 	//text element that displays the name of the event
-	level.billboardName = NewHudElem(); 
-	level.billboardName.alignX = "left"; 
+	level.billboardName = NewHudElem();
+	level.billboardName.alignX = "left";
 	level.billboardName.x = 260;
 	level.billboardName.y = 25;
 	level.billboardName.sort = 2;
@@ -11383,30 +11434,30 @@ create_billboard()
 	level.billboardName.color = ( 0, 0, 0 );
 
 	//text element that displays the type of event
-	level.billboardType = NewHudElem(); 
-	level.billboardType.alignX = "left"; 
-	level.billboardType.x = 260; 
+	level.billboardType = NewHudElem();
+	level.billboardType.alignX = "left";
+	level.billboardType.x = 260;
 	level.billboardType.y = 40;
 	level.billboardType.sort = 2;
 	level.billboardType.fontscale = 1.0;
 	level.billboardType.color = ( 0, 0, 0 );
 
 	//text element that displays the size of the event
-	level.billboardSize = NewHudElem(); 
-	level.billboardSize.alignX = "left"; 
-	level.billboardSize.x = 260; 
+	level.billboardSize = NewHudElem();
+	level.billboardSize.alignX = "left";
+	level.billboardSize.x = 260;
 	level.billboardSize.y = 55;
 	level.billboardSize.sort = 2;
 	level.billboardSize.fontscale = 1.0;
 	level.billboardSize.color = ( 0, 0, 0 );
 
-	level.billboardName setText("Name: ");
+	level.billboardName setText( "Name: " );
 	level.billboardType setText( "Type:" );
 	level.billboardSize setText( "Size:" );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: destroy_billboard()"
 "Module: Level"
@@ -11414,8 +11465,8 @@ create_billboard()
 "Example: destroy_billboard();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 destroy_billboard()
 {
 	//checks to make sure the billboard exists
@@ -11428,8 +11479,8 @@ destroy_billboard()
 	level.billboardSize destroy();
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: update_billboard( <event_name>, <event_type>, <event_size>, <event_state> )"
 "Module: Level"
@@ -11442,25 +11493,25 @@ destroy_billboard()
 "Example: thread update_billboard("Underground Defend", "Combat Defend", "Short (400 - 800)");"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 update_billboard( event_name, event_type, event_size, event_state, disable_fade )
 {
 	//checks to make sure the billboard exists
 	assertEx( IsDefined( level.billboardName ), "No billboard is created call create_billboard" );
 
 	//if any parameters are not defined, make them say undefined
-	if( !IsDefined(event_name) )
+	if ( !IsDefined( event_name ) )
 	{
 		event_name = "undefined";
 	}
 
-	if( !IsDefined(event_type) )
+	if ( !IsDefined( event_type ) )
 	{
 		event_type = "undefined";
 	}
 
-	if( !IsDefined(event_size) )
+	if ( !IsDefined( event_size ) )
 	{
 		event_size = "undefined";
 	}
@@ -11469,29 +11520,30 @@ update_billboard( event_name, event_type, event_size, event_state, disable_fade 
 	color = "black";
 
 	//over the course of one second flash the text from black to red
-	for(i = 0; i < 10; i++)
+	for ( i = 0; i < 10; i++ )
 	{
-		if(color == "black")
+		if ( color == "black" )
 		{
-			level.billboardName.color = ( 1, 0, 0);
+			level.billboardName.color = ( 1, 0, 0 );
 			level.billboardType.color = ( 1, 0, 0 );
-			level.billboardSize.color = ( 1, 0, 0	);
+			level.billboardSize.color = ( 1, 0, 0 );
 			color = "red";
 		}
 		else
 		{
-			level.billboardName.color = ( 0, 0, 0);
+			level.billboardName.color = ( 0, 0, 0 );
 			level.billboardType.color = ( 0, 0, 0 );
-			level.billboardSize.color = ( 0, 0, 0	);
+			level.billboardSize.color = ( 0, 0, 0 );
 			color = "black";
-		}	
-		wait(0.1);
+		}
+
+		wait( 0.1 );
 	}
 
 	//set billboard alpha to 1 and update the values
 	level.billboardBlack.alpha = 1;
 	level.billboardWhite.alpha = 1;
-	if( IsDefined(event_state))
+	if ( IsDefined( event_state ) )
 	{
 		level.billboardName setText( "Name: " + event_name + " (" + event_state + ")" );
 	}
@@ -11499,30 +11551,31 @@ update_billboard( event_name, event_type, event_size, event_state, disable_fade 
 	{
 		level.billboardName setText( "Name: " + event_name );
 	}
+
 	level.billboardType setText( "Type: " + event_type );
 	level.billboardSize setText( "Size: " + event_size );
 
 	//let the billboard remain completely opaque for 3 seconds
-	wait(3);
+	wait( 3 );
 
 	//-- do not fade out the billboard
-	if(IsDefined(disable_fade) && disable_fade)
+	if ( IsDefined( disable_fade ) && disable_fade )
 	{
 		return;
 	}
-	
+
 	//decrease alpha over 3 seconds
 	deltaT = 0.7 / 60;
-	for(i = 0; i < 60; i++)
+	for ( i = 0; i < 60; i++ )
 	{
 		level.billboardBlack.alpha -= deltaT;
 		level.billboardWhite.alpha -= deltaT;
-		wait(0.05);
+		wait( 0.05 );
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: heli_toggle_main_rotor_fx( <alternate> )"
 "Module: Vehicle"
@@ -11532,23 +11585,23 @@ update_billboard( event_name, event_type, event_size, event_state, disable_fade 
 "Example: level.helicopter heli_toggle_main_rotor_fx(1);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 heli_toggle_main_rotor_fx( alternate )
 {
 	//-- Self is the helicopter entity
-	if(alternate)
+	if ( alternate )
 	{
-		self SetClientFlag(0);
+		self SetClientFlag( 0 );
 	}
 	else
 	{
-		self ClearClientFlag(0);
+		self ClearClientFlag( 0 );
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: veh_toggle_tread_fx( <on> )"
 "Module: Vehicle"
@@ -11558,22 +11611,22 @@ heli_toggle_main_rotor_fx( alternate )
 "Example: level.tank veh_toggle_tread_fx(1);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 veh_toggle_tread_fx( on )
 {
-	if(!on)
+	if ( !on )
 	{
-		self SetClientFlag(6);
+		self SetClientFlag( 6 );
 	}
 	else
 	{
-		self ClearClientFlag(6);
+		self ClearClientFlag( 6 );
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: veh_toggle_exhaust_fx( <on> )"
 "Module: Vehicle"
@@ -11583,22 +11636,22 @@ veh_toggle_tread_fx( on )
 "Example: level.tank veh_toggle_exhaust_fx(0);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 veh_toggle_exhaust_fx( on )
 {
-	if(!on)
+	if ( !on )
 	{
-		self SetClientFlag(8);
+		self SetClientFlag( 8 );
 	}
 	else
 	{
-		self ClearClientFlag(8);
+		self ClearClientFlag( 8 );
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: veh_toggle_lights( <on> )"
 "Module: Vehicle"
@@ -11608,23 +11661,22 @@ veh_toggle_exhaust_fx( on )
 "Example: level.tank veh_toggle_lights(0);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 veh_toggle_lights( on )
 {
-	if(on)
+	if ( on )
 	{
-		self SetClientFlag(10);
+		self SetClientFlag( 10 );
 	}
 	else
 	{
-		self ClearClientFlag(10);
+		self ClearClientFlag( 10 );
 	}
 }
 
-
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: heli_toggle_rotor_fx( <on> )"
 "Module: Vehicle"
@@ -11634,22 +11686,22 @@ veh_toggle_lights( on )
 "Example: level.helicopter heli_toggle_rotor_fx(0);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 heli_toggle_rotor_fx( on )
 {
-	if(!on)
+	if ( !on )
 	{
-		self SetClientFlag(1);
+		self SetClientFlag( 1 );
 	}
 	else
 	{
-		self ClearClientFlag(1);
+		self ClearClientFlag( 1 );
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: vehicle_toggle_sounds( <on> )"
 "Module: Vehicle"
@@ -11659,18 +11711,18 @@ heli_toggle_rotor_fx( on )
 "Example: car vehicle_toggle_sounds(0);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 vehicle_toggle_sounds( on )
 {
 	// this flag number should *NOT* be changed. if it needs to be changed, code must be updated as well.
-	if(!on)
+	if ( !on )
 	{
-		self SetClientFlag(2);
+		self SetClientFlag( 2 );
 	}
 	else
 	{
-		self ClearClientFlag(2);
+		self ClearClientFlag( 2 );
 	}
 }
 
@@ -11678,8 +11730,8 @@ vehicle_toggle_sounds( on )
 // ---- Spawn Manager - Scripter interface ----
 // --------------------------------------------------------------------------------
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: spawn_manager_set_global_active_count( count )"
 "Module: Spawn Manager"
@@ -11688,7 +11740,7 @@ vehicle_toggle_sounds( on )
 "Example: spawn_manager_set_global_active_count(16);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 spawn_manager_set_global_active_count( cnt )
 {
@@ -11696,8 +11748,8 @@ spawn_manager_set_global_active_count( cnt )
 	level.spawn_manager_max_ai = cnt;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: sm_use_trig_when_complete( spawn_manager_targetname, trigger value, trigger key, only_once )"
 "Module: Spawn Manager"
@@ -11709,7 +11761,7 @@ spawn_manager_set_global_active_count( cnt )
 "Example: level sm_use_trig_when_complete( "my_spawn_manager_01", "next_trig", "targetname", 1);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 sm_use_trig_when_complete( spawn_manager_targetname, trig_name, trig_key, once_only )
 {
@@ -11718,27 +11770,27 @@ sm_use_trig_when_complete( spawn_manager_targetname, trig_name, trig_key, once_o
 
 sm_use_trig_when_complete_internal( spawn_manager_targetname, trig_name, trig_key, once_only )
 {
-	if(IsDefined(once_only) && once_only )
+	if ( IsDefined( once_only ) && once_only )
 	{
-		trigger = GetEnt(trig_name, trig_key);
-		AssertEX(IsDefined(trigger), "The trigger " + trig_key + " / " + trig_name + " does not exist.");
-		trigger endon("trigger");
+		trigger = GetEnt( trig_name, trig_key );
+		AssertEX( IsDefined( trigger ), "The trigger " + trig_key + " / " + trig_name + " does not exist." );
+		trigger endon( "trigger" );
 	}
 
 	// Check if the spawn manager is enabled based on the flags first and then try to disable it.
-	if( level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ) )
+	if ( level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ) )
 	{
-		flag_wait("sm_" + spawn_manager_targetname + "_complete");
-		trigger_use(trig_name, trig_key);
+		flag_wait( "sm_" + spawn_manager_targetname + "_complete" );
+		trigger_use( trig_name, trig_key );
 	}
 	else
 	{
-		AssertMsg("sm_use_trig_when_complete: Spawn manager '" + spawn_manager_targetname + "' not found.");
+		AssertMsg( "sm_use_trig_when_complete: Spawn manager '" + spawn_manager_targetname + "' not found." );
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: sm_use_trig_when_cleared( spawn_manager_targetname, trigger value, trigger key, once_only )"
 "Module: Spawn Manager"
@@ -11750,7 +11802,7 @@ sm_use_trig_when_complete_internal( spawn_manager_targetname, trig_name, trig_ke
 "Example: level sm_use_trig_when_cleared( "my_spawn_manager_01", "next_trig", "targetname", 1);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 sm_use_trig_when_cleared( spawn_manager_targetname, trig_name, trig_key, once_only )
 {
@@ -11759,27 +11811,27 @@ sm_use_trig_when_cleared( spawn_manager_targetname, trig_name, trig_key, once_on
 
 sm_use_trig_when_cleared_internal( spawn_manager_targetname, trig_name, trig_key, once_only )
 {
-	if(IsDefined(once_only) && once_only )
+	if ( IsDefined( once_only ) && once_only )
 	{
-		trigger = GetEnt(trig_name, trig_key);
-		AssertEX(IsDefined(trigger), "The trigger " + trig_key + " / " + trig_name + " does not exist.");
-		trigger endon("trigger");
+		trigger = GetEnt( trig_name, trig_key );
+		AssertEX( IsDefined( trigger ), "The trigger " + trig_key + " / " + trig_name + " does not exist." );
+		trigger endon( "trigger" );
 	}
 
 	// Check if the spawn manager is enabled based on the flags first and then try to disable it.
-	if( level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ) )
+	if ( level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ) )
 	{
-		flag_wait("sm_" + spawn_manager_targetname + "_cleared");
-		trigger_use(trig_name, trig_key);
+		flag_wait( "sm_" + spawn_manager_targetname + "_cleared" );
+		trigger_use( trig_name, trig_key );
 	}
 	else
 	{
-		AssertMsg("sm_use_trig_when_cleared: Spawn manager '" + spawn_manager_targetname + "' not found.");
+		AssertMsg( "sm_use_trig_when_cleared: Spawn manager '" + spawn_manager_targetname + "' not found." );
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: sm_use_trig_when_enabled( spawn_manager_targetname, trigger value, trigger key, once_only )"
 "Module: Spawn Manager"
@@ -11791,7 +11843,7 @@ sm_use_trig_when_cleared_internal( spawn_manager_targetname, trig_name, trig_key
 "Example: level sm_use_trig_when_enabled( "my_spawn_manager_01", "next_trig", "targetname", 1);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 sm_use_trig_when_enabled( spawn_manager_targetname, trig_name, trig_key, once_only )
 {
@@ -11800,27 +11852,27 @@ sm_use_trig_when_enabled( spawn_manager_targetname, trig_name, trig_key, once_on
 
 sm_use_trig_when_enabled_internal( spawn_manager_targetname, trig_name, trig_key, once_only )
 {
-	if(IsDefined(once_only) && once_only )
+	if ( IsDefined( once_only ) && once_only )
 	{
-		trigger = GetEnt(trig_name, trig_key);
-		AssertEX(IsDefined(trigger), "The trigger " + trig_key + " / " + trig_name + " does not exist.");
-		trigger endon("trigger");
+		trigger = GetEnt( trig_name, trig_key );
+		AssertEX( IsDefined( trigger ), "The trigger " + trig_key + " / " + trig_name + " does not exist." );
+		trigger endon( "trigger" );
 	}
 
 	// Check if the spawn manager is enabled based on the flags first and then wait for it to be enabled
-	if( level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ) )
+	if ( level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ) )
 	{
-		flag_wait("sm_" + spawn_manager_targetname + "_enabled");
-		trigger_use(trig_name, trig_key);
+		flag_wait( "sm_" + spawn_manager_targetname + "_enabled" );
+		trigger_use( trig_name, trig_key );
 	}
 	else
 	{
-		AssertMsg("sm_use_trig_when_cleared: Spawn manager '" + spawn_manager_targetname + "' not found.");
+		AssertMsg( "sm_use_trig_when_cleared: Spawn manager '" + spawn_manager_targetname + "' not found." );
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: sm_run_func_when_complete( spawn_manager_targetname, process, ent, var1, var2, var3, var4 )"
 "Module: Spawn Manager"
@@ -11835,7 +11887,7 @@ sm_use_trig_when_enabled_internal( spawn_manager_targetname, trig_name, trig_key
 "Example: level sm_run_func_when_complete(::my_function, bob, steve);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 sm_run_func_when_complete( spawn_manager_targetname, process, ent, var1, var2, var3, var4, var5 )
 {
@@ -11844,15 +11896,14 @@ sm_run_func_when_complete( spawn_manager_targetname, process, ent, var1, var2, v
 
 sm_run_func_when_complete_internal( spawn_manager_targetname, process, ent, var1, var2, var3, var4, var5 )
 {
-	AssertEx(IsDefined(process), "sm_run_func_when_complete: the function is not defined");
-	AssertEx(level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ), "sm_run_func_when_complete: Spawn manager '" + spawn_manager_targetname + "' not found.");
+	AssertEx( IsDefined( process ), "sm_run_func_when_complete: the function is not defined" );
+	AssertEx( level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ), "sm_run_func_when_complete: Spawn manager '" + spawn_manager_targetname + "' not found." );
 	waittill_spawn_manager_complete( spawn_manager_targetname );
-	single_func(ent, process, var1, var2, var3, var4, var5);
+	single_func( ent, process, var1, var2, var3, var4, var5 );
 }
 
-
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: sm_run_func_when_cleared( spawn_manager_targetname, process, ent, var1, var2, var3, var4 )"
 "Module: Spawn Manager"
@@ -11867,7 +11918,7 @@ sm_run_func_when_complete_internal( spawn_manager_targetname, process, ent, var1
 "Example: level sm_run_func_when_cleared(::my_function, bob, steve);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 sm_run_func_when_cleared( spawn_manager_targetname, process, ent, var1, var2, var3, var4, var5 )
 {
@@ -11876,13 +11927,14 @@ sm_run_func_when_cleared( spawn_manager_targetname, process, ent, var1, var2, va
 
 sm_run_func_when_cleared_internal( spawn_manager_targetname, process, ent, var1, var2, var3, var4, var5 )
 {
-	AssertEx(IsDefined(process), "sm_run_func_when_cleared: the function is not defined");
-	AssertEx(level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ), "sm_run_func_when_cleared: Spawn manager '" + spawn_manager_targetname + "' not found.");
-	waittill_spawn_manager_cleared(spawn_manager_targetname);
-	single_func(ent, process, var1, var2, var3, var4, var5);
+	AssertEx( IsDefined( process ), "sm_run_func_when_cleared: the function is not defined" );
+	AssertEx( level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ), "sm_run_func_when_cleared: Spawn manager '" + spawn_manager_targetname + "' not found." );
+	waittill_spawn_manager_cleared( spawn_manager_targetname );
+	single_func( ent, process, var1, var2, var3, var4, var5 );
 }
-/* 
-============= 
+
+/*
+=============
 ///ScriptDocBegin
 "Name: sm_run_func_when_enabled( spawn_manager_targetname, process, ent, var1, var2, var3, var4 )"
 "Module: Spawn Manager"
@@ -11897,7 +11949,7 @@ sm_run_func_when_cleared_internal( spawn_manager_targetname, process, ent, var1,
 "Example: my_spawnmanager sm_run_func_when_enabled(::my_function, bob, steve);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 sm_run_func_when_enabled( spawn_manager_targetname, process, ent, var1, var2, var3, var4, var5 )
 {
@@ -11906,14 +11958,14 @@ sm_run_func_when_enabled( spawn_manager_targetname, process, ent, var1, var2, va
 
 sm_run_func_when_enabled_internal( spawn_manager_targetname, process, ent, var1, var2, var3, var4, var5 )
 {
-	AssertEx(IsDefined(process), "sm_run_func_when_enabled: the function is not defined");
-	AssertEx(level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ), "sm_run_func_when_enabled: Spawn manager '" + spawn_manager_targetname + "' not found.");
+	AssertEx( IsDefined( process ), "sm_run_func_when_enabled: the function is not defined" );
+	AssertEx( level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ), "sm_run_func_when_enabled: Spawn manager '" + spawn_manager_targetname + "' not found." );
 	waittill_spawn_manager_enabled( spawn_manager_targetname );
-	single_func(ent, process, var1, var2, var3, var4, var5);
+	single_func( ent, process, var1, var2, var3, var4, var5 );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: spawn_manager_enable( <spawn_manager_targetname>, [no_assert] )"
 "Module: Spawn Manager"
@@ -11923,31 +11975,31 @@ sm_run_func_when_enabled_internal( spawn_manager_targetname, process, ent, var1,
 "Example: spawn_manager_enable("spawn_manager_04");"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 spawn_manager_enable( spawn_manager_targetname, no_assert )
 {
 	// Check if the spawn manager is found based on the flags first and then try to enable it.
 	// A spawn manager is disabled by default before enabled/activating it for the first time.
-	if( level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ) )
+	if ( level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ) )
 	{
-		for (i = 0; i < level.spawn_managers.size; i++)
+		for ( i = 0; i < level.spawn_managers.size; i++ )
 		{
-			if (level.spawn_managers[i].sm_id == spawn_manager_targetname)
+			if ( level.spawn_managers[ i ].sm_id == spawn_manager_targetname )
 			{
-				level.spawn_managers[i] notify("enable");
+				level.spawn_managers[ i ] notify( "enable" );
 				return;
 			}
 		}
 	}
-	else if (!is_true(no_assert))
+	else if ( !is_true( no_assert ) )
 	{
-		AssertMsg("spawn_manager_enable: Spawn manager '" + spawn_manager_targetname + "' not found.");
+		AssertMsg( "spawn_manager_enable: Spawn manager '" + spawn_manager_targetname + "' not found." );
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: spawn_manager_disable( <spawn_manager_targetname>, [no_assert] )"
 "Module: Spawn Manager"
@@ -11957,31 +12009,30 @@ spawn_manager_enable( spawn_manager_targetname, no_assert )
 "Example: spawn_manager_disable("spawn_manager_04");"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 spawn_manager_disable( spawn_manager_targetname, no_assert )
 {
 	// Check if the spawn manager is enabled based on the flags first and then try to disable it.
-	if( level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ) )
+	if ( level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ) )
 	{
-		for( i = 0; i < level.spawn_managers.size; i++ )
+		for ( i = 0; i < level.spawn_managers.size; i++ )
 		{
-			if( level.spawn_managers[i].sm_id == spawn_manager_targetname )
+			if ( level.spawn_managers[ i ].sm_id == spawn_manager_targetname )
 			{
-				level.spawn_managers[i] notify("disable");
+				level.spawn_managers[ i ] notify( "disable" );
 				return;
 			}
 		}
 	}
-	else if (!is_true(no_assert))
+	else if ( !is_true( no_assert ) )
 	{
-		AssertMsg("spawn_manager_disable: Spawn manager '" + spawn_manager_targetname + "' not found.");
+		AssertMsg( "spawn_manager_disable: Spawn manager '" + spawn_manager_targetname + "' not found." );
 	}
 }
 
-
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: spawn_manager_kill( <spawn_manager_targetname>, [no_assert] )"
 "Module: Spawn Manager"
@@ -11991,29 +12042,29 @@ spawn_manager_disable( spawn_manager_targetname, no_assert )
 "Example: spawn_manager_kill("spawn_manager_04");"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 spawn_manager_kill( spawn_manager_targetname, no_assert )
 {
-	if( level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ) )
+	if ( level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ) )
 	{
-		for( i = 0; i < level.spawn_managers.size; i++ )
+		for ( i = 0; i < level.spawn_managers.size; i++ )
 		{
-			if( level.spawn_managers[i].sm_id == spawn_manager_targetname )
+			if ( level.spawn_managers[ i ].sm_id == spawn_manager_targetname )
 			{
-				level.spawn_managers[i] notify("kill");
+				level.spawn_managers[ i ] notify( "kill" );
 				return;
 			}
 		}
 	}
-	else if (!is_true(no_assert))
+	else if ( !is_true( no_assert ) )
 	{
-		AssertMsg("spawn_manager_kill: Spawn manager '" + spawn_manager_targetname + "' not found.");
+		AssertMsg( "spawn_manager_kill: Spawn manager '" + spawn_manager_targetname + "' not found." );
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: is_spawn_manager_enabled( spawn_manager_targetname )"
 "Module: Spawn Manager"
@@ -12022,28 +12073,28 @@ spawn_manager_kill( spawn_manager_targetname, no_assert )
 "Example: is_spawn_manager_enabled("spawn_manager_04");"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 is_spawn_manager_enabled( spawn_manager_targetname )
 {
-	if( level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ) )
+	if ( level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ) )
 	{
-		if( flag( "sm_" + spawn_manager_targetname + "_enabled" ) )
+		if ( flag( "sm_" + spawn_manager_targetname + "_enabled" ) )
 		{
-			return true;	
+			return true;
 		}
-		
-		return false;	
+
+		return false;
 	}
 	else
 	{
-		AssertMsg("is_spawn_manager_enabled: Spawn manager '" + spawn_manager_targetname + "' not found.");
+		AssertMsg( "is_spawn_manager_enabled: Spawn manager '" + spawn_manager_targetname + "' not found." );
 	}
-	
+
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: is_spawn_manager_complete( spawn_manager_targetname )"
 "Module: Spawn Manager"
@@ -12052,27 +12103,27 @@ is_spawn_manager_enabled( spawn_manager_targetname )
 "Example: is_spawn_manager_complete("spawn_manager_04");"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 is_spawn_manager_complete( spawn_manager_targetname )
 {
-	if( level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ) )
+	if ( level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ) )
 	{
-		if( flag( "sm_" + spawn_manager_targetname + "_complete" ) )
+		if ( flag( "sm_" + spawn_manager_targetname + "_complete" ) )
 		{
-			return true;	
+			return true;
 		}
-	
+
 		return false;
 	}
 	else
 	{
-		AssertMsg("is_spawn_manager_complete: Spawn manager '" + spawn_manager_targetname + "' not found.");
+		AssertMsg( "is_spawn_manager_complete: Spawn manager '" + spawn_manager_targetname + "' not found." );
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: is_spawn_manager_cleared( spawn_manager_targetname )"
 "Module: Spawn Manager"
@@ -12081,27 +12132,27 @@ is_spawn_manager_complete( spawn_manager_targetname )
 "Example: is_spawn_manager_cleared("spawn_manager_04");"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 is_spawn_manager_cleared( spawn_manager_targetname )
 {
-	if( level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ) )
+	if ( level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ) )
 	{
-		if( flag( "sm_" + spawn_manager_targetname + "_cleared" ) )
+		if ( flag( "sm_" + spawn_manager_targetname + "_cleared" ) )
 		{
-			return true;	
+			return true;
 		}
 
 		return false;
 	}
 	else
 	{
-		AssertMsg("is_spawn_manager_cleared: Spawn manager '" + spawn_manager_targetname + "' not found.");
+		AssertMsg( "is_spawn_manager_cleared: Spawn manager '" + spawn_manager_targetname + "' not found." );
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: is_spawn_manager_killed( spawn_manager_targetname )"
 "Module: Spawn Manager"
@@ -12110,27 +12161,27 @@ is_spawn_manager_cleared( spawn_manager_targetname )
 "Example: is_spawn_manager_killed("spawn_manager_04");"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 is_spawn_manager_killed( spawn_manager_targetname )
 {
-	if( level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ) )
+	if ( level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ) )
 	{
-		if( flag( "sm_" + spawn_manager_targetname + "_killed" ) )
+		if ( flag( "sm_" + spawn_manager_targetname + "_killed" ) )
 		{
-			return true;	
+			return true;
 		}
 
 		return false;
 	}
 	else
 	{
-		AssertMsg("is_spawn_manager_killed: Spawn manager '" + spawn_manager_targetname + "' not found.");
+		AssertMsg( "is_spawn_manager_killed: Spawn manager '" + spawn_manager_targetname + "' not found." );
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: waittill_spawn_manager_cleared( spawn_manager_targetname )"
 "Module: Spawn Manager"
@@ -12139,22 +12190,22 @@ is_spawn_manager_killed( spawn_manager_targetname )
 "Example: waittill_spawn_manager_cleared("spawn_manager_04");"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
-waittill_spawn_manager_cleared(spawn_manager_targetname)
+waittill_spawn_manager_cleared( spawn_manager_targetname )
 {
-	if( level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ) )
+	if ( level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ) )
 	{
-		flag_wait("sm_" + spawn_manager_targetname + "_cleared");
+		flag_wait( "sm_" + spawn_manager_targetname + "_cleared" );
 	}
 	else
 	{
-		AssertMsg("waittill_spawn_manager_cleared: Spawn manager '" + spawn_manager_targetname + "' not found.");
+		AssertMsg( "waittill_spawn_manager_cleared: Spawn manager '" + spawn_manager_targetname + "' not found." );
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: waittill_spawn_manager_ai_remaining( spawn_manager_targetname, count )"
 "Module: Spawn Manager"
@@ -12164,41 +12215,41 @@ waittill_spawn_manager_cleared(spawn_manager_targetname)
 "Example: waittill_spawn_manager_ai_remaining("spawn_manager_04", 5);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
-waittill_spawn_manager_ai_remaining(spawn_manager_targetname, count_to_reach)
+waittill_spawn_manager_ai_remaining( spawn_manager_targetname, count_to_reach )
 {
-	AssertEX( IsDefined(count_to_reach), "# of AI remaining not specified in _utility::waittill_spawn_manager_ai_remaining()");
+	AssertEX( IsDefined( count_to_reach ), "# of AI remaining not specified in _utility::waittill_spawn_manager_ai_remaining()" );
 	AssertEX( count_to_reach, "# of AI remaining specified in _utility::waittill_spawn_manager_ai_remaining() is 0, use waittill_spawn_manager_cleared" );
 
-	if( level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ) )
+	if ( level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ) )
 	{
-		flag_wait("sm_" + spawn_manager_targetname + "_complete");
+		flag_wait( "sm_" + spawn_manager_targetname + "_complete" );
 	}
 	else
 	{
-		AssertMsg("waittill_spawn_manager_ai_remaining: Spawn manager '" + spawn_manager_targetname + "' not found.");
+		AssertMsg( "waittill_spawn_manager_ai_remaining: Spawn manager '" + spawn_manager_targetname + "' not found." );
 	}
-	
-	if( flag( "sm_" + spawn_manager_targetname + "_cleared" ) )	
+
+	if ( flag( "sm_" + spawn_manager_targetname + "_cleared" ) )
 	{
 		return;
 	}
-	
+
 	spawn_manager = maps\_spawn_manager::get_spawn_manager_array( spawn_manager_targetname );
-	
+
 	AssertEx( spawn_manager.size, "Somehow the spawn manager doesnt exist, but related flag existed before." );
 	AssertEx( ( spawn_manager.size == 1 ), "Found two spawn managers with same targetname." );
 
-	// spawn manager might be deleted while we are waiting too	
-	while( ( IsDefined( spawn_manager[0] ) ) && ( spawn_manager[0].activeAI.size > count_to_reach ) )
+	// spawn manager might be deleted while we are waiting too
+	while ( ( IsDefined( spawn_manager[ 0 ] ) ) && ( spawn_manager[ 0 ].activeAI.size > count_to_reach ) )
 	{
-		wait(0.1);
+		wait( 0.1 );
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: waittill_spawn_manager_complete( spawn_manager_targetname )"
 "Module: Spawn Manager"
@@ -12207,22 +12258,22 @@ waittill_spawn_manager_ai_remaining(spawn_manager_targetname, count_to_reach)
 "Example: waittill_spawn_manager_complete("spawn_manager_04");"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
-waittill_spawn_manager_complete(spawn_manager_targetname)
+waittill_spawn_manager_complete( spawn_manager_targetname )
 {
-	if( level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ) )
+	if ( level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ) )
 	{
-		flag_wait("sm_" + spawn_manager_targetname + "_complete");
+		flag_wait( "sm_" + spawn_manager_targetname + "_complete" );
 	}
 	else
 	{
-		AssertMsg("waittill_spawn_manager_complete: Spawn manager '" + spawn_manager_targetname + "' not found.");
+		AssertMsg( "waittill_spawn_manager_complete: Spawn manager '" + spawn_manager_targetname + "' not found." );
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: waittill_spawn_manager_enabled( spawn_manager_targetname )"
 "Module: Spawn Manager"
@@ -12231,68 +12282,68 @@ waittill_spawn_manager_complete(spawn_manager_targetname)
 "Example: waittill_spawn_manager_enabled("spawn_manager_04");"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
-waittill_spawn_manager_enabled(spawn_manager_targetname)
+waittill_spawn_manager_enabled( spawn_manager_targetname )
 {
-	if( level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ) )
+	if ( level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ) )
 	{
-		flag_wait("sm_" + spawn_manager_targetname + "_enabled");
+		flag_wait( "sm_" + spawn_manager_targetname + "_enabled" );
 	}
 	else
 	{
-		AssertMsg("waittill_spawn_manager_enabled: Spawn manager '" + spawn_manager_targetname + "' not found.");
+		AssertMsg( "waittill_spawn_manager_enabled: Spawn manager '" + spawn_manager_targetname + "' not found." );
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: waittill_spawn_manager_spawned_count( spawn_manager_targetname, count )"
 "Module: Spawn Manager"
 "Summary: Returns when the spawn manager has spawned the specified amount of AI."
 "MandatoryArg: <spawn_manager_targetname>"
 "MandatoryArg: count"
-"Example: waittill_spawn_manager_spawned_count( "my_sm_targetname", 20 ) 
+"Example: waittill_spawn_manager_spawned_count( "my_sm_targetname", 20 )
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 
-waittill_spawn_manager_spawned_count( spawn_manager_targetname, count ) 
-{ 
-	if( level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ) )
+waittill_spawn_manager_spawned_count( spawn_manager_targetname, count )
+{
+	if ( level flag_exists( "sm_" + spawn_manager_targetname + "_enabled" ) )
 	{
-		flag_wait("sm_" + spawn_manager_targetname + "_enabled");
+		flag_wait( "sm_" + spawn_manager_targetname + "_enabled" );
 	}
 	else
 	{
-		AssertMsg("waittill_spawn_manager_spawned_count: Spawn manager '" + spawn_manager_targetname + "' not found.");
+		AssertMsg( "waittill_spawn_manager_spawned_count: Spawn manager '" + spawn_manager_targetname + "' not found." );
 	}
-	 
-  spawn_manager = maps\_spawn_manager::get_spawn_manager_array( spawn_manager_targetname );
 
-  AssertEx( spawn_manager.size, "Somehow the spawn manager doesnt exist, but related flag existed before." );
-  AssertEx( ( spawn_manager.size == 1 ), "Found two spawn managers with same targetname." );
+	spawn_manager = maps\_spawn_manager::get_spawn_manager_array( spawn_manager_targetname );
 
-  Assert( spawn_manager[0].count > count, "waittill_spawn_manager_spawned_count : Count should be less than total count on the spawn manager." );
+	AssertEx( spawn_manager.size, "Somehow the spawn manager doesnt exist, but related flag existed before." );
+	AssertEx( ( spawn_manager.size == 1 ), "Found two spawn managers with same targetname." );
 
-  original_count = spawn_manager[0].count;
+	Assert( spawn_manager[ 0 ].count > count, "waittill_spawn_manager_spawned_count : Count should be less than total count on the spawn manager." );
 
-  // spawnCount holds the number of AI's are spawned
-  while(1)
-  {
-    if( IsDefined( spawn_manager[0].spawnCount ) && ( spawn_manager[0].spawnCount < count ) && !is_spawn_manager_killed( spawn_manager_targetname ) )
-    {
-    	wait(0.5);
-    }
-    else
-    {
-    	break;	
-    }	
-  }
-  
-  return;	
+	original_count = spawn_manager[ 0 ].count;
+
+	// spawnCount holds the number of AI's are spawned
+	while ( 1 )
+	{
+		if ( IsDefined( spawn_manager[ 0 ].spawnCount ) && ( spawn_manager[ 0 ].spawnCount < count ) && !is_spawn_manager_killed( spawn_manager_targetname ) )
+		{
+			wait( 0.5 );
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	return;
 }
 
 // --------------------------------------------------------------------------------
@@ -12300,17 +12351,17 @@ waittill_spawn_manager_spawned_count( spawn_manager_targetname, count )
 // --------------------------------------------------------------------------------
 
 /#
-debug_replay(string)
+debug_replay( string )
 {
-	if( getdebugdvar( "replay_debug" ) == "1" )
+	if ( getdebugdvar( "replay_debug" ) == "1" )
 	{
-		println("time=" + GetTime() + " " + string);
+		println( "time=" + GetTime() + " " + string );
 	}
 }
 #/
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: contextual_melee( <melee_name>, <which_set> )"
 "Module: AI"
@@ -12321,15 +12372,15 @@ debug_replay(string)
 "Example: guy contextual_melee("necksnap_stand", "quick");"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
-contextual_melee(melee_name, which_set)
+contextual_melee( melee_name, which_set )
 {
-	self maps\_contextual_melee::main(melee_name, which_set);
+	self maps\_contextual_melee::main( melee_name, which_set );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: add_meatshield_target( <meatshield>, <scripted> )"
 "Module: AI"
@@ -12340,15 +12391,15 @@ contextual_melee(melee_name, which_set)
 "Example: guy add_meatshield_target(my_meatshield);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
-add_meatshield_target(meatshield, scripted)
+add_meatshield_target( meatshield, scripted )
 {
-	maps\_meatshield::add_target(meatshield, scripted);
+	maps\_meatshield::add_target( meatshield, scripted );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: add_meatshield_angle_limits( <meatshield>, <leftarc>, <rightarc> )"
 "Module: AI"
@@ -12360,15 +12411,15 @@ add_meatshield_target(meatshield, scripted)
 "Example: guy add_meatshield_target(my_meatshield);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
-add_meatshield_angle_limits(guy, leftarc, rightarc)
+add_meatshield_angle_limits( guy, leftarc, rightarc )
 {
 	maps\_meatshield::add_angle_limits( guy, leftarc, rightarc );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: veh_magic_bullet_shield( <on> )"
 "Module: Vehicle"
@@ -12378,14 +12429,14 @@ add_meatshield_angle_limits(guy, leftarc, rightarc)
 "Example: level.tank veh_magic_bullet_shield(1);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 veh_magic_bullet_shield( on )
 {
-	assertex(!IsAI(self), "This is for vehicles, please use magic_bullet_shield for AI.");
-	assertex(!IsPlayer(self), "This is for vehicles, please use magic_bullet_shield for players.");
+	assertex( !IsAI( self ), "This is for vehicles, please use magic_bullet_shield for AI." );
+	assertex( !IsPlayer( self ), "This is for vehicles, please use magic_bullet_shield for players." );
 
-	if(!on)
+	if ( !on )
 	{
 		self maps\_vehicle::godoff();
 	}
@@ -12398,8 +12449,8 @@ veh_magic_bullet_shield( on )
 /////////////////////////////////////////////////////////////////////
 ////////////////////////// CALLBACKS ////////////////////////////////
 /////////////////////////////////////////////////////////////////////
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: OnFirstPlayerConnect_Callback(<func>)"
 "Module: Callbacks"
@@ -12408,15 +12459,15 @@ veh_magic_bullet_shield( on )
 "Example: OnFirstPlayerConnect_Callback(::on_first_player_connect);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
-OnFirstPlayerConnect_Callback(func)
+OnFirstPlayerConnect_Callback( func )
 {
-	maps\_callbackglobal::AddCallback("on_first_player_connect", func);
+	maps\_callbackglobal::AddCallback( "on_first_player_connect", func );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: OnFirstPlayerConnect_CallbackRemove(<func>)"
 "Module: Callbacks"
@@ -12425,15 +12476,15 @@ OnFirstPlayerConnect_Callback(func)
 "Example: OnFirstPlayerConnect_CallbackRemove(::on_first_player_connect);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
-OnFirstPlayerConnect_CallbackRemove(func)
+OnFirstPlayerConnect_CallbackRemove( func )
 {
-	maps\_callbackglobal::RemoveCallback("on_first_player_connect", func);
+	maps\_callbackglobal::RemoveCallback( "on_first_player_connect", func );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: OnPlayerConnect_Callback(<func>)"
 "Module: Callbacks"
@@ -12442,15 +12493,15 @@ OnFirstPlayerConnect_CallbackRemove(func)
 "Example: OnPlayerConnect_Callback(::on_player_connect);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
-OnPlayerConnect_Callback(func)
+OnPlayerConnect_Callback( func )
 {
-	maps\_callbackglobal::AddCallback("on_player_connect", func);
+	maps\_callbackglobal::AddCallback( "on_player_connect", func );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: OnPlayerConnect_CallbackRemove(<func>)"
 "Module: Callbacks"
@@ -12459,15 +12510,15 @@ OnPlayerConnect_Callback(func)
 "Example: OnPlayerConnect_CallbackRemove(::on_player_connect);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
-OnPlayerConnect_CallbackRemove(func)
+OnPlayerConnect_CallbackRemove( func )
 {
-	maps\_callbackglobal::RemoveCallback("on_player_connect", func);
+	maps\_callbackglobal::RemoveCallback( "on_player_connect", func );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: OnPlayerDisconnect_Callback(<func>)"
 "Module: Callbacks"
@@ -12476,15 +12527,15 @@ OnPlayerConnect_CallbackRemove(func)
 "Example: OnPlayerDisconnect_Callback(::on_player_disconnect);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
-OnPlayerDisconnect_Callback(func)
+OnPlayerDisconnect_Callback( func )
 {
-	maps\_callbackglobal::AddCallback("on_player_disconnect", func);
+	maps\_callbackglobal::AddCallback( "on_player_disconnect", func );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: OnPlayerDisconnect_CallbackRemove(<func>)"
 "Module: Callbacks"
@@ -12493,15 +12544,15 @@ OnPlayerDisconnect_Callback(func)
 "Example: OnPlayerDisconnect_CallbackRemove(::on_player_disconnect);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
-OnPlayerDisconnect_CallbackRemove(func)
+OnPlayerDisconnect_CallbackRemove( func )
 {
-	maps\_callbackglobal::RemoveCallback("on_player_disconnect", func);
+	maps\_callbackglobal::RemoveCallback( "on_player_disconnect", func );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: OnPlayerDamage_Callback(<func>)"
 "Module: Callbacks"
@@ -12510,15 +12561,15 @@ OnPlayerDisconnect_CallbackRemove(func)
 "Example: OnPlayerDamage_Callback(::on_player_damage);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
-OnPlayerDamage_Callback(func)
+OnPlayerDamage_Callback( func )
 {
-	maps\_callbackglobal::AddCallback("on_player_damage", func);
+	maps\_callbackglobal::AddCallback( "on_player_damage", func );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: OnPlayerDamage_CallbackRemove(<func>)"
 "Module: Callbacks"
@@ -12527,15 +12578,15 @@ OnPlayerDamage_Callback(func)
 "Example: OnPlayerDamage_CallbackRemove(::on_player_damage);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
-OnPlayerDamage_CallbackRemove(func)
+OnPlayerDamage_CallbackRemove( func )
 {
-	maps\_callbackglobal::RemoveCallback("on_player_damage", func);
+	maps\_callbackglobal::RemoveCallback( "on_player_damage", func );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: OnPlayerLastStand_Callback(<func>)"
 "Module: Callbacks"
@@ -12544,15 +12595,15 @@ OnPlayerDamage_CallbackRemove(func)
 "Example: OnPlayerLastStand_Callback(::on_player_last_stand);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
-OnPlayerLastStand_Callback(func)
+OnPlayerLastStand_Callback( func )
 {
-	maps\_callbackglobal::AddCallback("on_player_last_stand", func);
+	maps\_callbackglobal::AddCallback( "on_player_last_stand", func );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: OnPlayerLastStand_CallbackRemove(<func>)"
 "Module: Callbacks"
@@ -12561,15 +12612,15 @@ OnPlayerLastStand_Callback(func)
 "Example: OnPlayerLastStand_CallbackRemove(::on_player_last_stand);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
-OnPlayerLastStand_CallbackRemove(func)
+OnPlayerLastStand_CallbackRemove( func )
 {
-	maps\_callbackglobal::RemoveCallback("on_player_last_stand", func);
+	maps\_callbackglobal::RemoveCallback( "on_player_last_stand", func );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: OnPlayerKilled_Callback(<func>)"
 "Module: Callbacks"
@@ -12578,15 +12629,15 @@ OnPlayerLastStand_CallbackRemove(func)
 "Example: OnPlayerKilled_Callback(::on_player_killed);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
-OnPlayerKilled_Callback(func)
+OnPlayerKilled_Callback( func )
 {
-	maps\_callbackglobal::AddCallback("on_player_killed", func);
+	maps\_callbackglobal::AddCallback( "on_player_killed", func );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: OnPlayerKilled_CallbackRemove(<func>)"
 "Module: Callbacks"
@@ -12595,23 +12646,23 @@ OnPlayerKilled_Callback(func)
 "Example: OnPlayerKilled_CallbackRemove(::on_player_killed);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
-OnPlayerKilled_CallbackRemove(func)
+OnPlayerKilled_CallbackRemove( func )
 {
-	maps\_callbackglobal::RemoveCallback("on_player_killed", func);
+	maps\_callbackglobal::RemoveCallback( "on_player_killed", func );
 }
 
 // OnPlayerRevived_Callback(func)
 // {
 // 	// The revived callback doesn't seem to be called by code.
 // 	// We need to fix this if we need this functionality
-// 
+//
 // 	maps\_callbackglobal::AddCallback("on_player_revived", func);
 // }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: OnActorDamage_Callback(<func>)"
 "Module: Callbacks"
@@ -12620,15 +12671,15 @@ OnPlayerKilled_CallbackRemove(func)
 "Example: OnActorDamage_Callback(::on_actor_damage);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
-OnActorDamage_Callback(func)
+OnActorDamage_Callback( func )
 {
-	maps\_callbackglobal::AddCallback("on_actor_damage", func);
+	maps\_callbackglobal::AddCallback( "on_actor_damage", func );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: OnActorDamage_CallbackRemove(<func>)"
 "Module: Callbacks"
@@ -12637,15 +12688,15 @@ OnActorDamage_Callback(func)
 "Example: OnActorDamage_CallbackRemove(::on_actor_damage);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
-OnActorDamage_CallbackRemove(func)
+OnActorDamage_CallbackRemove( func )
 {
-	maps\_callbackglobal::RemoveCallback("on_actor_damage", func);
+	maps\_callbackglobal::RemoveCallback( "on_actor_damage", func );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: OnActorKilled_Callback(<func>)"
 "Module: Callbacks"
@@ -12654,15 +12705,15 @@ OnActorDamage_CallbackRemove(func)
 "Example: OnActorDamage_Callback(::on_actor_killed);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
-OnActorKilled_Callback(func)
+OnActorKilled_Callback( func )
 {
-	maps\_callbackglobal::AddCallback("on_actor_killed", func);
+	maps\_callbackglobal::AddCallback( "on_actor_killed", func );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: OnActorKilled_CallbackRemove(<func>)"
 "Module: Callbacks"
@@ -12671,15 +12722,15 @@ OnActorKilled_Callback(func)
 "Example: OnActorDamage_CallbackRemove(::on_actor_killed);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
-OnActorKilled_CallbackRemove(func)
+OnActorKilled_CallbackRemove( func )
 {
-	maps\_callbackglobal::RemoveCallback("on_actor_killed", func);
+	maps\_callbackglobal::RemoveCallback( "on_actor_killed", func );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: OnVehicleDamage_Callback(<func>)"
 "Module: Callbacks"
@@ -12688,15 +12739,15 @@ OnActorKilled_CallbackRemove(func)
 "Example: OnVehicleDamage_Callback(::on_vehicle_damage);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
-OnVehicleDamage_Callback(func)
+OnVehicleDamage_Callback( func )
 {
-	maps\_callbackglobal::AddCallback("on_vehicle_damage", func);
+	maps\_callbackglobal::AddCallback( "on_vehicle_damage", func );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: OnVehicleDamage_CallbackRemove(<func>)"
 "Module: Callbacks"
@@ -12705,16 +12756,15 @@ OnVehicleDamage_Callback(func)
 "Example: OnVehicleDamage_CallbackRemove(::on_vehicle_damage);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
-OnVehicleDamage_CallbackRemove(func)
+OnVehicleDamage_CallbackRemove( func )
 {
-	maps\_callbackglobal::RemoveCallback("on_vehicle_damage", func);
+	maps\_callbackglobal::RemoveCallback( "on_vehicle_damage", func );
 }
 
-
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: OnSaveRestored_Callback(<func>)"
 "Module: Callbacks"
@@ -12723,15 +12773,15 @@ OnVehicleDamage_CallbackRemove(func)
 "Example: OnSaveRestored_Callback(::on_save_restored);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
-OnSaveRestored_Callback(func)
+OnSaveRestored_Callback( func )
 {
-	maps\_callbackglobal::AddCallback("on_save_restored", func);
+	maps\_callbackglobal::AddCallback( "on_save_restored", func );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: OnSaveRestored_CallbackRemove(<func>)"
 "Module: Callbacks"
@@ -12740,19 +12790,19 @@ OnSaveRestored_Callback(func)
 "Example: OnSaveRestored_CallbackRemove(::on_save_restored);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
-OnSaveRestored_CallbackRemove(func)
+OnSaveRestored_CallbackRemove( func )
 {
-	maps\_callbackglobal::RemoveCallback("on_save_restored", func);
+	maps\_callbackglobal::RemoveCallback( "on_save_restored", func );
 }
 
 /////////////////////////////////////////////////////////////////////
 ////////////////////////// END CALLBACKS ////////////////////////////
 /////////////////////////////////////////////////////////////////////
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: aim_at_target(target, duration)"
 "Summary: Force AI to start aiming at given target"
@@ -12763,15 +12813,15 @@ OnSaveRestored_CallbackRemove(func)
 "Example: level.price aim_at_target( level.player );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
-aim_at_target(target, duration)
+=============
+*/
+aim_at_target( target, duration )
 {
-	self	endon("death");
-	self	endon("stop_aim_at_target");
+	self endon( "death" );
+	self endon( "stop_aim_at_target" );
 
-	assert( IsDefined(target) );
-	if( !IsDefined(target) )
+	assert( IsDefined( target ) );
+	if ( !IsDefined( target ) )
 	{
 		return;
 	}
@@ -12780,21 +12830,21 @@ aim_at_target(target, duration)
 	self.a.allow_shooting = false;
 
 	// aim for duration
-	if( IsDefined(duration) && duration > 0 )
+	if ( IsDefined( duration ) && duration > 0 )
 	{
 		elapsed = 0;
-		while( elapsed < duration )
+		while ( elapsed < duration )
 		{
 			elapsed += 0.05;
-			wait(0.05);
+			wait( 0.05 );
 		}
 
 		stop_aim_at_target();
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: stop_aim_at_target()"
 "Summary: Stop the AI from forced aiming and allow it to go back to normal"
@@ -12803,18 +12853,18 @@ aim_at_target(target, duration)
 "Example: level.price stop_aim_at_target();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 stop_aim_at_target()
 {
 	self ClearEntityTarget();
 	self.a.allow_shooting = true;
 
-	self notify("stop_aim_at_target");
+	self notify( "stop_aim_at_target" );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: shoot_at_target(target, tag, fireDelay, duration)"
 "Summary: Force AI to aim and shoot at given target"
@@ -12827,20 +12877,20 @@ stop_aim_at_target()
 "Example: level.price aim_at_target( level.player );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
-shoot_at_target(target, tag, fireDelay, duration)
+=============
+*/
+shoot_at_target( target, tag, fireDelay, duration )
 {
-	self	endon("death");
-	self	endon("stop_shoot_at_target");
+	self endon( "death" );
+	self endon( "stop_shoot_at_target" );
 
-	assert( IsDefined(target) );
-	if( !IsDefined(target) )
+	assert( IsDefined( target ) );
+	if ( !IsDefined( target ) )
 	{
 		return;
 	}
 
-	if( IsDefined(tag) && tag != "" && tag != "tag_eye" && tag != "tag_head" )
+	if ( IsDefined( tag ) && tag != "" && tag != "tag_eye" && tag != "tag_head" )
 	{
 		self SetEntityTarget( target, 1, tag );
 	}
@@ -12853,7 +12903,7 @@ shoot_at_target(target, tag, fireDelay, duration)
 	self animscripts\weaponList::RefillClip();
 
 	// wait to aim before firing
-	if( IsDefined(fireDelay) && fireDelay > 0 )
+	if ( IsDefined( fireDelay ) && fireDelay > 0 )
 	{
 		self.a.allow_shooting = false;
 		wait( fireDelay );
@@ -12869,31 +12919,31 @@ shoot_at_target(target, tag, fireDelay, duration)
 	self call_overloaded_func( "animscripts\shoot_behavior", "setShootEnt", target );
 
 	// wait for first shot
-	self waittill("shoot");
+	self waittill( "shoot" );
 
 	// fire for duration
-	if( IsDefined(duration) )
+	if ( IsDefined( duration ) )
 	{
-		if( duration > 0)
+		if ( duration > 0 )
 		{
 			elapsed = 0;
-			while( elapsed < duration )
+			while ( elapsed < duration )
 			{
 				elapsed += 0.05;
-				wait(0.05);
+				wait( 0.05 );
 			}
 		}
-		else if (duration == -1)
+		else if ( duration == -1 )
 		{
-			target waittill("death");
+			target waittill( "death" );
 		}
 	}
 
 	stop_shoot_at_target();
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: shoot_at_target_untill_dead(target, tag, fireDelay)"
 "Summary: Force AI to aim and shoot at given target untill it's dead."
@@ -12905,15 +12955,15 @@ shoot_at_target(target, tag, fireDelay, duration)
 "Example: level.price shoot_at_target_untill_dead( target_dude );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
-shoot_at_target_untill_dead(target, tag, fireDelay)
+=============
+*/
+shoot_at_target_untill_dead( target, tag, fireDelay )
 {
-	shoot_at_target(target, tag, fireDelay, -1);
+	shoot_at_target( target, tag, fireDelay, -1 );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: stop_shoot_at_target()"
 "Summary: Give the AI his gun back."
@@ -12922,94 +12972,94 @@ shoot_at_target_untill_dead(target, tag, fireDelay)
 "Example: level.price stop_shoot_at_target();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 stop_shoot_at_target()
 {
 	self ClearEntityTarget();
 
 	self.cansee_override = false;
 
-	self notify("stop_shoot_at_target");
+	self notify( "stop_shoot_at_target" );
 }
 
-add_trigger_to_ent(ent) // Self == The trigger volume
+add_trigger_to_ent( ent ) // Self == The trigger volume
 {
-	if(!IsDefined(ent._triggers))
+	if ( !IsDefined( ent._triggers ) )
 	{
 		ent._triggers = [];
 	}
-	
-	ent._triggers[self GetEntityNumber()] = 1;
+
+	ent._triggers[ self GetEntityNumber() ] = 1;
 }
 
-remove_trigger_from_ent(ent)	// Self == The trigger volume.
+remove_trigger_from_ent( ent ) // Self == The trigger volume.
 {
-	if(!IsDefined(ent._triggers))
+	if ( !IsDefined( ent._triggers ) )
 		return;
-		
-	if(!IsDefined(ent._triggers[self GetEntityNumber()]))
+
+	if ( !IsDefined( ent._triggers[ self GetEntityNumber() ] ) )
 		return;
-		
-	ent._triggers[self GetEntityNumber()] = 0;
+
+	ent._triggers[ self GetEntityNumber() ] = 0;
 }
 
-ent_already_in_trigger(trig)	// Self == The entity in the trigger volume.
+ent_already_in_trigger( trig ) // Self == The entity in the trigger volume.
 {
-	if(!IsDefined(self._triggers))
+	if ( !IsDefined( self._triggers ) )
 		return false;
-		
-	if(!IsDefined(self._triggers[trig GetEntityNumber()]))
+
+	if ( !IsDefined( self._triggers[ trig GetEntityNumber() ] ) )
 		return false;
-		
-	if(!self._triggers[trig GetEntityNumber()])
+
+	if ( !self._triggers[ trig GetEntityNumber() ] )
 		return false;
-		
-	return true;	// We're already in this trigger volume.
+
+	return true; // We're already in this trigger volume.
 }
 
-trigger_thread(ent, on_enter_payload, on_exit_payload)	// Self == The trigger.
+trigger_thread( ent, on_enter_payload, on_exit_payload ) // Self == The trigger.
 {
-	ent endon("entityshutdown");
-	ent endon("death");
-	
-	if(ent ent_already_in_trigger(self))
-		return;
-		
-	self add_trigger_to_ent(ent);
+	ent endon( "entityshutdown" );
+	ent endon( "death" );
 
-//	iprintlnbold("Trigger " + self.targetname + " hit by ent " + ent getentitynumber());
-	
+	if ( ent ent_already_in_trigger( self ) )
+		return;
+
+	self add_trigger_to_ent( ent );
+
+	//	iprintlnbold("Trigger " + self.targetname + " hit by ent " + ent getentitynumber());
+
 	endon_condition = "leave_trigger_" + self GetEntityNumber();
-	
-	if(IsDefined(on_enter_payload))
+
+	if ( IsDefined( on_enter_payload ) )
 	{
-		self thread [[on_enter_payload]](ent, endon_condition);
-	}
-	
-	while(IsDefined(ent) && ent IsTouching(self))
-	{
-		wait(0.01);
+		self thread [[ on_enter_payload ]]( ent, endon_condition );
 	}
 
-	ent notify(endon_condition);
-
-//	iprintlnbold(ent getentitynumber() + " leaves trigger " + self.targetname + ".");
-
-	if(IsDefined(ent) && IsDefined(on_exit_payload))
+	while ( IsDefined( ent ) && ent IsTouching( self ) )
 	{
-		self thread [[on_exit_payload]](ent);
+		wait( 0.01 );
 	}
 
-	if(IsDefined(ent))
+	ent notify( endon_condition );
+
+	//	iprintlnbold(ent getentitynumber() + " leaves trigger " + self.targetname + ".");
+
+	if ( IsDefined( ent ) && IsDefined( on_exit_payload ) )
 	{
-		self remove_trigger_from_ent(ent);
+		self thread [[ on_exit_payload ]]( ent );
+	}
+
+	if ( IsDefined( ent ) )
+	{
+		self remove_trigger_from_ent( ent );
 	}
 
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: set_swimming_depth_of_field(<toggle>, <set_values>, <near_start>, <near_end>, <far_start>, <far_end>, <near_blur>, <far_blur>)"
 "Summary: Allows you to enable or disable depth of field changes for swimming and overwrite values as desired."
@@ -13026,35 +13076,35 @@ trigger_thread(ent, on_enter_payload, on_exit_payload)	// Self == The trigger.
 "OptionalArg: <far blur> Maximal blur radius for far depth of field, in pixels at 640x480."
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
-set_swimming_depth_of_field( toggle, set_values, near_start, near_end, far_start, far_end, near_blur, far_blur)
+=============
+*/
+set_swimming_depth_of_field( toggle, set_values, near_start, near_end, far_start, far_end, near_blur, far_blur )
 {
-	AssertEx(IsDefined(toggle), "toggle must be set to true or false");
-	
-	if(toggle)
+	AssertEx( IsDefined( toggle ), "toggle must be set to true or false" );
+
+	if ( toggle )
 	{
 		level._swimming.toggle_depth_of_field = true;
-/#		
-		println("depth of field enabled");
-#/		
-		if(IsDefined(set_values) && set_values)
+		/#
+		println( "depth of field enabled" );
+		#/
+		if ( IsDefined( set_values ) && set_values )
 		{
-/#			
-			println("DOF enabled and values are being overwritten");
-#/			
+			/#
+			println( "DOF enabled and values are being overwritten" );
+			#/
 			//if they decide to overwrite; check for valid settings.
-			AssertEx(IsDefined(near_start), "Depth of Field value near_start undefined");
-			AssertEx(IsDefined(near_end), "Depth of Field value near_end undefined");
-			AssertEx(IsDefined(far_start), "Depth of Field value far_start undefined");
-			AssertEx(IsDefined(far_end), "Depth of Field value far_end undefined");
-			AssertEx(IsDefined(near_blur), "Depth of Field value near_blur undefined");
-			AssertEx(IsDefined(far_blur), "Depth of Field value far_blur undefined");
-			
+			AssertEx( IsDefined( near_start ), "Depth of Field value near_start undefined" );
+			AssertEx( IsDefined( near_end ), "Depth of Field value near_end undefined" );
+			AssertEx( IsDefined( far_start ), "Depth of Field value far_start undefined" );
+			AssertEx( IsDefined( far_end ), "Depth of Field value far_end undefined" );
+			AssertEx( IsDefined( near_blur ), "Depth of Field value near_blur undefined" );
+			AssertEx( IsDefined( far_blur ), "Depth of Field value far_blur undefined" );
+
 			//this must be checked because SetDepthOfField will turn off if start values are >= to end values
-			AssertEx(near_start < near_end, "Depth of Field value near_start must be < near_end");
-			AssertEx(far_start < far_end, "Depth of Field value far_start must be < far_end");
-					
+			AssertEx( near_start < near_end, "Depth of Field value near_start must be < near_end" );
+			AssertEx( far_start < far_end, "Depth of Field value far_start must be < far_end" );
+
 			//SetDepthOfField( <near start>, <near end>, <far start>, <far end>, <near blur>, <far blur> )
 			level._swimming.dof_near_start = near_start;
 			level._swimming.dof_near_end = near_end;
@@ -13064,17 +13114,17 @@ set_swimming_depth_of_field( toggle, set_values, near_start, near_end, far_start
 			level._swimming.dof_far_blur = far_blur;
 		}
 	}
-	else if(!toggle)
+	else if ( !toggle )
 	{
-/#		
-		println("swimming depth of field disabled");
-#/		
+		/#
+		println( "swimming depth of field disabled" );
+		#/
 		level._swimming.toggle_depth_of_field = false;
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: disable_swimming()"
 "Summary: Disable swimming script."
@@ -13083,15 +13133,15 @@ set_swimming_depth_of_field( toggle, set_values, near_start, near_end, far_start
 "Example: level disable_swimming();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 disable_swimming()
 {
 	self maps\_swimming::disable();
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: enable_swimming()"
 "Summary: Enable swimming script."
@@ -13100,15 +13150,15 @@ disable_swimming()
 "Example: level enable_swimming();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 enable_swimming()
 {
 	self maps\_swimming::enable();
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: hide_swimming_arms()"
 "Summary: Hide swimming arms."
@@ -13117,15 +13167,15 @@ enable_swimming()
 "Example: level hide_swimming_arms();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 hide_swimming_arms()
 {
-	self ClientNotify("_swimming:hide_arms");
+	self ClientNotify( "_swimming:hide_arms" );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: show_swimming_arms()"
 "Summary: Show swimming arms."
@@ -13134,15 +13184,15 @@ hide_swimming_arms()
 "Example: level show_swimming_arms();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 show_swimming_arms()
 {
-	self ClientNotify("_swimming:show_arms");
+	self ClientNotify( "_swimming:show_arms" );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: delete_ents()"
 "Summary: Delete all ents with specified mask within radius"
@@ -13151,19 +13201,19 @@ show_swimming_arms()
 "Example: delete_ents( level.CONTENTS_CORPSE, get_players()[0].origin, 1024 );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 delete_ents( mask, origin, radius )
 {
 	ents = entsearch( mask, origin, radius );
-	for( i = 0; i < ents.size; i++ )
+	for ( i = 0; i < ents.size; i++ )
 	{
-		ents[i] delete();
+		ents[ i ] delete();
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: set_drop_weapon(<weapon_name>)"
 "Summary: Specify what weapon an AI will drop."
@@ -13173,17 +13223,16 @@ delete_ents( mask, origin, radius )
 "Example: guy set_drop_weapon("dragonov_sp");"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
-set_drop_weapon(weapon_name)
+=============
+*/
+set_drop_weapon( weapon_name )
 {
-	AssertEx(IsDefined(weapon_name) && IsString(weapon_name), "_utility::set_drop_weapon: Invalid weapon name!");
+	AssertEx( IsDefined( weapon_name ) && IsString( weapon_name ), "_utility::set_drop_weapon: Invalid weapon name!" );
 	self.script_dropweapon = weapon_name;
 }
 
-
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: take_and_giveback_weapons()"
 "Summary: Removes all the player's weapons, waits for a notify that is passed through, and returns all weapons at previous ammo"
@@ -13192,14 +13241,14 @@ set_drop_weapon(weapon_name)
 "Example: get_players()[0] thread take_and_giveback_weapons("giveback");"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
-take_and_giveback_weapons(mynotify, no_autoswitch)
+take_and_giveback_weapons( mynotify, no_autoswitch )
 {
 	take_weapons();
-	self waittill (mynotify);
-	give_weapons(no_autoswitch);
+	self waittill( mynotify );
+	give_weapons( no_autoswitch );
 }
 
 take_weapons()
@@ -13211,10 +13260,10 @@ take_weapons()
 	weapon_list_modified = [];
 
 	// remove all the attachmentweapon/altweapons from the weaponlist
-	for ( i = 0; i < self.weapons_list.size; i++)
+	for ( i = 0; i < self.weapons_list.size; i++ )
 	{
-		if( !is_weapon_attachment( self.weapons_list[i] ) )
-			weapon_list_modified[ weapon_list_modified.size ] = self.weapons_list[i];
+		if ( !is_weapon_attachment( self.weapons_list[ i ] ) )
+			weapon_list_modified[ weapon_list_modified.size ] = self.weapons_list[ i ];
 	}
 
 	// store the modified list back into the weapons list
@@ -13222,76 +13271,75 @@ take_weapons()
 
 	// if the current weapon is an alt weapon, then find the base weapon and make it currentweapon
 	// as we cant give just attachmentweapon/altweapon to the player
-	if( is_weapon_attachment( self.curweapon ) )
+	if ( is_weapon_attachment( self.curweapon ) )
 	{
 		self.curweapon = get_baseweapon_for_attachment( self.curweapon );
 	}
 
 	self.weapons_info = [];
 
-	for ( i = 0; i < self.weapons_list.size; i++)
+	for ( i = 0; i < self.weapons_list.size; i++ )
 	{
-		self.weapons_info[i] = SpawnStruct();
+		self.weapons_info[ i ] = SpawnStruct();
 
-		if (IsDefined(self.offhand) && self.weapons_list[i] == self.offhand )
+		if ( IsDefined( self.offhand ) && self.weapons_list[ i ] == self.offhand )
 		{
-			self.weapons_info[i]._ammo = 0;
-			self.weapons_info[i]._stock = self GetWeaponAmmoStock(self.weapons_list[i]);
+			self.weapons_info[ i ]._ammo = 0;
+			self.weapons_info[ i ]._stock = self GetWeaponAmmoStock( self.weapons_list[ i ] );
 		}
 		else
 		{
-			self.weapons_info[i]._ammo = self GetWeaponAmmoClip(self.weapons_list[i]);
-			self.weapons_info[i]._stock = self GetWeaponAmmoStock(self.weapons_list[i]);
-			self.weapons_info[i]._renderOptions = self GetWeaponRenderOptions( self.weapons_list[i] );
+			self.weapons_info[ i ]._ammo = self GetWeaponAmmoClip( self.weapons_list[ i ] );
+			self.weapons_info[ i ]._stock = self GetWeaponAmmoStock( self.weapons_list[ i ] );
+			self.weapons_info[ i ]._renderOptions = self GetWeaponRenderOptions( self.weapons_list[ i ] );
 		}
 	}
 
 	self TakeAllWeapons();
 }
 
-give_weapons(no_autoswitch)
+give_weapons( no_autoswitch )
 {
-	for (i=0; i < self.weapons_list.size; i++)
+	for ( i = 0; i < self.weapons_list.size; i++ )
 	{
-		if( IsDefined( self.weapons_info[i]._renderOptions ) )
+		if ( IsDefined( self.weapons_info[ i ]._renderOptions ) )
 		{
-			self GiveWeapon(self.weapons_list[i], 0, self.weapons_info[i]._renderOptions );
+			self GiveWeapon( self.weapons_list[ i ], 0, self.weapons_info[ i ]._renderOptions );
 		}
 		else
 		{
-			self GiveWeapon(self.weapons_list[i]);
+			self GiveWeapon( self.weapons_list[ i ] );
 		}
 
-		self SetWeaponAmmoClip(self.weapons_list[i], self.weapons_info[i]._ammo);
-		self SetWeaponAmmoStock(self.weapons_list[i], self.weapons_info[i]._stock );
+		self SetWeaponAmmoClip( self.weapons_list[ i ], self.weapons_info[ i ]._ammo );
+		self SetWeaponAmmoStock( self.weapons_list[ i ], self.weapons_info[ i ]._stock );
 	}
 
 	self.weapons_info = undefined;
 
-	if( IsDefined( self.curweapon ) && self.curweapon != "none" && !IsDefined(no_autoswitch) )
-	{	
+	if ( IsDefined( self.curweapon ) && self.curweapon != "none" && !IsDefined( no_autoswitch ) )
+	{
 		//special case for the dragons breath
 		/*if(IsSubstr( self.curweapon,"_db"))
 		{
 			self GiveWeapon("spas_sog_sp");
 			self.curweapon = "spas_sog_sp";
 		}*/
-		self SwitchToWeapon(self.curweapon);
+		self SwitchToWeapon( self.curweapon );
 	}
 }
 
 is_weapon_attachment( weapon_name )
 {
-	weapon_pieces = StrTok(weapon_name, "_");
-	
-	if( weapon_pieces[0] == "ft" || weapon_pieces[0] == "mk" || weapon_pieces[0] == "gl" )
+	weapon_pieces = StrTok( weapon_name, "_" );
+
+	if ( weapon_pieces[ 0 ] == "ft" || weapon_pieces[ 0 ] == "mk" || weapon_pieces[ 0 ] == "gl" )
 	{
 		return true;
 	}
-	
+
 	return false;
 }
-
 
 // do not call this function from level script, only meant to be used by take_weapons function
 get_baseweapon_for_attachment( weapon_name )
@@ -13300,46 +13348,46 @@ get_baseweapon_for_attachment( weapon_name )
 
 	// find the attachment type
 	weapon_pieces = StrTok( weapon_name, "_" );
-	
-	attachment = weapon_pieces[0];
-	Assert( weapon_pieces[0] == "ft" || weapon_pieces[0] == "mk" || weapon_pieces[0] == "gl" || weapon_pieces[0] == "db" );
-	
+
+	attachment = weapon_pieces[ 0 ];
+	Assert( weapon_pieces[ 0 ] == "ft" || weapon_pieces[ 0 ] == "mk" || weapon_pieces[ 0 ] == "gl" || weapon_pieces[ 0 ] == "db" );
+
 	// find the weapon related to this attachment
-	weapon = weapon_pieces[1];
-	Assert( weapon_pieces[1] != "ft" && weapon_pieces[1] != "mk" && weapon_pieces[1] != "gl" && weapon_pieces[1] != "db"  );
-	
+	weapon = weapon_pieces[ 1 ];
+	Assert( weapon_pieces[ 1 ] != "ft" && weapon_pieces[ 1 ] != "mk" && weapon_pieces[ 1 ] != "gl" && weapon_pieces[ 1 ] != "db" );
+
 	// now find a base weapon that has this combination
-	for ( i = 0; i < self.weapons_list.size; i++)
+	for ( i = 0; i < self.weapons_list.size; i++ )
 	{
-		if( IsSubStr( self.weapons_list[i], weapon ) && IsSubStr( self.weapons_list[i], attachment ) )
-			return self.weapons_list[i];
+		if ( IsSubStr( self.weapons_list[ i ], weapon ) && IsSubStr( self.weapons_list[ i ], attachment ) )
+			return self.weapons_list[ i ];
 	}
 
 	// if in case no weapon is found, just return the first one in the inventory
 	// this is just a fallback
-	return self.weapons_list[0];
+	return self.weapons_list[ 0 ];
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: set_near_plane()"
 "Summary: Set the r_znear DVAR."
 "Module: Player"
 "CallOn: A player"
-"Example: 
+"Example:
 get_players()[0] set_near_plane(1); // draw stuff close to the camera."
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
-set_near_plane(val)
+=============
+*/
+set_near_plane( val )
 {
-	self SetClientDvar("r_znear", val);
+	self SetClientDvar( "r_znear", val );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: reset_near_plane()"
 "Summary: Set the r_znear DVAR to default value."
@@ -13348,16 +13396,16 @@ set_near_plane(val)
 "Example: get_players()[0] reset_near_plane();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 reset_near_plane()
 {
 	// 4 is the default znear
-	self SetClientDvar("r_znear", 4);
+	self SetClientDvar( "r_znear", 4 );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: average_origin(<array>)"
 "Summary: Calculate the average origin of an array of vectors or entities"
@@ -13367,51 +13415,51 @@ reset_near_plane()
 "Example: average_origin(origin_array);"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 
 average_origin( ent_array )
 {
-	AssertEx( IsArray(ent_array), "_utility::average_position passed a non-array" );
-	AssertEx( ent_array.size > 0, "_utility::average_position passed a size zero array");
-	
-	if(IsVec(ent_array[0]))
+	AssertEx( IsArray( ent_array ), "_utility::average_position passed a non-array" );
+	AssertEx( ent_array.size > 0, "_utility::average_position passed a size zero array" );
+
+	if ( IsVec( ent_array[ 0 ] ) )
 	{
 		//The ent array is actually already positions
-		return(average_origin_internal( ent_array ));
+		return ( average_origin_internal( ent_array ) );
 	}
-	
+
 	//Create a new array from the .origins of the ents then evaluate
 	org_array = [];
-	for(i=0; i<ent_array.size; i++)
+	for ( i = 0; i < ent_array.size; i++ )
 	{
-		org_array[i] = ent_array[i].origin;
+		org_array[ i ] = ent_array[ i ].origin;
 	}
-	
-	return(average_origin_internal( org_array ));
+
+	return ( average_origin_internal( org_array ) );
 }
 
 average_origin_internal( org_array )
 {
-	if(org_array.size == 1)
-  {
-  	return org_array[0];
-  }
-                
-  pos = (0,0,0);
-          
-  for( i=0; i < org_array.size; i++ )
-  {
-  	pos += org_array[i];
-  }
-                
-  avg_pos = pos / org_array.size;
-                
+	if ( org_array.size == 1 )
+	{
+		return org_array[ 0 ];
+	}
+
+	pos = ( 0, 0, 0 );
+
+	for ( i = 0; i < org_array.size; i++ )
+	{
+		pos += org_array[ i ];
+	}
+
+	avg_pos = pos / org_array.size;
+
 	return avg_pos;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: screen_message_create(<string_message>)"
 "Summary: Creates a HUD element at the correct position with the string or string reference passed in."
@@ -13423,110 +13471,109 @@ average_origin_internal( org_array )
 "Example: screen_message_create( &"LEVEL_STRING" );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 screen_message_create( string_message_1, string_message_2, string_message_3 )
 {
 	// if the mission is failing then do no create this instruction
 	// because it can potentially overlap the death/hint string
-	if( IsDefined( level.missionfailed ) && level.missionfailed )
+	if ( IsDefined( level.missionfailed ) && level.missionfailed )
 		return;
-	
+
 	// if player is killed then this dvar will be set.
 	// SUMEET_TODO - make it efficient next game instead of checking dvar here
-	if( GetDvarInt( "hud_missionFailed" ) == 1 )
+	if ( GetDvarInt( "hud_missionFailed" ) == 1 )
 		return;
 
 	//handle displaying the first string
-	if( !IsDefined(level._screen_message_1) )
+	if ( !IsDefined( level._screen_message_1 ) )
 	{
 		//text element that displays the name of the event
-		level._screen_message_1 = NewHudElem(); 
+		level._screen_message_1 = NewHudElem();
 		level._screen_message_1.elemType = "font";
 		level._screen_message_1.font = "objective";
 		level._screen_message_1.fontscale = 1.8;
 		level._screen_message_1.horzAlign = "center";
 		level._screen_message_1.vertAlign = "middle";
-		level._screen_message_1.alignX = "center"; 
+		level._screen_message_1.alignX = "center";
 		level._screen_message_1.alignY = "middle";
 		level._screen_message_1.y = -60;
 		level._screen_message_1.sort = 2;
-		
+
 		level._screen_message_1.color = ( 1, 1, 1 );
 		level._screen_message_1.alpha = 0.70;
-		
+
 		level._screen_message_1.hidewheninmenu = true;
 	}
 
 	//set the text of the element to the string passed in
 	level._screen_message_1 SetText( string_message_1 );
 
-	if( IsDefined(string_message_2) )
+	if ( IsDefined( string_message_2 ) )
 	{
 		//handle displaying the first string
-		if( !IsDefined(level._screen_message_2) )
+		if ( !IsDefined( level._screen_message_2 ) )
 		{
 			//text element that displays the name of the event
-			level._screen_message_2 = NewHudElem(); 
+			level._screen_message_2 = NewHudElem();
 			level._screen_message_2.elemType = "font";
 			level._screen_message_2.font = "objective";
 			level._screen_message_2.fontscale = 1.8;
 			level._screen_message_2.horzAlign = "center";
 			level._screen_message_2.vertAlign = "middle";
-			level._screen_message_2.alignX = "center"; 
+			level._screen_message_2.alignX = "center";
 			level._screen_message_2.alignY = "middle";
 			level._screen_message_2.y = -33;
 			level._screen_message_2.sort = 2;
 
 			level._screen_message_2.color = ( 1, 1, 1 );
 			level._screen_message_2.alpha = 0.70;
-			
+
 			level._screen_message_2.hidewheninmenu = true;
 		}
-	
+
 		//set the text of the element to the string passed in
 		level._screen_message_2 SetText( string_message_2 );
 	}
-	else if( IsDefined(level._screen_message_2) )
+	else if ( IsDefined( level._screen_message_2 ) )
 	{
 		level._screen_message_2 Destroy();
 	}
-	
-	if( IsDefined(string_message_3) )
+
+	if ( IsDefined( string_message_3 ) )
 	{
 		//handle displaying the first string
-		if( !IsDefined(level._screen_message_3) )
+		if ( !IsDefined( level._screen_message_3 ) )
 		{
 			//text element that displays the name of the event
-			level._screen_message_3 = NewHudElem(); 
+			level._screen_message_3 = NewHudElem();
 			level._screen_message_3.elemType = "font";
 			level._screen_message_3.font = "objective";
 			level._screen_message_3.fontscale = 1.8;
 			level._screen_message_3.horzAlign = "center";
 			level._screen_message_3.vertAlign = "middle";
-			level._screen_message_3.alignX = "center"; 
+			level._screen_message_3.alignX = "center";
 			level._screen_message_3.alignY = "middle";
 			level._screen_message_3.y = -6;
 			level._screen_message_3.sort = 2;
 
 			level._screen_message_3.color = ( 1, 1, 1 );
 			level._screen_message_3.alpha = 0.70;
-			
+
 			level._screen_message_3.hidewheninmenu = true;
 		}
-	
+
 		//set the text of the element to the string passed in
 		level._screen_message_3 SetText( string_message_3 );
 	}
-	else if( IsDefined(level._screen_message_3) )
+	else if ( IsDefined( level._screen_message_3 ) )
 	{
 		level._screen_message_3 Destroy();
-	}	
+	}
 }
-	
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: screen_message_delete()"
 "Summary: Deletes the current message being displayed on the screen made using screen_message_create."
@@ -13535,26 +13582,28 @@ screen_message_create( string_message_1, string_message_2, string_message_3 )
 "Example: screen_message_delete();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 screen_message_delete()
 {
-	if( IsDefined(level._screen_message_1) )
+	if ( IsDefined( level._screen_message_1 ) )
 	{
 		level._screen_message_1 Destroy();
 	}
-	if( IsDefined(level._screen_message_2) )
+
+	if ( IsDefined( level._screen_message_2 ) )
 	{
 		level._screen_message_2 Destroy();
 	}
-	if( IsDefined(level._screen_message_3) )
+
+	if ( IsDefined( level._screen_message_3 ) )
 	{
 		level._screen_message_3 Destroy();
-	}	
+	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: get_eye()"
 "Summary: Get eye position accurately even on a player when linked to an entity."
@@ -13563,17 +13612,17 @@ screen_message_delete()
 "Example: eye_pos = player get_eye();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
+=============
 */
 get_eye()
 {
-	if (IsPlayer(self))
+	if ( IsPlayer( self ) )
 	{
 		linked_ent = self GetLinkedEnt();
-		if (IsDefined(linked_ent) && (GetDvarInt( #"cg_cameraUseTagCamera") > 0))
+		if ( IsDefined( linked_ent ) && ( GetDvarInt( #"cg_cameraUseTagCamera" ) > 0 ) )
 		{
-			camera = linked_ent GetTagOrigin("tag_camera");
-			if (IsDefined(camera))
+			camera = linked_ent GetTagOrigin( "tag_camera" );
+			if ( IsDefined( camera ) )
 			{
 				return camera;
 			}
@@ -13584,8 +13633,8 @@ get_eye()
 	return pos;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: vehicle_node_wait( <strName> , <strKey> )"
 "Summary: Waits until a vehicle node with the specified key / value is triggered. Returns the node and assigns the entity that triggered it to "node.who"."
@@ -13595,17 +13644,17 @@ get_eye()
 "Example: vehicle_node_wait( "heli_landing", "script_noteworthy" );"
 "SPMP: both"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 vehicle_node_wait( strName, strKey )
 {
-	if( !IsDefined( strKey ) )
+	if ( !IsDefined( strKey ) )
 	{
 		strKey = "targetname";
 	}
 
-	nodes = GetVehicleNodeArray( strName, strKey ); 
-	AssertEX( IsDefined(nodes) && nodes.size > 0, "_utility::vehicle_node_wait - vehicle node not found: " + strName + " key: " + strKey );
+	nodes = GetVehicleNodeArray( strName, strKey );
+	AssertEX( IsDefined( nodes ) && nodes.size > 0, "_utility::vehicle_node_wait - vehicle node not found: " + strName + " key: " + strKey );
 
 	ent = SpawnStruct();
 	array_thread( nodes, common_scripts\utility::trigger_wait_think, ent );
@@ -13613,7 +13662,7 @@ vehicle_node_wait( strName, strKey )
 	ent waittill( "trigger", eOther, node_hit );
 	level notify( strName, eOther );
 
-	if(IsDefined(node_hit))
+	if ( IsDefined( node_hit ) )
 	{
 		node_hit.who = eother;
 		return node_hit;
@@ -13624,8 +13673,8 @@ vehicle_node_wait( strName, strKey )
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: timescale_tween(start, end, time, delay, step_time)"
 "Summary: Tweens timescale from a starting value to an ending value over time."
@@ -13638,13 +13687,13 @@ vehicle_node_wait( strName, strKey )
 "Example: level thread timescale_tween(.06, 1, tween_time);"
 "SPMP: both"
 ///ScriptDocEnd
-============= 
-*/ 
-timescale_tween(start, end, time, delay, step_time)
+=============
+*/
+timescale_tween( start, end, time, delay, step_time )
 {
 	DEFAULT_STEP_TIME = .1;
 
-	if (!IsDefined(step_time))
+	if ( !IsDefined( step_time ) )
 	{
 		step_time = DEFAULT_STEP_TIME;
 	}
@@ -13653,43 +13702,41 @@ timescale_tween(start, end, time, delay, step_time)
 	time_scale_range = end - start;
 
 	time_scale_step = 0;
-	if (num_steps > 0)
+	if ( num_steps > 0 )
 	{
-		time_scale_step = abs(time_scale_range) / num_steps;
+		time_scale_step = abs( time_scale_range ) / num_steps;
 	}
 
-	if (IsDefined(delay))
+	if ( IsDefined( delay ) )
 	{
 		wait delay;
 	}
 
-	level notify("timescale_tween");
-	level endon("timescale_tween");
+	level notify( "timescale_tween" );
+	level endon( "timescale_tween" );
 
 	time_scale = start;
-	SetTimeScale(time_scale);
+	SetTimeScale( time_scale );
 
-	while (time_scale != end)
+	while ( time_scale != end )
 	{
-		wait(step_time);
+		wait( step_time );
 
-		if (time_scale_range > 0)
+		if ( time_scale_range > 0 )
 		{
-			time_scale = min(time_scale + time_scale_step, end);
+			time_scale = min( time_scale + time_scale_step, end );
 		}
-		else if (time_scale_range < 0)
+		else if ( time_scale_range < 0 )
 		{
-			time_scale = max(time_scale - time_scale_step, end);
+			time_scale = max( time_scale - time_scale_step, end );
 		}
 
-		SetTimeScale(time_scale);
+		SetTimeScale( time_scale );
 	}
 }
 
-
-
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: player_seek"
 "Summary: when called AI will move towards the player and attack the player."
@@ -13697,26 +13744,26 @@ timescale_tween(start, end, time, delay, step_time)
 "Example: add script_playerseek kvp on the spawner"
 "SPMP: both"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 player_seek( delayed )
 {
-	self endon("death");
-	
+	self endon( "death" );
+
 	// ignore suppression so that this AI can charge the player
 	self.ignoresuppression = 1;
 
 	// if this AI is supposed to go to a node, then wait until it gets to node
-	if( IsDefined( self.target ) || IsDefined( self.script_spawner_targets ) )
+	if ( IsDefined( self.target ) || IsDefined( self.script_spawner_targets ) )
 	{
-		self waittill("goal");
+		self waittill( "goal" );
 	}
-		
+
 	// now keep reducing the goalradius so this ai comes closer to the player in stages
-	while(1)
+	while ( 1 )
 	{
 		// wait as needed
-		if( IsDefined( delayed ) )
+		if ( IsDefined( delayed ) )
 		{
 			wait( RandomIntRange( 6, 12 ) );
 		}
@@ -13724,13 +13771,13 @@ player_seek( delayed )
 		{
 			wait( 0.05 );
 		}
-	
+
 		// keep reducing the goal distance
-		if( self.goalradius > 100 )
+		if ( self.goalradius > 100 )
 		{
 			self.goalradius = self.goalradius - 100;
 		}
-		
+
 		// modify the path enemy distance so that AI goes near the goal
 		self.pathenemyFightdist = self.goalradius;
 
@@ -13741,8 +13788,8 @@ player_seek( delayed )
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: set_spawner_targets(<spawner_target_names>)"
 "Summary: Gives an AI new script_spawner_targets node(s) to go to. Overrides previously set script_spawner_targets. Seperate sets by spaces."
@@ -13750,15 +13797,15 @@ player_seek( delayed )
 "Example: guy set_spawner_targets("balcony1 balcony2");"
 "SPMP: both"
 ///ScriptDocEnd
-============= 
-*/ 
-set_spawner_targets(spawner_targets)
+=============
+*/
+set_spawner_targets( spawner_targets )
 {
-	self thread maps\_spawner::go_to_spawner_target(StrTok(spawner_targets," "));
+	self thread maps\_spawner::go_to_spawner_target( StrTok( spawner_targets, " " ) );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: ragdoll_death()"
 "Summary: Starts ragdoll on an AI and kills him."
@@ -13766,8 +13813,8 @@ set_spawner_targets(spawner_targets)
 "Example: guy ragdoll_death();"
 "SPMP: both"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 ragdoll_death()
 {
 	self animscripts\utility::do_ragdoll_death();
@@ -13775,23 +13822,22 @@ ragdoll_death()
 
 is_destructible()
 {
-	if (!IsDefined(self.script_noteworthy))
+	if ( !IsDefined( self.script_noteworthy ) )
 	{
 		return false;
 	}
 
-	switch (self.script_noteworthy)
+	switch ( self.script_noteworthy )
 	{
-	case "explodable_barrel":
-		return true;
+		case "explodable_barrel":
+			return true;
 	}
 
 	return false;
 }
 
-
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: register_overloaded_func(filename, funcname, func)"
 "Summary: Registers the given func under the given filename and funcname. Allows it to be called indirectly, which means the file where it's called from won't necessarily be referencing the file it is from"
@@ -13802,30 +13848,31 @@ is_destructible()
 "Example: register_overloaded_func( "_quotes", "displaymissionfailed", maps/_quotes::displaymissionfailed );"
 "SPMP: both"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 register_overloaded_func( filename, funcname, func )
 {
 	if ( !isDefined( level._overloaded_funcs ) )
 	{
 		level._overloaded_funcs = [];
 	}
-	if ( !isDefined( level._overloaded_funcs[filename] ) )
+
+	if ( !isDefined( level._overloaded_funcs[ filename ] ) )
 	{
-		level._overloaded_funcs[filename] = [];
+		level._overloaded_funcs[ filename ] = [];
 	}
-	if ( isDefined( level._overloaded_funcs[filename][funcname] ) )
+
+	if ( isDefined( level._overloaded_funcs[ filename ][ funcname ] ) )
 	{
 		error( "Tried to call register_overloaded_func() on a previously registered filename['" + filename + "']/funcname['" + funcname + "'] combination." );
 		return;
 	}
 
-	level._overloaded_funcs[filename][funcname] = func;
+	level._overloaded_funcs[ filename ][ funcname ] = func;
 }
 
-
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: call_overloaded_func(filename, funcname, func)"
 "Summary: Calls the func registered under the given filename and funcname combination. Allows it to be called indirectly, which means the file where it's called from won't necessarily be referencing the file it is from"
@@ -13840,8 +13887,8 @@ register_overloaded_func( filename, funcname, func )
 "Example: call_overloaded_func( "_quotes", "displaymissionfailed" );"
 "SPMP: both"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 call_overloaded_func( filename, funcname, var1, var2, var3, var4, var5 )
 {
 	if ( !isDefined( level._overloaded_funcs ) )
@@ -13854,9 +13901,11 @@ call_overloaded_func( filename, funcname, var1, var2, var3, var4, var5 )
 		{
 			assertex( false, "call_overloaded_func: no overloaded_funcs registered." );
 		}
+
 		return false;
 	}
-	if ( !isDefined( level._overloaded_funcs[filename] ) )
+
+	if ( !isDefined( level._overloaded_funcs[ filename ] ) )
 	{
 		if ( GetDvar( #"zombiemode" ) == "1" )
 		{
@@ -13866,9 +13915,11 @@ call_overloaded_func( filename, funcname, var1, var2, var3, var4, var5 )
 		{
 			assertex( false, "call_overloaded_func: no overloaded_funcs registered for filename: '" + filename + "'." );
 		}
+
 		return false;
 	}
-	if ( !isDefined( level._overloaded_funcs[filename][funcname] ) )
+
+	if ( !isDefined( level._overloaded_funcs[ filename ][ funcname ] ) )
 	{
 		if ( GetDvar( #"zombiemode" ) == "1" )
 		{
@@ -13878,39 +13929,40 @@ call_overloaded_func( filename, funcname, var1, var2, var3, var4, var5 )
 		{
 			assertex( false, "call_overloaded_func: no overloaded_func registered for filename['" + filename + "']/funcname['" + funcname + "'] combination." );
 		}
+
 		return false;
 	}
 
 	if ( IsDefined( var5 ) )
 	{
-		return self [[ level._overloaded_funcs[filename][funcname] ]]( var1, var2, var3, var4, var5 );
+		return self [[ level._overloaded_funcs[ filename ][ funcname ] ]]( var1, var2, var3, var4, var5 );
 	}
 
 	if ( IsDefined( var4 ) )
 	{
-		return self [[ level._overloaded_funcs[filename][funcname] ]]( var1, var2, var3, var4 );
+		return self [[ level._overloaded_funcs[ filename ][ funcname ] ]]( var1, var2, var3, var4 );
 	}
 
 	if ( IsDefined( var3 ) )
 	{
-		return self [[ level._overloaded_funcs[filename][funcname] ]]( var1, var2, var3 );
+		return self [[ level._overloaded_funcs[ filename ][ funcname ] ]]( var1, var2, var3 );
 	}
 
 	if ( IsDefined( var2 ) )
 	{
-		return self [[ level._overloaded_funcs[filename][funcname] ]]( var1, var2 );
+		return self [[ level._overloaded_funcs[ filename ][ funcname ] ]]( var1, var2 );
 	}
 
 	if ( IsDefined( var1 ) )
 	{
-		return self [[ level._overloaded_funcs[filename][funcname] ]]( var1 );
+		return self [[ level._overloaded_funcs[ filename ][ funcname ] ]]( var1 );
 	}
 
-	return self [[ level._overloaded_funcs[filename][funcname] ]]();
+	return self [[ level._overloaded_funcs[ filename ][ funcname ] ]]();
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: get_overloaded_func(filename, funcname)"
 "Summary: Returns the func registered under the given filename and funcname combination."
@@ -13920,8 +13972,8 @@ call_overloaded_func( filename, funcname, var1, var2, var3, var4, var5 )
 "Example: get_overloaded_func( "_quotes", "displaymissionfailed" );"
 "SPMP: both"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 get_overloaded_func( filename, funcname )
 {
 	if ( !isDefined( level._overloaded_funcs ) )
@@ -13934,9 +13986,11 @@ get_overloaded_func( filename, funcname )
 		{
 			assertex( false, "get_overloaded_func: no overloaded_funcs registered." );
 		}
+
 		return false;
 	}
-	if ( !isDefined( level._overloaded_funcs[filename] ) )
+
+	if ( !isDefined( level._overloaded_funcs[ filename ] ) )
 	{
 		if ( GetDvar( #"zombiemode" ) == "1" )
 		{
@@ -13946,9 +14000,11 @@ get_overloaded_func( filename, funcname )
 		{
 			assertex( false, "get_overloaded_func: no overloaded_funcs registered for filename: '" + filename + "'." );
 		}
+
 		return false;
 	}
-	if ( !isDefined( level._overloaded_funcs[filename][funcname] ) )
+
+	if ( !isDefined( level._overloaded_funcs[ filename ][ funcname ] ) )
 	{
 		if ( GetDvar( #"zombiemode" ) == "1" )
 		{
@@ -13958,14 +14014,15 @@ get_overloaded_func( filename, funcname )
 		{
 			assertex( false, "get_overloaded_func: no overloaded_func registered for filename['" + filename + "']/funcname['" + funcname + "'] combination." );
 		}
+
 		return false;
 	}
 
-	return level._overloaded_funcs[filename][funcname]; 
+	return level._overloaded_funcs[ filename ][ funcname ];
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: waittill_not_moving()"
 "Summary: waits for the object to stop moving"
@@ -13974,12 +14031,12 @@ get_overloaded_func( filename, funcname )
 "Example: self waittill_not_moving();"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 waittill_not_moving()
 {
-	self endon("death");
-	self endon( "disconnect" );	
+	self endon( "death" );
+	self endon( "disconnect" );
 	self endon( "detonated" );
 	level endon( "game_ended" );
 
@@ -13989,14 +14046,16 @@ waittill_not_moving()
 	//}
 	//else
 	//{
+	prevorigin = self.origin;
+	while ( 1 )
+	{
+		wait .15;
+		if ( self.origin == prevorigin )
+			break;
+
 		prevorigin = self.origin;
-		while(1)
-		{
-			wait .15;
-			if ( self.origin == prevorigin )
-				break;
-			prevorigin = self.origin;
-		}
+	}
+
 	//}
 }
 
@@ -14010,8 +14069,8 @@ turn_on_friendly_player_look()
 	level._dont_look_at_player = false;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: force_goal([node_or_org], [radius], [shoot], [endon])"
 "Summary: Force an AI to go to goal by temporarily disabling AI features."
@@ -14023,97 +14082,97 @@ turn_on_friendly_player_look()
 "Example: self thread force_goal( node, 20, true );"
 "SPMP: both"
 ///ScriptDocEnd
-============= 
-*/ 
-force_goal(node_or_org, radius, shoot, end_on, keep_colors)
+=============
+*/
+force_goal( node_or_org, radius, shoot, end_on, keep_colors )
 {
-	self endon("death");
+	self endon( "death" );
 
 	goalradius = self.goalradius;
-	if (IsDefined(radius))
+	if ( IsDefined( radius ) )
 	{
 		self.goalradius = radius;
 	}
 
 	color_enabled = false;
-	if (!is_true(keep_colors))
+	if ( !is_true( keep_colors ) )
 	{
-		if (IsDefined(get_force_color()))
+		if ( IsDefined( get_force_color() ) )
 		{
 			color_enabled = true;
 			self disable_ai_color();
 		}
 	}
 
-	allowpain				= self.allowpain;
-	allowreact				= self.allowreact;
-	ignoreall				= self.ignoreall;
-	ignoreme				= self.ignoreme;
-	dontshootwhilemoving	= self.dontshootwhilemoving;
-	ignoresuppression		= self.ignoresuppression;
-	suppressionthreshold	= self.suppressionthreshold;
-	nododgemove				= self.nododgemove;
-	grenadeawareness		= self.grenadeawareness;
-	pathenemylookahead		= self.pathenemylookahead;
-	pathenemyfightdist		= self.pathenemyfightdist;
-	meleeattackdist			= self.meleeattackdist;
-	fixednodesaferadius		= self.fixednodesaferadius;
+	allowpain = self.allowpain;
+	allowreact = self.allowreact;
+	ignoreall = self.ignoreall;
+	ignoreme = self.ignoreme;
+	dontshootwhilemoving = self.dontshootwhilemoving;
+	ignoresuppression = self.ignoresuppression;
+	suppressionthreshold = self.suppressionthreshold;
+	nododgemove = self.nododgemove;
+	grenadeawareness = self.grenadeawareness;
+	pathenemylookahead = self.pathenemylookahead;
+	pathenemyfightdist = self.pathenemyfightdist;
+	meleeattackdist = self.meleeattackdist;
+	fixednodesaferadius = self.fixednodesaferadius;
 
-	if (is_false(shoot))
+	if ( is_false( shoot ) )
 	{
-		self set_ignoreall(true);
+		self set_ignoreall( true );
 	}
 
-	self.dontshootwhilemoving	= undefined;
-	self.pathenemyfightdist		= 0;
-	self.pathenemylookahead		= 0;
-	self.ignoresuppression		= true;
-	self.suppressionthreshold	= 1;
-	self.nododgemove			= true;
-	self.grenadeawareness		= 0;
-	self.meleeattackdist		= 0;
-	self.fixednodesaferadius	= 0;
+	self.dontshootwhilemoving = undefined;
+	self.pathenemyfightdist = 0;
+	self.pathenemylookahead = 0;
+	self.ignoresuppression = true;
+	self.suppressionthreshold = 1;
+	self.nododgemove = true;
+	self.grenadeawareness = 0;
+	self.meleeattackdist = 0;
+	self.fixednodesaferadius = 0;
 
 	if ( GetDvar( #"zombiemode" ) != "1" )
 	{
-		self set_ignoreme(true);
+		self set_ignoreme( true );
 		self disable_react();
 		self disable_pain();
 	}
 
-	self PushPlayer(true);
+	self PushPlayer( true );
 
-	if (IsDefined(node_or_org))
+	if ( IsDefined( node_or_org ) )
 	{
-		if (IsVec(node_or_org))
+		if ( IsVec( node_or_org ) )
 		{
-			self set_goal_pos(node_or_org);
+			self set_goal_pos( node_or_org );
 		}
 		else
 		{
-			self set_goal_node(node_or_org);
+			self set_goal_node( node_or_org );
 		}
 	}
 
-	if (IsDefined(end_on))
+	if ( IsDefined( end_on ) )
 	{
-		self waittill(end_on);
+		self waittill( end_on );
 	}
 	else
 	{
-		self waittill("goal");
+		self waittill( "goal" );
 	}
 
-	if (color_enabled)
+	if ( color_enabled )
 	{
 		enable_ai_color();
 	}
 
-	self PushPlayer(false);	// assume we want this off once we have reached goal
+	self PushPlayer( false ); // assume we want this off once we have reached goal
 
 	if ( GetDvar( #"zombiemode" ) == "1" )
 	{
-		if (IsDefined(radius))
+		if ( IsDefined( radius ) )
 		{
 			self.goalradius = goalradius;
 		}
@@ -14122,58 +14181,58 @@ force_goal(node_or_org, radius, shoot, end_on, keep_colors)
 	{
 		self.goalradius = goalradius;
 
-		self set_ignoreall(ignoreall);
-		self set_ignoreme(ignoreme);
+		self set_ignoreall( ignoreall );
+		self set_ignoreme( ignoreme );
 
-		if (allowpain)
+		if ( allowpain )
 		{
 			self enable_pain();
 		}
 
-		if (allowreact)
+		if ( allowreact )
 		{
 			self enable_react();
 		}
 	}
 
-	self.ignoresuppression		= ignoresuppression;
-	self.suppressionthreshold	= suppressionthreshold;
-	self.nododgemove			= nododgemove;
-	self.dontshootwhilemoving	= dontshootwhilemoving;
-	self.grenadeawareness		= grenadeawareness;
-	self.pathenemylookahead		= pathenemylookahead;
-	self.pathenemyfightdist		= pathenemyfightdist;
-	self.meleeattackdist		= meleeattackdist;
-	self.fixednodesaferadius	= fixednodesaferadius;
+	self.ignoresuppression = ignoresuppression;
+	self.suppressionthreshold = suppressionthreshold;
+	self.nododgemove = nododgemove;
+	self.dontshootwhilemoving = dontshootwhilemoving;
+	self.grenadeawareness = grenadeawareness;
+	self.pathenemylookahead = pathenemylookahead;
+	self.pathenemyfightdist = pathenemyfightdist;
+	self.meleeattackdist = meleeattackdist;
+	self.fixednodesaferadius = fixednodesaferadius;
 }
 
 restore_ik_headtracking_limits()
 {
-	SetSavedDvar("ik_pitch_limit_thresh", 10);
-	SetSavedDvar("ik_pitch_limit_max", 60);
-	SetSavedDvar("ik_roll_limit_thresh", 30);
-	SetSavedDvar("ik_roll_limit_max", 100);
-	SetSavedDvar("ik_yaw_limit_thresh", 10);
-	SetSavedDvar("ik_yaw_limit_max", 90);
+	SetSavedDvar( "ik_pitch_limit_thresh", 10 );
+	SetSavedDvar( "ik_pitch_limit_max", 60 );
+	SetSavedDvar( "ik_roll_limit_thresh", 30 );
+	SetSavedDvar( "ik_roll_limit_max", 100 );
+	SetSavedDvar( "ik_yaw_limit_thresh", 10 );
+	SetSavedDvar( "ik_yaw_limit_max", 90 );
 }
 
 relax_ik_headtracking_limits()
 {
-	SetSavedDvar("ik_pitch_limit_thresh", 110);
-	SetSavedDvar("ik_pitch_limit_max", 120);
-	SetSavedDvar("ik_roll_limit_thresh", 90);
-	SetSavedDvar("ik_roll_limit_max", 100);
-	SetSavedDvar("ik_yaw_limit_thresh", 80);
-	SetSavedDvar("ik_yaw_limit_max", 90);
+	SetSavedDvar( "ik_pitch_limit_thresh", 110 );
+	SetSavedDvar( "ik_pitch_limit_max", 120 );
+	SetSavedDvar( "ik_roll_limit_thresh", 90 );
+	SetSavedDvar( "ik_roll_limit_max", 100 );
+	SetSavedDvar( "ik_yaw_limit_thresh", 80 );
+	SetSavedDvar( "ik_yaw_limit_max", 90 );
 }
 
-do_notetracks(flag)
+do_notetracks( flag )
 {
-	self animscripts\shared::DoNoteTracks(flag);
+	self animscripts\shared::DoNoteTracks( flag );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: rumble_delay([delay], [rumble])"
 "Summary: play rumble on an entity at a delayed time."
@@ -14184,16 +14243,16 @@ do_notetracks(flag)
 "Example: self thread rumble_delay( 5, "grenade_rumble" );"
 "SPMP: both"
 ///ScriptDocEnd
-============= 
-*/ 
-rumble_delay(delay, rumble)
+=============
+*/
+rumble_delay( delay, rumble )
 {
 	wait delay;
-	self PlayRumbleOnEntity(rumble);
+	self PlayRumbleOnEntity( rumble );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: enable_random_weapon_drops()"
 "Summary: Enable AI to drop random weapons"
@@ -14201,16 +14260,16 @@ rumble_delay(delay, rumble)
 "Example: enable_random_weapon_drops()"
 "SPMP: SP"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
 enable_random_weapon_drops()
 {
 	level.rw_enabled = true;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: disable_random_weapon_drops()"
 "Summary: Disable AI to drop random weapons"
@@ -14218,16 +14277,16 @@ enable_random_weapon_drops()
 "Example: disable_random_weapon_drops()"
 "SPMP: SP"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
 disable_random_weapon_drops()
 {
 	level.rw_enabled = false;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: enable_random_alt_weapon_drops()"
 "Summary: Enable AI to drop random weapons with alt_weapon capabilities (ft, gl, mk, etc)"
@@ -14235,16 +14294,16 @@ disable_random_weapon_drops()
 "Example: enable_random_alt_weapon_drops()"
 "SPMP: SP"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
 enable_random_alt_weapon_drops()
 {
 	level.rw_attachments_allowed = true;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: disable_random_alt_weapon_drops()"
 "Summary: Disable AI to drop random weapons with alt_weapon capabilities (ft, gl, mk, etc)"
@@ -14252,16 +14311,16 @@ enable_random_alt_weapon_drops()
 "Example: disable_random_alt_weapon_drops()"
 "SPMP: SP"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
 disable_random_alt_weapon_drops()
 {
 	level.rw_attachments_allowed = false;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: set_random_alt_weapon_drops( <attachment_abbreviation> , <on_or_off> )"
 "Summary: set the droppability of an alt weapon from the random weapon drop system). True/On  False/Off "
@@ -14269,86 +14328,86 @@ disable_random_alt_weapon_drops()
 "Example: set_random_alt_weapon_drops( "ft" , true )"
 "SPMP: SP"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
 set_random_alt_weapon_drops( attachment_abbreviation, on_or_off )
 {
-	AssertEX(IsDefined(attachment_abbreviation), "set_random_alt_weapon_drops called without passing in an attachment type");
-	AssertEX(IsDefined(on_or_off), "set_random_alt_weapon_drops called without telling the function whether it is on or off");
-	
-	switch( attachment_abbreviation )
+	AssertEX( IsDefined( attachment_abbreviation ), "set_random_alt_weapon_drops called without passing in an attachment type" );
+	AssertEX( IsDefined( on_or_off ), "set_random_alt_weapon_drops called without telling the function whether it is on or off" );
+
+	switch ( attachment_abbreviation )
 	{
 		case "ft":
 			level.rw_ft_allowed = on_or_off;
-		break;
-		
+			break;
+
 		case "gl":
 			level.rw_gl_allowed = on_or_off;
-		break;
-		
+			break;
+
 		case "mk":
 			level.rw_mk_allowed = on_or_off;
-		break;
-		
+			break;
+
 		default:
-			AssertEX(false, "Weapon of type: " + attachment_abbreviation + " is not a valid attachment abbreviation." );
-		break;
+			AssertEX( false, "Weapon of type: " + attachment_abbreviation + " is not a valid attachment abbreviation." );
+			break;
 	}
 }
 
-button_held_think(which_button)
+button_held_think( which_button )
 {
-	self endon("disconnect");
+	self endon( "disconnect" );
 
-	if (!IsDefined(self._holding_button))
+	if ( !IsDefined( self._holding_button ) )
 	{
 		self._holding_button = [];
 	}
-	
-	self._holding_button[which_button] = false;
-	
-	time_started = 0;
-	use_time = GetDvarInt("g_useholdtime");
 
-	while(1)
+	self._holding_button[ which_button ] = false;
+
+	time_started = 0;
+	use_time = GetDvarInt( "g_useholdtime" );
+
+	while ( 1 )
 	{
-		if(self._holding_button[which_button])
+		if ( self._holding_button[ which_button ] )
 		{
-			if(!self [[level._button_funcs[which_button]]]())
+			if ( !self [[ level._button_funcs[ which_button ] ]]() )
 			{
-				self._holding_button[which_button] = false;
+				self._holding_button[ which_button ] = false;
 			}
 		}
 		else
 		{
-			if(self [[level._button_funcs[which_button]]]())
+			if ( self [[ level._button_funcs[ which_button ] ]]() )
 			{
-				if(time_started == 0)
+				if ( time_started == 0 )
 				{
 					time_started = GetTime();
 				}
 
-				if((GetTime() - time_started) > use_time)
+				if ( ( GetTime() - time_started ) > use_time )
 				{
-					self._holding_button[which_button] = true;
+					self._holding_button[ which_button ] = true;
 				}
 			}
 			else
 			{
-				if(time_started != 0)
+				if ( time_started != 0 )
 				{
 					time_started = 0;
 				}
 			}
 		}
 
-		wait(0.05);
+		wait( 0.05 );
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: use_button_held()"
 "Summary: Returns true if the player is holding down their use button."
@@ -14356,24 +14415,24 @@ button_held_think(which_button)
 "Example: if(player use_button_held())"
 "SPMP: SP"
 ///ScriptDocEnd
-============= 
+=============
 */
 
 use_button_held()
 {
 	init_button_wrappers();
 
-	if(!IsDefined(self._use_button_think_threaded))
+	if ( !IsDefined( self._use_button_think_threaded ) )
 	{
-		self thread button_held_think(level.BUTTON_USE);
+		self thread button_held_think( level.BUTTON_USE );
 		self._use_button_think_threaded = true;
 	}
 
-	return self._holding_button[level.BUTTON_USE];
+	return self._holding_button[ level.BUTTON_USE ];
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: ads_button_held()"
 "Summary: Returns true if the player is holding down their ADS button."
@@ -14381,24 +14440,24 @@ use_button_held()
 "Example: if(player ads_button_held())"
 "SPMP: SP"
 ///ScriptDocEnd
-============= 
+=============
 */
 
 ads_button_held()
 {
 	init_button_wrappers();
 
-	if(!IsDefined(self._ads_button_think_threaded))
+	if ( !IsDefined( self._ads_button_think_threaded ) )
 	{
-		self thread button_held_think(level.BUTTON_ADS);
+		self thread button_held_think( level.BUTTON_ADS );
 		self._ads_button_think_threaded = true;
 	}
 
-	return self._holding_button[level.BUTTON_ADS];
+	return self._holding_button[ level.BUTTON_ADS ];
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: attack_button_held()"
 "Summary: Returns true if the player is holding down their attack button."
@@ -14406,54 +14465,54 @@ ads_button_held()
 "Example: if(player attack_button_held())"
 "SPMP: SP"
 ///ScriptDocEnd
-============= 
+=============
 */
 
 attack_button_held()
 {
 	init_button_wrappers();
 
-	if(!IsDefined(self._attack_button_think_threaded))
+	if ( !IsDefined( self._attack_button_think_threaded ) )
 	{
-		self thread button_held_think(level.BUTTON_ATTACK);
+		self thread button_held_think( level.BUTTON_ATTACK );
 		self._attack_button_think_threaded = true;
 	}
 
-	return self._holding_button[level.BUTTON_ATTACK];
+	return self._holding_button[ level.BUTTON_ATTACK ];
 }
 
 // button pressed wrappers
 use_button_pressed()
 {
-	return (self UseButtonPressed());
+	return ( self UseButtonPressed() );
 }
 
 ads_button_pressed()
 {
-	return (self AdsButtonPressed());
+	return ( self AdsButtonPressed() );
 }
 
 attack_button_pressed()
 {
-	return (self AttackButtonPressed());
+	return ( self AttackButtonPressed() );
 }
 
 init_button_wrappers()
 {
-	if (!IsDefined(level._button_funcs))
+	if ( !IsDefined( level._button_funcs ) )
 	{
-		level.BUTTON_USE	= 0;
-		level.BUTTON_ADS	= 1;
-		level.BUTTON_ATTACK	= 2;
+		level.BUTTON_USE = 0;
+		level.BUTTON_ADS = 1;
+		level.BUTTON_ATTACK = 2;
 
-		level._button_funcs[level.BUTTON_USE]		= ::use_button_pressed;
-		level._button_funcs[level.BUTTON_ADS]		= ::ads_button_pressed;
-		level._button_funcs[level.BUTTON_ATTACK]	= ::attack_button_pressed;
+		level._button_funcs[ level.BUTTON_USE ] =::use_button_pressed;
+		level._button_funcs[ level.BUTTON_ADS ] =::ads_button_pressed;
+		level._button_funcs[ level.BUTTON_ATTACK ] =::attack_button_pressed;
 	}
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: play_movie_on_surface(<movie_name>, is_looping, is_in_memory, start_on_notify, use_fullscreen_fade, notify_when_done, notify_offset)"
 "Summary: play a bink movie in a surface in game such as a TV, projector screen, model, etc.."
@@ -14467,88 +14526,87 @@ init_button_wrappers()
 "Example: level thread play_movie_on_surface( "treyarch", true, false, "start_movie", "movie_done", 1 );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
-play_movie_on_surface(movie_name, is_looping, is_in_memory, start_on_notify, notify_when_done, notify_offset)
+play_movie_on_surface( movie_name, is_looping, is_in_memory, start_on_notify, notify_when_done, notify_offset )
 {
-	level endon("stop_movie");
+	level endon( "stop_movie" );
 
-	if (!IsDefined(level.flag["movie_loaded"]))
+	if ( !IsDefined( level.flag[ "movie_loaded" ] ) )
 	{
-		flag_init("movie_loaded");
+		flag_init( "movie_loaded" );
 	}
-	
+
 	// TFLAME - 8/21/2010 - give these defaults for single use, non streamed
-	if (!IsDefined(is_looping))
+	if ( !IsDefined( is_looping ) )
 	{
 		is_looping = false;
 	}
-	
-	if (!IsDefined(is_in_memory))
+
+	if ( !IsDefined( is_in_memory ) )
 	{
 		is_in_memory = true;
 	}
-	
-	if (!IsDefined(notify_offset) || notify_offset < .3)
+
+	if ( !IsDefined( notify_offset ) || notify_offset < .3 )
 	{
 		notify_offset = .3;
 	}
-	
-	level thread load_movie(movie_name, is_looping, is_in_memory, IsDefined(start_on_notify));
-	
-	if (IsDefined(start_on_notify))
+
+	level thread load_movie( movie_name, is_looping, is_in_memory, IsDefined( start_on_notify ) );
+
+	if ( IsDefined( start_on_notify ) )
 	{
-		level waittill(start_on_notify);
+		level waittill( start_on_notify );
 	}
 
-	playsoundatposition(movie_name+"_movie",(0,0,0));
-	flag_wait("movie_loaded");
+	playsoundatposition( movie_name + "_movie", ( 0, 0, 0 ) );
+	flag_wait( "movie_loaded" );
 
-	Pause3DCinematic(false);
+	Pause3DCinematic( false );
 
-	waittill_movie_done(notify_when_done, notify_offset, is_looping);
-	flag_clear("movie_loaded");
+	waittill_movie_done( notify_when_done, notify_offset, is_looping );
+	flag_clear( "movie_loaded" );
 }
-
 
 start_movie_scene()
 {
-	level notify("kill_scene_subs_thread");	// make sure only one scene is running before we kill the array.
+	level notify( "kill_scene_subs_thread" ); // make sure only one scene is running before we kill the array.
 	// clear out the scene subs array.
 	level._scene_subs = [];
 }
 
-add_scene_line(scene_line, time, duration)
+add_scene_line( scene_line, time, duration )
 {
-	if(!IsDefined(level._scene_subs))
+	if ( !IsDefined( level._scene_subs ) )
 	{
 		level._scene_subs = [];
 	}
-	
+
 	sl = SpawnStruct();
 	sl.line = scene_line;
 	sl.time = time;
 	sl.duration = duration;
-	
-	for(i = 0; i < level._scene_subs.size; i ++)
+
+	for ( i = 0; i < level._scene_subs.size; i++ )
 	{
-		if(time < level._scene_subs[i].time)
+		if ( time < level._scene_subs[ i ].time )
 		{
-			PrintLn("*** ERROR:  Cannot add an earlier line after a later one.  Times must always increase.");
+			PrintLn( "*** ERROR:  Cannot add an earlier line after a later one.  Times must always increase." );
 			return;
 		}
-	}	
-	
-	level._scene_subs[level._scene_subs.size] = sl;
+	}
+
+	level._scene_subs[ level._scene_subs.size ] = sl;
 }
 
-sub_fade(alpha, duration)	// self == hud_elem
+sub_fade( alpha, duration ) // self == hud_elem
 {
-	self notify("kill_fade");	
-	self endon("kill_fade");	// only one fade running at a time, please.
-	
-	if(alpha == 1)	// fading in
+	self notify( "kill_fade" );
+	self endon( "kill_fade" ); // only one fade running at a time, please.
+
+	if ( alpha == 1 ) // fading in
 	{
 		self.alpha = 0;
 	}
@@ -14556,29 +14614,29 @@ sub_fade(alpha, duration)	// self == hud_elem
 	self fadeOverTime( duration );
 	self.alpha = alpha;
 	wait( duration );
-	
+
 }
 
-do_scene_sub(sub_string, duration)
+do_scene_sub( sub_string, duration )
 {
-	if(!GetDvarInt( #"cg_subtitles"))
+	if ( !GetDvarInt( #"cg_subtitles" ) )
 		return;
-		
-	if (!IsDefined(level.vo_hud))
+
+	if ( !IsDefined( level.vo_hud ) )
 	{
 		level.vo_hud = NewHudElem();
 		level.vo_hud.fontscale = 2;
 		level.vo_hud.horzAlign = "center";
 		level.vo_hud.vertAlign = "middle";
-		level.vo_hud.alignX = "center"; 
+		level.vo_hud.alignX = "center";
 		level.vo_hud.alignY = "middle";
 		level.vo_hud.y = 180;
 		level.vo_hud.sort = 0;
 	}
-	
+
 	fade_duration = 0.2;
 
-	level.vo_hud thread sub_fade(1, fade_duration);
+	level.vo_hud thread sub_fade( 1, fade_duration );
 
 	old_scale = level.vo_hud.fontscale;
 
@@ -14588,52 +14646,51 @@ do_scene_sub(sub_string, duration)
 
 	level.vo_hud.sort = 1;
 
+	level.vo_hud SetText( sub_string );
 
-	level.vo_hud SetText(sub_string);
+	wait( duration - fade_duration );
 
-	wait (duration - fade_duration);
-	
-	level.vo_hud sub_fade(0, fade_duration); // Not threaded... Block.
-	
-	level.vo_hud SetText("");
-	
+	level.vo_hud sub_fade( 0, fade_duration ); // Not threaded... Block.
+
+	level.vo_hud SetText( "" );
+
 	level.vo_hud.sort = old_sort;
 	level.vo_hud.fontscale = old_scale;
 }
 
 playback_scene_subs()
 {
-	
-	if(!IsDefined(level._scene_subs))
+
+	if ( !IsDefined( level._scene_subs ) )
 	{
 		return;
 	}
-	
-	level notify("kill_scene_subs_thread");
-	level endon("kill_scene_subs_thread");
-	
+
+	level notify( "kill_scene_subs_thread" );
+	level endon( "kill_scene_subs_thread" );
+
 	scene_start = GetTime();
-	
-	for(i = 0; i < level._scene_subs.size; i ++)
+
+	for ( i = 0; i < level._scene_subs.size; i++ )
 	{
-		level._scene_subs[i].time = scene_start + (level._scene_subs[i].time * 1000);
+		level._scene_subs[ i ].time = scene_start + ( level._scene_subs[ i ].time * 1000 );
 	}
-	
-	for(i = 0; i < level._scene_subs.size; i ++)
+
+	for ( i = 0; i < level._scene_subs.size; i++ )
 	{
-		while(GetTime() < level._scene_subs[i].time)
+		while ( GetTime() < level._scene_subs[ i ].time )
 		{
-			wait(0.05);
+			wait( 0.05 );
 		}
-		
-		do_scene_sub(level._scene_subs[i].line, level._scene_subs[i].duration);
+
+		do_scene_sub( level._scene_subs[ i ].line, level._scene_subs[ i ].duration );
 	}
-	
+
 	level._scene_subs = undefined;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: play_movie(<movie_name>, is_looping, is_in_memory, start_on_notify, use_fullscreen_fade, notify_when_done, notify_offset)"
 "Summary: play a bink movie."
@@ -14648,95 +14705,95 @@ playback_scene_subs()
 "Example: level thread play_movie( "treyarch", false, false, "start_movie", true, "movie_done", 1 );"
 "SPMP: singleplayer"
 ///ScriptDocEnd
-============= 
-*/ 
+=============
+*/
 
-play_movie(movie_name, is_looping, is_in_memory, start_on_notify, use_fullscreen_trans, notify_when_done, notify_offset, snapshot)
+play_movie( movie_name, is_looping, is_in_memory, start_on_notify, use_fullscreen_trans, notify_when_done, notify_offset, snapshot )
 {
-	level endon("stop_movie");
+	level endon( "stop_movie" );
 
-	if (!IsDefined(level.flag["movie_loaded"]))
+	if ( !IsDefined( level.flag[ "movie_loaded" ] ) )
 	{
-		flag_init("movie_loaded");
+		flag_init( "movie_loaded" );
 	}
 
-	if (!IsDefined(level.flag["movie_failed"]))
+	if ( !IsDefined( level.flag[ "movie_failed" ] ) )
 	{
-		flag_init("movie_failed");
+		flag_init( "movie_failed" );
 	}
-	
+
 	// TFLAME - 8/21/2010 - give these defaults for single use, non streamed
-	if (!IsDefined(is_looping))
+	if ( !IsDefined( is_looping ) )
 	{
 		is_looping = false;
 	}
-	
-	if (!IsDefined(is_in_memory))
+
+	if ( !IsDefined( is_in_memory ) )
 	{
 		is_in_memory = true;
 	}
-	
-	if (!IsDefined(notify_offset) || notify_offset < .3)
+
+	if ( !IsDefined( notify_offset ) || notify_offset < .3 )
 	{
 		notify_offset = .3;
 	}
 
-	if(!IsDefined (snapshot))
+	if ( !IsDefined( snapshot ) )
 	{
-		snapshot = 0;		
+		snapshot = 0;
 	}
 
 	fullscreen_trans_in = "none";
 	fullscreen_trans_out = "none";
-	if (is_true(use_fullscreen_trans))
+	if ( is_true( use_fullscreen_trans ) )
 	{
 		fullscreen_trans_in = "white";
 		fullscreen_trans_out = "white";
 
-		if (IsDefined(level.movie_trans_in))
+		if ( IsDefined( level.movie_trans_in ) )
 		{
 			fullscreen_trans_in = level.movie_trans_in;
 		}
 
-		if (IsDefined(level.movie_trans_out))
+		if ( IsDefined( level.movie_trans_out ) )
 		{
 			fullscreen_trans_out = level.movie_trans_out;
 		}
 	}
-	
-	level thread load_movie(movie_name, is_looping, is_in_memory, IsDefined(start_on_notify));
-	
-	if (IsDefined(start_on_notify))
+
+	level thread load_movie( movie_name, is_looping, is_in_memory, IsDefined( start_on_notify ) );
+
+	if ( IsDefined( start_on_notify ) )
 	{
-		level waittill(start_on_notify);
+		level waittill( start_on_notify );
 	}
 
 	level thread playback_scene_subs();
 	level thread handle_movie_dvars();
 
-	vision_set = movie_fade_in(movie_name, fullscreen_trans_in);	//-- transition in
-/* REMOVED SNAPSHOT CDC now doing this in alais
+	vision_set = movie_fade_in( movie_name, fullscreen_trans_in ); //-- transition in
+	/* REMOVED SNAPSHOT CDC now doing this in alais
 	if(snapshot == 0)
 	{
-		//audio notify to activate movie snapshot and duck audio	
+		//audio notify to activate movie snapshot and duck audio
 		clientNotify ("pms");
 	}
 	else
 	{
 		clientNotify ("pmsao");
-		
-	}
-*/	
-	hud = start_movie(movie_name, fullscreen_trans_in);			//-- movie plays
 
-	if (flag("movie_failed"))
+	}
+*/
+	hud = start_movie( movie_name, fullscreen_trans_in ); //-- movie plays
+
+	if ( flag( "movie_failed" ) )
 	{
-		if (IsDefined(notify_when_done))
+		if ( IsDefined( notify_when_done ) )
 		{
 			wait .05; // give level a chance to wait for this
-			level notify(notify_when_done);
+			level notify( notify_when_done );
 
-			if (IsDefined(notify_offset))
+			if ( IsDefined( notify_offset ) )
 			{
 				wait notify_offset;
 			}
@@ -14744,143 +14801,143 @@ play_movie(movie_name, is_looping, is_in_memory, start_on_notify, use_fullscreen
 	}
 	else
 	{
-		waittill_movie_done(notify_when_done, notify_offset, is_looping);
+		waittill_movie_done( notify_when_done, notify_offset, is_looping );
 	}
-	
-	//audio notify to activate default snapshot	
-	clientNotify ("pmo");
-	
-	flag_clear("movie_loaded");
-	flag_clear("movie_failed");
+
+	//audio notify to activate default snapshot
+	clientNotify( "pmo" );
+
+	flag_clear( "movie_loaded" );
+	flag_clear( "movie_failed" );
 
 	//reset transitions to default
 	level.movie_trans_in = undefined;
 	level.movie_trans_out = undefined;
 
-	if (IsDefined(hud))
+	if ( IsDefined( hud ) )
 	{
 		hud Destroy();
 	}
 
-	level thread movie_fade_out(movie_name, vision_set, fullscreen_trans_out);	//-- transition out
-	level waittill_notify_or_timeout("cine_notify", 1);	// only return when we're really done
+	level thread movie_fade_out( movie_name, vision_set, fullscreen_trans_out ); //-- transition out
+	level waittill_notify_or_timeout( "cine_notify", 1 ); // only return when we're really done
 }
 
 handle_movie_dvars()
 {
 	players = GetPlayers();
-	for (i=0;i<players.size;i++)
+	for ( i = 0; i < players.size; i++ )
 	{
-		players[i]._hud_dvars = [];
-		players[i]._hud_dvars["cl_scoreDraw"] = Int(GetDvar("cl_scoreDraw"));
-		players[i]._hud_dvars["compass"] = Int(GetDvar("compass"));
-		players[i]._hud_dvars["hud_showstance"] = Int(GetDvar("hud_showstance"));
-		players[i]._hud_dvars["actionSlotsHide"] = Int(GetDvar("actionSlotsHide"));
-		players[i]._hud_dvars["ammoCounterHide"] = Int(GetDvar("ammoCounterHide"));
-		players[i]._hud_dvars["cg_cursorHints"] = Int(GetDvar("cg_cursorHints"));
-		players[i]._hud_dvars["hud_showobjectives"] = Int(GetDvar("hud_showobjectives"));
-		players[i]._hud_dvars["cg_drawFriendlyNames"] = Int(GetDvar("cg_drawfriendlynames"));
+		players[ i ]._hud_dvars = [];
+		players[ i ]._hud_dvars[ "cl_scoreDraw" ] = Int( GetDvar( "cl_scoreDraw" ) );
+		players[ i ]._hud_dvars[ "compass" ] = Int( GetDvar( "compass" ) );
+		players[ i ]._hud_dvars[ "hud_showstance" ] = Int( GetDvar( "hud_showstance" ) );
+		players[ i ]._hud_dvars[ "actionSlotsHide" ] = Int( GetDvar( "actionSlotsHide" ) );
+		players[ i ]._hud_dvars[ "ammoCounterHide" ] = Int( GetDvar( "ammoCounterHide" ) );
+		players[ i ]._hud_dvars[ "cg_cursorHints" ] = Int( GetDvar( "cg_cursorHints" ) );
+		players[ i ]._hud_dvars[ "hud_showobjectives" ] = Int( GetDvar( "hud_showobjectives" ) );
+		players[ i ]._hud_dvars[ "cg_drawFriendlyNames" ] = Int( GetDvar( "cg_drawfriendlynames" ) );
 
-		players[i] SetClientDvars( "cl_scoreDraw",0,"compass",0,"hud_showstance",0,"actionSlotsHide",1,"ammoCounterHide",1,"cg_cursorHints",0, "hud_showobjectives", 0, "cg_drawfriendlynames", 0);
+		players[ i ] SetClientDvars( "cl_scoreDraw", 0, "compass", 0, "hud_showstance", 0, "actionSlotsHide", 1, "ammoCounterHide", 1, "cg_cursorHints", 0, "hud_showobjectives", 0, "cg_drawfriendlynames", 0 );
 	}
 
-	flag_wait("movie_loaded");		// movie starts
-	waittill_either("movie_loaded", "stop_movie");	// movie ends
+	flag_wait( "movie_loaded" ); // movie starts
+	waittill_either( "movie_loaded", "stop_movie" ); // movie ends
 
-	PrintLn("play_movie: resetting play movie dvars.");
+	PrintLn( "play_movie: resetting play movie dvars." );
 
 	players = GetPlayers();
-	for (i=0;i<players.size;i++)
+	for ( i = 0; i < players.size; i++ )
 	{
-		keys = GetArrayKeys(players[i]._hud_dvars);
+		keys = GetArrayKeys( players[ i ]._hud_dvars );
 
-		players[i] SetClientDvars( keys[0],players[i]._hud_dvars[keys[0]],keys[1],players[i]._hud_dvars[keys[1]],keys[2],players[i]._hud_dvars[keys[2]],keys[3],players[i]._hud_dvars[keys[3]],keys[4],players[i]._hud_dvars[keys[4]],keys[5],players[i]._hud_dvars[keys[5]], keys[6], players[i]._hud_dvars[keys[6]], keys[7], players[i]._hud_dvars[keys[7]]);
+		players[ i ] SetClientDvars( keys[ 0 ], players[ i ]._hud_dvars[ keys[ 0 ] ], keys[ 1 ], players[ i ]._hud_dvars[ keys[ 1 ] ], keys[ 2 ], players[ i ]._hud_dvars[ keys[ 2 ] ], keys[ 3 ], players[ i ]._hud_dvars[ keys[ 3 ] ], keys[ 4 ], players[ i ]._hud_dvars[ keys[ 4 ] ], keys[ 5 ], players[ i ]._hud_dvars[ keys[ 5 ] ], keys[ 6 ], players[ i ]._hud_dvars[ keys[ 6 ] ], keys[ 7 ], players[ i ]._hud_dvars[ keys[ 7 ] ] );
 	}
 }
 
-load_movie(movie_name, is_looping, is_in_memory, paused)
+load_movie( movie_name, is_looping, is_in_memory, paused )
 {
-	level endon("stop_movie");
-	Start3DCinematic(movie_name, is_looping, is_in_memory);
+	level endon( "stop_movie" );
+	Start3DCinematic( movie_name, is_looping, is_in_memory );
 
 	level thread load_movie_failsafe();
-	level waittill("cine_notify", num);
+	level waittill( "cine_notify", num );
 
-	if (num == -1)
+	if ( num == -1 )
 	{
 		// movie was not able to load in 10 seconds
-		flag_set("movie_failed");
+		flag_set( "movie_failed" );
 	}
-	else if (is_true(paused))
+	else if ( is_true( paused ) )
 	{
-		Pause3DCinematic(true);
+		Pause3DCinematic( true );
 	}
 
-	flag_set("movie_loaded");
+	flag_set( "movie_loaded" );
 }
 
 load_movie_failsafe()
 {
-	level endon("cine_notify");
+	level endon( "cine_notify" );
 	wait 10;
 	Stop3DCinematic();
-	level notify("cine_notify", -1);
+	level notify( "cine_notify", -1 );
 }
 
-start_movie(movie_name, fullscreen_trans)
+start_movie( movie_name, fullscreen_trans )
 {
-	flag_wait("movie_loaded");
+	flag_wait( "movie_loaded" );
 
 	hud = undefined;
 
-	if ( !IsDefined(level.fullscreen_cin_hud) )
+	if ( !IsDefined( level.fullscreen_cin_hud ) )
 	{
-		hud = create_movie_hud(fullscreen_trans);
+		hud = create_movie_hud( fullscreen_trans );
 	}
 
-	if (!flag("movie_failed"))
+	if ( !flag( "movie_failed" ) )
 	{
-// 		IPrintLnBold("play_movie: movie playing!");
+		// 		IPrintLnBold("play_movie: movie playing!");
 
-		PlaySoundAtPosition(movie_name+"_movie",(0,0,0));
-		Pause3DCinematic(false);
+		PlaySoundAtPosition( movie_name + "_movie", ( 0, 0, 0 ) );
+		Pause3DCinematic( false );
 	}
-	
+
 	return hud;
 }
 
 stop_movie()
 {
-	level endon("movie_loaded");
-	level notify("stop_movie");
+	level endon( "movie_loaded" );
+	level notify( "stop_movie" );
 	Stop3DCinematic();
-	flag_clear("movie_loaded");
+	flag_clear( "movie_loaded" );
 }
 
-create_movie_hud(fullscreen_trans)
+create_movie_hud( fullscreen_trans )
 {
 	movie_hud = NewHudElem();
 	movie_hud.x = 0;
 	movie_hud.y = 0;
-	movie_hud.horzAlign  = "fullscreen";
-	movie_hud.vertAlign  = "fullscreen";
+	movie_hud.horzAlign = "fullscreen";
+	movie_hud.vertAlign = "fullscreen";
 	movie_hud.foreground = false; //Arcade Mode compatible
 	movie_hud.sort = 0;
 	movie_hud.alpha = 1;
 
-	if (!is_true(level.flag["movie_failed"]))
+	if ( !is_true( level.flag[ "movie_failed" ] ) )
 	{
-		movie_hud SetShader("cinematic", 640, 480);
+		movie_hud SetShader( "cinematic", 640, 480 );
 	}
 	else
 	{
-		if (fullscreen_trans == "black")
+		if ( fullscreen_trans == "black" )
 		{
-			movie_hud SetShader("black", 640, 480);
+			movie_hud SetShader( "black", 640, 480 );
 		}
 		else
 		{
-			movie_hud SetShader("white", 640, 480);
+			movie_hud SetShader( "white", 640, 480 );
 		}
 	}
 
@@ -14890,67 +14947,67 @@ create_movie_hud(fullscreen_trans)
 
 destroy_when_movie_is_stopped()
 {
-	level endon("movie_loaded");
-	level waittill("stop_movie");
-	
-	if (IsDefined(self))
+	level endon( "movie_loaded" );
+	level waittill( "stop_movie" );
+
+	if ( IsDefined( self ) )
 	{
 		self Destroy();
 	}
 }
 
-movie_fade_in(movie_name, fullscreen_trans)
+movie_fade_in( movie_name, fullscreen_trans )
 {
-	level endon("stop_movie");
+	level endon( "stop_movie" );
 
 	current_vision_set = "";
 
-	if (fullscreen_trans != "none")
+	if ( fullscreen_trans != "none" )
 	{
 		fade_hud = NewHudElem();
 
-		PlaySoundAtPosition(movie_name+"_fade_in",(0,0,0));
-		
+		PlaySoundAtPosition( movie_name + "_fade_in", ( 0, 0, 0 ) );
+
 		FADE_IN = .5;
-		if (IsDefined(level.movie_fade_in_time))
+		if ( IsDefined( level.movie_fade_in_time ) )
 		{
 			FADE_IN = level.movie_fade_in_time;
 		}
 
-		switch (fullscreen_trans)
+		switch ( fullscreen_trans )
 		{
-		case "white":
+			case "white":
 			{
-				current_vision_set = get_players()[0] GetVisionSetNaked();	
-				VisionSetNaked("int_frontend_char_trans", FADE_IN);
+				current_vision_set = get_players()[ 0 ] GetVisionSetNaked();
+				VisionSetNaked( "int_frontend_char_trans", FADE_IN );
 				break;
 			}
-		case "whitehud":
+			case "whitehud":
 			{
 				fade_hud.x = 0;
 				fade_hud.y = 0;
-				fade_hud.horzAlign  = "fullscreen";
-				fade_hud.vertAlign  = "fullscreen";
+				fade_hud.horzAlign = "fullscreen";
+				fade_hud.vertAlign = "fullscreen";
 				fade_hud.foreground = false; //Arcade Mode compatible
 				fade_hud.sort = 0;
 				fade_hud.alpha = 0;
-				fade_hud SetShader("white", 640, 480);
-				fade_hud FadeOverTime(FADE_IN);
+				fade_hud SetShader( "white", 640, 480 );
+				fade_hud FadeOverTime( FADE_IN );
 				fade_hud.alpha = 1;
 
 				break;
 			}
-		case "black":
+			case "black":
 			{
 				fade_hud.x = 0;
 				fade_hud.y = 0;
-				fade_hud.horzAlign  = "fullscreen";
-				fade_hud.vertAlign  = "fullscreen";
+				fade_hud.horzAlign = "fullscreen";
+				fade_hud.vertAlign = "fullscreen";
 				fade_hud.foreground = false; //Arcade Mode compatible
 				fade_hud.sort = 0;
 				fade_hud.alpha = 0;
-				fade_hud SetShader("black", 640, 480);
-				fade_hud FadeOverTime(FADE_IN);
+				fade_hud SetShader( "black", 640, 480 );
+				fade_hud FadeOverTime( FADE_IN );
 				fade_hud.alpha = 1;
 
 				break;
@@ -14964,75 +15021,75 @@ movie_fade_in(movie_name, fullscreen_trans)
 	return current_vision_set;
 }
 
-movie_fade_out(movie_name, vision_set, fullscreen_trans)
+movie_fade_out( movie_name, vision_set, fullscreen_trans )
 {
-	level endon("stop_movie");
+	level endon( "stop_movie" );
 
-	if (fullscreen_trans != "none")
+	if ( fullscreen_trans != "none" )
 	{
 		fade_hud = NewHudElem();
 
-		PlaySoundAtPosition(movie_name+"_fade_out",(0,0,0));
+		PlaySoundAtPosition( movie_name + "_fade_out", ( 0, 0, 0 ) );
 
 		FADE_OUT = .5;
-		if (IsDefined(level.movie_fade_out_time))
+		if ( IsDefined( level.movie_fade_out_time ) )
 		{
 			FADE_OUT = level.movie_fade_out_time;
 		}
 
-		switch (fullscreen_trans)
+		switch ( fullscreen_trans )
 		{
-		case "white":
+			case "white":
 			{
-				current_vision_set = get_players()[0] GetVisionSetNaked();
-				if (current_vision_set != "int_frontend_char_trans")
+				current_vision_set = get_players()[ 0 ] GetVisionSetNaked();
+				if ( current_vision_set != "int_frontend_char_trans" )
 				{
 					vision_set = current_vision_set;
 				}
 
-				VisionSetNaked("int_frontend_char_trans", 0);
+				VisionSetNaked( "int_frontend_char_trans", 0 );
 				wait .1;
-				VisionSetNaked(vision_set, FADE_OUT);
+				VisionSetNaked( vision_set, FADE_OUT );
 
 				break;
 			}
-		case "whitehud":
+			case "whitehud":
 			{
 				fade_hud.x = 0;
 				fade_hud.y = 0;
-				fade_hud.horzAlign  = "fullscreen";
-				fade_hud.vertAlign  = "fullscreen";
+				fade_hud.horzAlign = "fullscreen";
+				fade_hud.vertAlign = "fullscreen";
 				fade_hud.foreground = false; //Arcade Mode compatible
 				fade_hud.sort = 0;
 				fade_hud.alpha = 1;
-				fade_hud SetShader("white", 640, 480);
-				fade_hud FadeOverTime(FADE_OUT);
+				fade_hud SetShader( "white", 640, 480 );
+				fade_hud FadeOverTime( FADE_OUT );
 				fade_hud.alpha = 0;
 
 				break;
 			}
-		case "black":
+			case "black":
 			{
 				fade_hud.x = 0;
 				fade_hud.y = 0;
-				fade_hud.horzAlign  = "fullscreen";
-				fade_hud.vertAlign  = "fullscreen";
+				fade_hud.horzAlign = "fullscreen";
+				fade_hud.vertAlign = "fullscreen";
 				fade_hud.foreground = false; //Arcade Mode compatible
 				fade_hud.sort = 0;
 				fade_hud.alpha = 1;
-				fade_hud SetShader("black", 640, 480);
-				fade_hud FadeOverTime(FADE_OUT);
+				fade_hud SetShader( "black", 640, 480 );
+				fade_hud FadeOverTime( FADE_OUT );
 				fade_hud.alpha = 0;
-				
-				current_vision_set = get_players()[0] GetVisionSetNaked();
-				if (current_vision_set == "int_frontend_char_trans")
+
+				current_vision_set = get_players()[ 0 ] GetVisionSetNaked();
+				if ( current_vision_set == "int_frontend_char_trans" )
 				{
-					VisionSetNaked(vision_set, 0);
+					VisionSetNaked( vision_set, 0 );
 				}
 				break;
 			}
 		}
-		
+
 		wait FADE_OUT;
 		fade_hud Destroy();
 	}
@@ -15040,50 +15097,50 @@ movie_fade_out(movie_name, vision_set, fullscreen_trans)
 
 // Flamer's magic for waiting until a cinematic movie is done
 // WILL NOT WORK IN COOP MODES - DONT USE IT
-waittill_movie_done(notify_when_done, notify_offset, is_looping)
+waittill_movie_done( notify_when_done, notify_offset, is_looping )
 {
-	level endon("stop_movie");
+	level endon( "stop_movie" );
 
 	cutoff_time = 0.2;
 
-	if ( is_true(is_looping))
+	if ( is_true( is_looping ) )
 	{
-		level waittill ("stop_movie");
+		level waittill( "stop_movie" );
 	}
 
 	timeleft = GetCinematicTimeRemaining();
-	PrintLn(timeleft);
-	
+	PrintLn( timeleft );
+
 	counter = 0;
-	while ( (timeleft < 0.05) && counter < 100 )
+	while ( ( timeleft < 0.05 ) && counter < 100 )
 	{
 		wait 0.05;
 		counter++;
 		timeleft = GetCinematicTimeRemaining();
-		PrintLn(timeleft);
+		PrintLn( timeleft );
 	}
 
 	oldtimeleft = GetCinematicTimeRemaining();
 
-	AssertEx(counter < 100, "Error: Bink movie never started playing even 5 seconds after calling waittill_movie_done");
-	if ((counter >= 100) && IsDefined(notify_when_done))
+	AssertEx( counter < 100, "Error: Bink movie never started playing even 5 seconds after calling waittill_movie_done" );
+	if ( ( counter >= 100 ) && IsDefined( notify_when_done ) )
 	{
-		level notify(notify_when_done);
+		level notify( notify_when_done );
 	}
 
-	while (timeleft >= cutoff_time)
+	while ( timeleft >= cutoff_time )
 	{
-		if (IsDefined(notify_when_done) && (timeleft <= notify_offset))
+		if ( IsDefined( notify_when_done ) && ( timeleft <= notify_offset ) )
 		{
-			level notify(notify_when_done);
+			level notify( notify_when_done );
 		}
 
 		wait 0.05;
 
 		timeleft = GetCinematicTimeRemaining();
-		PrintLn(timeleft);
+		PrintLn( timeleft );
 
-		if (timeleft < oldtimeleft )
+		if ( timeleft < oldtimeleft )
 		{
 			oldtimeleft = timeleft;
 		}
@@ -15093,25 +15150,25 @@ waittill_movie_done(notify_when_done, notify_offset, is_looping)
 		}
 	}
 
-	if (IsDefined(notify_when_done))
+	if ( IsDefined( notify_when_done ) )
 	{
-		level notify(notify_when_done);
+		level notify( notify_when_done );
 	}
 }
 
 wont_disable_player_firing()
 {
-	if(!IsDefined(self))
+	if ( !IsDefined( self ) )
 	{
 		return;
 	}
-	
+
 	self.NoFriendlyfire = true;
 	self.ignoreforfriendlyfire = 1;
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: allow_divetoprone()"
 "Summary: Sets the dtp dvar to enable or disable dive to prone"
@@ -15119,11 +15176,11 @@ wont_disable_player_firing()
 "Example: allow_divetoprone( false );"
 "SPMP: SP"
 ///ScriptDocEnd
-============= 
+=============
 */
 allow_divetoprone( allowed )
 {
-	if( !IsDefined( allowed ) )
+	if ( !IsDefined( allowed ) )
 	{
 		return;
 	}
@@ -15131,62 +15188,63 @@ allow_divetoprone( allowed )
 	SetDvar( "dtp", allowed );
 }
 
-/* 
-============= 
+/*
+=============
 ///ScriptDocBegin
 "Name: waittill_player_shoots()"
-"Summary: Waits for the player to fire a gun. Returns the weapon name. 
+"Summary: Waits for the player to fire a gun. Returns the weapon name.
 "Module: Player"
 "OptionalArg: <weapon_type> : Specify silencer preference to wait for: "silenced", "not_silenced", or "any". Deafaults to "any".
 "OptionalArg: <ender> : Player notify to end the function.
 "Example: player waittill_player_shoots("not_silenced", "stealth_over");
 "SPMP: SP"
 ///ScriptDocEnd
-============= 
+=============
 */
 
-waittill_player_shoots(weapon_type, ender)
+waittill_player_shoots( weapon_type, ender )
 {
 	//silenced, not_silenced, any
-	if(IsDefined(ender))
+	if ( IsDefined( ender ) )
 	{
-		self endon (ender);
-	}	
-	
+		self endon( ender );
+	}
+
 	//if no weapon specified, then detect "any"
-	if(!IsDefined (weapon_type))
+	if ( !IsDefined( weapon_type ) )
 	{
 		weapon_type = "any";
 	}
-	
-	while(1)
+
+	while ( 1 )
 	{
 		//wait for player to fire
-		self waittill ("weapon_fired");
-		
+		self waittill( "weapon_fired" );
+
 		//what gun does the player have
 		gun = self GetCurrentWeapon();
-		
+
 		//return based on specified weapon
-		if(weapon_type == "any") //all weapons are valid, return weapon
+		if ( weapon_type == "any" ) //all weapons are valid, return weapon
 		{
 			return gun;
 		}
-		else if(weapon_type =="silenced")//only looking for silenced shots
-		{	
-			if( IsSubStr(gun, "silencer"))//if player has a silenced weapon, return
+		else if ( weapon_type == "silenced" ) //only looking for silenced shots
+		{
+			if ( IsSubStr( gun, "silencer" ) ) //if player has a silenced weapon, return
 			{
 				return gun;
 			}
 		}
 		else //only looking for "not_silenced" shots
 		{
-			if( !IsSubStr(gun, "silencer"))//if weapon is not silenced, return
+			if ( !IsSubStr( gun, "silencer" ) ) //if weapon is not silenced, return
 			{
 				return gun;
 			}
 		}
-		continue;//weapon fired is not the kind we want to detect, keep waiting
-	}		
-	
+
+		continue; //weapon fired is not the kind we want to detect, keep waiting
+	}
+
 }

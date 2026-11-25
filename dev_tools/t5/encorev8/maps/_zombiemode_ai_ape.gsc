@@ -9,22 +9,22 @@ init()
 
 	init_ape_zombie_anims();
 	init_ape_powerup_drops();
-	
-	level._effect["ape_groundhit"] = loadfx("maps/zombie/fx_zombie_ape_grnd_hit");
-	level._effect["ape_spawn"] = loadfx("maps/zombie/fx_zombie_ape_spawn_dust");
-	level._effect["ape_impact"] = loadfx("maps/zombie/fx_zombie_flesh_hit_ape");
-	level._effect["ape_trail"] = loadfx("maps/zombie/fx_zombie_ape_spawn_trail");
-	
+
+	level._effect[ "ape_groundhit" ] = loadfx( "maps/zombie/fx_zombie_ape_grnd_hit" );
+	level._effect[ "ape_spawn" ] = loadfx( "maps/zombie/fx_zombie_ape_spawn_dust" );
+	level._effect[ "ape_impact" ] = loadfx( "maps/zombie/fx_zombie_flesh_hit_ape" );
+	level._effect[ "ape_trail" ] = loadfx( "maps/zombie/fx_zombie_ape_spawn_trail" );
+
 	// Function that will be used to calculate the value of different spawners when choosing which to use when spawning new ape
 	// Functions that overload this, should return an int, with a higher value indicating a better spawner
-	if( !isDefined( level.ape_zombie_spawn_heuristic ) )
+	if ( !isDefined( level.ape_zombie_spawn_heuristic ) )
 	{
 		level.ape_zombie_spawn_heuristic = maps\_zombiemode_ai_ape::ape_zombie_default_spawn_heuristic;
 	}
-	
+
 	// Function that will be used to calculate the value of different idle nodes for apes in the "non-active" state
 	// Functions that overload this, should return an int, with a higher value indicating a better node
-	if( !isDefined( level.ape_zombie_pathfind_heuristic ) )
+	if ( !isDefined( level.ape_zombie_pathfind_heuristic ) )
 	{
 		level.ape_zombie_pathfind_heuristic = maps\_zombiemode_ai_ape::ape_zombie_default_pathfind_heuristic;
 	}
@@ -36,11 +36,11 @@ init()
 
 	if ( !isDefined( level.ape_zombie_activation ) )
 	{
-		level.ape_zombie_activation = ::ape_zombie_check_for_activation;
+		level.ape_zombie_activation =::ape_zombie_check_for_activation;
 	}
 
 	precacheshellshock( "electrocution" );
-	
+
 	// Nodes that will be used as goals when an ape zombie is his "non-active" state.
 	level.ape_idle_nodes = GetNodeArray( "boss_idle", "script_noteworthy" );
 
@@ -48,108 +48,125 @@ init()
 	level.num_ape_zombies = 0;
 
 	level.ape_zombie_spawners = GetEntArray( "boss_zombie_spawner", "targetname" );
-	array_thread( level.ape_zombie_spawners, ::add_spawn_function, maps\_zombiemode_ai_ape::ape_prespawn );
+	array_thread( level.ape_zombie_spawners,::add_spawn_function, maps\_zombiemode_ai_ape::ape_prespawn );
 
 	// Counters and timers used by the ape, can be overloaded on a level by level basis
-	if( !isDefined( level.max_ape_zombies ) )
+	if ( !isDefined( level.max_ape_zombies ) )
 	{
 		level.max_ape_zombies = 1;
 	}
-	if( !isDefined( level.ape_respawn_timer ) )
+
+	if ( !isDefined( level.ape_respawn_timer ) )
 	{
 		level.ape_respawn_timer = 30;
 	}
-	if( !isDefined( level.ape_zombie_health_mult ) )
+
+	if ( !isDefined( level.ape_zombie_health_mult ) )
 	{
 		level.ape_zombie_health_mult = 7;
 	}
-	if( !isDefined( level.ape_zombie_damage_mult ) )
+
+	if ( !isDefined( level.ape_zombie_damage_mult ) )
 	{
 		level.ape_zombie_damage_mult = 2;
 	}
-	if( !isDefined( level.ape_zombie_min_health ) )
+
+	if ( !isDefined( level.ape_zombie_min_health ) )
 	{
 		level.ape_zombie_min_health = 10000;
 	}
-	if( !isDefined( level.ape_zombie_scream_a_chance ) )
+
+	if ( !isDefined( level.ape_zombie_scream_a_chance ) )
 	{
 		level.ape_zombie_scream_a_chance = 100;
 	}
-	if( !isDefined( level.ape_zombie_scream_a_radius ) )
+
+	if ( !isDefined( level.ape_zombie_scream_a_radius ) )
 	{
-		level.ape_zombie_scream_a_radius_sq = 512*512;
+		level.ape_zombie_scream_a_radius_sq = 512 * 512;
 	}
-	if( !isDefined( level.ape_zombie_scream_b_chance ) )
+
+	if ( !isDefined( level.ape_zombie_scream_b_chance ) )
 	{
 		level.ape_zombie_scream_b_chance = 0;
 	}
-	if( !isDefined( level.ape_zombie_scream_b_radius ) )
+
+	if ( !isDefined( level.ape_zombie_scream_b_radius ) )
 	{
-		level.ape_zombie_scream_b_radius_sq = 512*512;
+		level.ape_zombie_scream_b_radius_sq = 512 * 512;
 	}
-	if( !isDefined( level.ape_zombie_groundhit_damage ) )
+
+	if ( !isDefined( level.ape_zombie_groundhit_damage ) )
 	{
 		level.ape_zombie_groundhit_damage = 100;
 	}
-	if( !isDefined( level.ape_zombie_groundhit_trigger_radius ) )
+
+	if ( !isDefined( level.ape_zombie_groundhit_trigger_radius ) )
 	{
 		level.ape_zombie_groundhit_trigger_radius = 96;
 	}
-	if( !isDefined( level.ape_zombie_groundhit_damage_radius ) )
+
+	if ( !isDefined( level.ape_zombie_groundhit_damage_radius ) )
 	{
 		level.ape_zombie_groundhit_damage_radius = 280;
 	}
-	if( !isDefined( level.ape_zombie_proximity_wake ) )
+
+	if ( !isDefined( level.ape_zombie_proximity_wake ) )
 	{
 		level.ape_zombie_proximity_wake = 48;
 	}
-	if( !isDefined( level.ape_thundergun_damage ) )
+
+	if ( !isDefined( level.ape_thundergun_damage ) )
 	{
 		level.ape_thundergun_damage = 250;
 	}
-	if( !isDefined( level.ape_fire_damage ) )
+
+	if ( !isDefined( level.ape_fire_damage ) )
 	{
 		level.ape_fire_damage = 500;
 	}
-	if( !isDefined( level.ape_ground_attack_delay ) )
+
+	if ( !isDefined( level.ape_ground_attack_delay ) )
 	{
 		level.ape_ground_attack_delay = 5000;
 	}
-	if( !isDefined( level.ape_tesla_damage ) )
+
+	if ( !isDefined( level.ape_tesla_damage ) )
 	{
 		level.ape_tesla_damage = 1000;
 	}
-	
-	// If there are any apes flagged as preferential first spawners, spawn them. If there are too many, spawn the max 
+
+	// If there are any apes flagged as preferential first spawners, spawn them. If there are too many, spawn the max
 	// number of apes chosen randomly from the array of preferential first spawners.
 	firstSpawners = GetEntArray( "first_boss_spawner", "script_noteworthy" );
-	
-	if( isDefined( firstSpawners ) && firstSpawners.size > 0 )
+
+	if ( isDefined( firstSpawners ) && firstSpawners.size > 0 )
 	{
-		if( firstSpawners.size > level.max_ape_zombies )
+		if ( firstSpawners.size > level.max_ape_zombies )
 		{
 			chosenSpawners = [];
-			while( chosenSpawners.size < level.max_ape_zombies )
+			while ( chosenSpawners.size < level.max_ape_zombies )
 			{
 				index = RandomInt( firstSpawners.size );
-				if( firstSpawners[index].script_string == "boss" ) // Just in case someone else put first_boss_spawner in the targetname
+				if ( firstSpawners[ index ].script_string == "boss" ) // Just in case someone else put first_boss_spawner in the targetname
 				{
-					chosenSpawners = array_add( chosenSpawners, firstSpawners[index] );
+					chosenSpawners = array_add( chosenSpawners, firstSpawners[ index ] );
 				}
-				firstSpawners = array_remove( firstSpawners, firstSpawners[index] );
+
+				firstSpawners = array_remove( firstSpawners, firstSpawners[ index ] );
 			}
 		}
 		else
 		{
 			chosenSpawners = firstSpawners;
 		}
-		
-		for( i = 0; i < chosenSpawners.size; i++ )
+
+		for ( i = 0; i < chosenSpawners.size; i++ )
 		{
-			chosenSpawners[i] ape_zombie_spawn();
+			chosenSpawners[ i ] ape_zombie_spawn();
 		}
 	}
-	
+
 	//level thread ape_zombie_manager();
 	level thread ape_zombie_update_proximity_wake();
 	level.ammo_spawn = true;
@@ -174,49 +191,49 @@ init()
 ape_prespawn()
 {
 	self.animname = "ape_zombie";
-	
+
 	self.custom_idle_setup = maps\_zombiemode_ai_ape::ape_zombie_idle_setup;
-	
+
 	self.damage_mult = level.ape_zombie_damage_mult;
 
 	self.a.idleAnimOverrideArray = [];
-	self.a.idleAnimOverrideArray["stand"] = [];
-	self.a.idleAnimOverrideWeights["stand"] = [];
-	self.a.idleAnimOverrideArray["stand"][0][0] 	= %ai_zombie_simianaut_idle;
-	self.a.idleAnimOverrideWeights["stand"][0][0] 	= 10;
-	self.a.idleAnimOverrideArray["stand"][0][1] 	= %ai_zombie_simianaut_idle;
-	self.a.idleAnimOverrideWeights["stand"][0][1] 	= 10;
-	
+	self.a.idleAnimOverrideArray[ "stand" ] = [];
+	self.a.idleAnimOverrideWeights[ "stand" ] = [];
+	self.a.idleAnimOverrideArray[ "stand" ][ 0 ][ 0 ] = %ai_zombie_simianaut_idle;
+	self.a.idleAnimOverrideWeights[ "stand" ][ 0 ][ 0 ] = 10;
+	self.a.idleAnimOverrideArray[ "stand" ][ 0 ][ 1 ] = %ai_zombie_simianaut_idle;
+	self.a.idleAnimOverrideWeights[ "stand" ][ 0 ][ 1 ] = 10;
+
 	rand = randomIntRange( 1, 5 );
-	self.deathanim = level.scr_anim["ape_zombie"]["death"+rand];
+	self.deathanim = level.scr_anim[ "ape_zombie" ][ "death" + rand ];
 
-	self.ignorelocationaldamage = true; 
-	self.ignoreall = true; 
-	self.allowdeath = true; 			// allows death during animscripted calls
-	self.is_zombie = true; 			// needed for melee.gsc in the animscripts
-	self.has_legs = true; 			// Sumeet - This tells the zombie that he is allowed to stand anymore or not, gibbing can take 
-															// out both legs and then the only allowed stance should be prone.
-	self allowedStances( "stand" ); 
+	self.ignorelocationaldamage = true;
+	self.ignoreall = true;
+	self.allowdeath = true; // allows death during animscripted calls
+	self.is_zombie = true; // needed for melee.gsc in the animscripts
+	self.has_legs = true; // Sumeet - This tells the zombie that he is allowed to stand anymore or not, gibbing can take
+	// out both legs and then the only allowed stance should be prone.
+	self allowedStances( "stand" );
 
-	self.gibbed = false; 
+	self.gibbed = false;
 	self.head_gibbed = false;
-	
-	// might need this so co-op zombie players cant block zombie pathing
-	//self PushPlayer( true ); 
 
-	self.disableArrivals = true; 
-	self.disableExits = true; 
+	// might need this so co-op zombie players cant block zombie pathing
+	//self PushPlayer( true );
+
+	self.disableArrivals = true;
+	self.disableExits = true;
 	self.grenadeawareness = 0;
 	self.badplaceawareness = 0;
 
-	self.ignoreSuppression = true; 	
-	self.suppressionThreshold = 1; 
-	self.noDodgeMove = true; 
+	self.ignoreSuppression = true;
+	self.suppressionThreshold = 1;
+	self.noDodgeMove = true;
 	self.dontShootWhileMoving = true;
 	self.pathenemylookahead = 0;
 
 	self.badplaceawareness = 0;
-	self.chatInitialized = false; 
+	self.chatInitialized = false;
 
 	self.a.disablePain = true;
 	self disable_react(); // SUMEET - zombies dont use react feature.
@@ -229,27 +246,27 @@ ape_prespawn()
 	}
 
 	self.freezegun_damage = 0;
-	
-	self.dropweapon = false; 
+
+	self.dropweapon = false;
 	self thread maps\_zombiemode_spawner::zombie_damage_failsafe();
 
-	self thread maps\_zombiemode_spawner::delayed_zombie_eye_glow();	// delayed eye glow for ground crawlers (the eyes floated above the ground before the anim started)
+	self thread maps\_zombiemode_spawner::delayed_zombie_eye_glow(); // delayed eye glow for ground crawlers (the eyes floated above the ground before the anim started)
 	self.flame_damage_time = 0;
 	self.meleeDamage = 50;
 	self.no_powerups = true;
 	self thread maps\_zombiemode_ai_ape::ape_set_airstrike_damage();
 
-	self.thundergun_disintegrate_func = ::ape_thundergun_disintegrate;
-	self.thundergun_fling_func = ::ape_thundergun_disintegrate;
-	self.fire_damage_func = ::ape_fire_damage;
+	self.thundergun_disintegrate_func =::ape_thundergun_disintegrate;
+	self.thundergun_fling_func =::ape_thundergun_disintegrate;
+	self.fire_damage_func =::ape_fire_damage;
 	//self.trap_reaction_func = ::ape_trap_reaction;
-	self.custom_damage_func = ::ape_custom_damage;
-	self.actor_damage_func = ::ape_actor_damage;
-	self.nuke_damage_func = ::ape_nuke_damage;
-	self.tesla_damage_func = ::ape_tesla_damage;
-	self.dog_damage_func = ::ape_dog_damage;
-	self.zombie_damage_fx_func = ::ape_zombie_damage_fx;
-	self.non_attacker_func = ::ape_non_attacker;
+	self.custom_damage_func =::ape_custom_damage;
+	self.actor_damage_func =::ape_actor_damage;
+	self.nuke_damage_func =::ape_nuke_damage;
+	self.tesla_damage_func =::ape_tesla_damage;
+	self.dog_damage_func =::ape_dog_damage;
+	self.zombie_damage_fx_func =::ape_zombie_damage_fx;
+	self.non_attacker_func =::ape_non_attacker;
 
 	self.entered_level = false;
 	self.chest_beat = false;
@@ -294,226 +311,236 @@ ape_set_airstrike_damage()
 
 ape_zombie_idle_setup()
 {
-	self.a.array["turn_left_45"] = %exposed_tracking_turn45L;
-	self.a.array["turn_left_90"] = %exposed_tracking_turn90L;
-	self.a.array["turn_left_135"] = %exposed_tracking_turn135L;
-	self.a.array["turn_left_180"] = %exposed_tracking_turn180L;
-	self.a.array["turn_right_45"] = %exposed_tracking_turn45R;
-	self.a.array["turn_right_90"] = %exposed_tracking_turn90R;
-	self.a.array["turn_right_135"] = %exposed_tracking_turn135R;
-	self.a.array["turn_right_180"] = %exposed_tracking_turn180L;
-	self.a.array["exposed_idle"] = array( %ai_zombie_simianaut_idle, %ai_zombie_simianaut_idle );
-	self.a.array["straight_level"] = %ai_zombie_simianaut_idle;
-	self.a.array["stand_2_crouch"] = %ai_zombie_shot_leg_right_2_crawl;
+	self.a.array[ "turn_left_45" ] = %exposed_tracking_turn45L;
+	self.a.array[ "turn_left_90" ] = %exposed_tracking_turn90L;
+	self.a.array[ "turn_left_135" ] = %exposed_tracking_turn135L;
+	self.a.array[ "turn_left_180" ] = %exposed_tracking_turn180L;
+	self.a.array[ "turn_right_45" ] = %exposed_tracking_turn45R;
+	self.a.array[ "turn_right_90" ] = %exposed_tracking_turn90R;
+	self.a.array[ "turn_right_135" ] = %exposed_tracking_turn135R;
+	self.a.array[ "turn_right_180" ] = %exposed_tracking_turn180L;
+	self.a.array[ "exposed_idle" ] = array( %ai_zombie_simianaut_idle, %ai_zombie_simianaut_idle );
+	self.a.array[ "straight_level" ] = %ai_zombie_simianaut_idle;
+	self.a.array[ "stand_2_crouch" ] = %ai_zombie_shot_leg_right_2_crawl;
 }
 
 init_ape_zombie_anims()
 {
 	// deaths
-	level.scr_anim["ape_zombie"]["death1"] 	= %ai_zombie_boss_death;
-	level.scr_anim["ape_zombie"]["death2"] 	= %ai_zombie_boss_death_a;
-	level.scr_anim["ape_zombie"]["death3"] 	= %ai_zombie_boss_death_explode;
-	level.scr_anim["ape_zombie"]["death4"] 	= %ai_zombie_boss_death_mg;
+	level.scr_anim[ "ape_zombie" ][ "death1" ] = %ai_zombie_boss_death;
+	level.scr_anim[ "ape_zombie" ][ "death2" ] = %ai_zombie_boss_death_a;
+	level.scr_anim[ "ape_zombie" ][ "death3" ] = %ai_zombie_boss_death_explode;
+	level.scr_anim[ "ape_zombie" ][ "death4" ] = %ai_zombie_boss_death_mg;
 
 	// run cycles
-	
-	level.scr_anim["ape_zombie"]["walk1"] 	= %ai_zombie_simianaut_walk;
-	level.scr_anim["ape_zombie"]["walk2"] 	= %ai_zombie_simianaut_walk;
-	level.scr_anim["ape_zombie"]["walk3"] 	= %ai_zombie_simianaut_walk;
-	level.scr_anim["ape_zombie"]["walk4"] 	= %ai_zombie_simianaut_walk;
-	level.scr_anim["ape_zombie"]["walk5"] 	= %ai_zombie_simianaut_walk;
-	level.scr_anim["ape_zombie"]["walk6"] 	= %ai_zombie_simianaut_walk;
-	level.scr_anim["ape_zombie"]["walk7"] 	= %ai_zombie_simianaut_walk;
-	level.scr_anim["ape_zombie"]["walk8"] 	= %ai_zombie_simianaut_walk;
 
-	level.scr_anim["ape_zombie"]["run1"] 	= %ai_zombie_walk_fast_v1;
-	level.scr_anim["ape_zombie"]["run2"] 	= %ai_zombie_walk_fast_v2;
-	level.scr_anim["ape_zombie"]["run3"] 	= %ai_zombie_walk_fast_v3;
-	level.scr_anim["ape_zombie"]["run4"] 	= %ai_zombie_run_v2;
-	level.scr_anim["ape_zombie"]["run5"] 	= %ai_zombie_run_v4;
-	level.scr_anim["ape_zombie"]["run6"] 	= %ai_zombie_run_v3;
+	level.scr_anim[ "ape_zombie" ][ "walk1" ] = %ai_zombie_simianaut_walk;
+	level.scr_anim[ "ape_zombie" ][ "walk2" ] = %ai_zombie_simianaut_walk;
+	level.scr_anim[ "ape_zombie" ][ "walk3" ] = %ai_zombie_simianaut_walk;
+	level.scr_anim[ "ape_zombie" ][ "walk4" ] = %ai_zombie_simianaut_walk;
+	level.scr_anim[ "ape_zombie" ][ "walk5" ] = %ai_zombie_simianaut_walk;
+	level.scr_anim[ "ape_zombie" ][ "walk6" ] = %ai_zombie_simianaut_walk;
+	level.scr_anim[ "ape_zombie" ][ "walk7" ] = %ai_zombie_simianaut_walk;
+	level.scr_anim[ "ape_zombie" ][ "walk8" ] = %ai_zombie_simianaut_walk;
+
+	level.scr_anim[ "ape_zombie" ][ "run1" ] = %ai_zombie_walk_fast_v1;
+	level.scr_anim[ "ape_zombie" ][ "run2" ] = %ai_zombie_walk_fast_v2;
+	level.scr_anim[ "ape_zombie" ][ "run3" ] = %ai_zombie_walk_fast_v3;
+	level.scr_anim[ "ape_zombie" ][ "run4" ] = %ai_zombie_run_v2;
+	level.scr_anim[ "ape_zombie" ][ "run5" ] = %ai_zombie_run_v4;
+	level.scr_anim[ "ape_zombie" ][ "run6" ] = %ai_zombie_run_v3;
 
 	//level.scr_anim["ape_zombie"]["sprint1"] = %ai_zombie_boss_sprint_a;
 	//level.scr_anim["ape_zombie"]["sprint2"] = %ai_zombie_boss_sprint_a;
 	//level.scr_anim["ape_zombie"]["sprint3"] = %ai_zombie_boss_sprint_b;
 	//level.scr_anim["ape_zombie"]["sprint4"] = %ai_zombie_boss_sprint_b;
-	level.scr_anim["ape_zombie"]["sprint1"] = %ai_zombie_simianaut_run_man;
-	level.scr_anim["ape_zombie"]["sprint2"] = %ai_zombie_simianaut_run_side;
-	level.scr_anim["ape_zombie"]["sprint3"] = %ai_zombie_simianaut_run;
-	level.scr_anim["ape_zombie"]["sprint4"] = %ai_zombie_simianaut_run_fast;
+	level.scr_anim[ "ape_zombie" ][ "sprint1" ] = %ai_zombie_simianaut_run_man;
+	level.scr_anim[ "ape_zombie" ][ "sprint2" ] = %ai_zombie_simianaut_run_side;
+	level.scr_anim[ "ape_zombie" ][ "sprint3" ] = %ai_zombie_simianaut_run;
+	level.scr_anim[ "ape_zombie" ][ "sprint4" ] = %ai_zombie_simianaut_run_fast;
 
-	level.scr_anim["ape_zombie"]["wounded1"] = %ai_zombie_simianaut_run_wounded;
+	level.scr_anim[ "ape_zombie" ][ "wounded1" ] = %ai_zombie_simianaut_run_wounded;
 
 	// run cycles in prone
-	level.scr_anim["ape_zombie"]["crawl1"] 	= %ai_zombie_crawl;
-	level.scr_anim["ape_zombie"]["crawl2"] 	= %ai_zombie_crawl_v1;
-	level.scr_anim["ape_zombie"]["crawl3"] 	= %ai_zombie_crawl_v2;
-	level.scr_anim["ape_zombie"]["crawl4"] 	= %ai_zombie_crawl_v3;
-	level.scr_anim["ape_zombie"]["crawl5"] 	= %ai_zombie_crawl_v4;
-	level.scr_anim["ape_zombie"]["crawl6"] 	= %ai_zombie_crawl_v5;
-	level.scr_anim["ape_zombie"]["crawl_hand_1"] = %ai_zombie_walk_on_hands_a;
-	level.scr_anim["ape_zombie"]["crawl_hand_2"] = %ai_zombie_walk_on_hands_b;
+	level.scr_anim[ "ape_zombie" ][ "crawl1" ] = %ai_zombie_crawl;
+	level.scr_anim[ "ape_zombie" ][ "crawl2" ] = %ai_zombie_crawl_v1;
+	level.scr_anim[ "ape_zombie" ][ "crawl3" ] = %ai_zombie_crawl_v2;
+	level.scr_anim[ "ape_zombie" ][ "crawl4" ] = %ai_zombie_crawl_v3;
+	level.scr_anim[ "ape_zombie" ][ "crawl5" ] = %ai_zombie_crawl_v4;
+	level.scr_anim[ "ape_zombie" ][ "crawl6" ] = %ai_zombie_crawl_v5;
+	level.scr_anim[ "ape_zombie" ][ "crawl_hand_1" ] = %ai_zombie_walk_on_hands_a;
+	level.scr_anim[ "ape_zombie" ][ "crawl_hand_2" ] = %ai_zombie_walk_on_hands_b;
 
-	level.scr_anim["ape_zombie"]["crawl_sprint1"] 	= %ai_zombie_crawl_sprint;
-	level.scr_anim["ape_zombie"]["crawl_sprint2"] 	= %ai_zombie_crawl_sprint_1;
-	level.scr_anim["ape_zombie"]["crawl_sprint3"] 	= %ai_zombie_crawl_sprint_2;
+	level.scr_anim[ "ape_zombie" ][ "crawl_sprint1" ] = %ai_zombie_crawl_sprint;
+	level.scr_anim[ "ape_zombie" ][ "crawl_sprint2" ] = %ai_zombie_crawl_sprint_1;
+	level.scr_anim[ "ape_zombie" ][ "crawl_sprint3" ] = %ai_zombie_crawl_sprint_2;
 
-	if( !isDefined( level._zombie_melee ) )
+	if ( !isDefined( level._zombie_melee ) )
 	{
 		level._zombie_melee = [];
 	}
-	if( !isDefined( level._zombie_walk_melee ) )
+
+	if ( !isDefined( level._zombie_walk_melee ) )
 	{
 		level._zombie_walk_melee = [];
 	}
-	if( !isDefined( level._zombie_run_melee ) )
+
+	if ( !isDefined( level._zombie_run_melee ) )
 	{
 		level._zombie_run_melee = [];
 	}
-	level._zombie_melee["ape_zombie"] = [];
-	level._zombie_walk_melee["ape_zombie"] = [];
-	level._zombie_run_melee["ape_zombie"] = [];
 
-	level._zombie_melee["ape_zombie"][0] 				= %ai_semianaut_attack_v1; 
-	level._zombie_melee["ape_zombie"][1] 				= %ai_semianaut_attack_v1; 
-	level._zombie_melee["ape_zombie"][2] 				= %ai_semianaut_attack_v1; 
-	level._zombie_melee["ape_zombie"][3] 				= %ai_semianaut_attack_v1;	
-	level._zombie_melee["ape_zombie"][3] 				= %ai_semianaut_attack_v1;	
+	level._zombie_melee[ "ape_zombie" ] = [];
+	level._zombie_walk_melee[ "ape_zombie" ] = [];
+	level._zombie_run_melee[ "ape_zombie" ] = [];
 
-	if( isDefined( level.ape_zombie_anim_override ) )
+	level._zombie_melee[ "ape_zombie" ][ 0 ] = %ai_semianaut_attack_v1;
+	level._zombie_melee[ "ape_zombie" ][ 1 ] = %ai_semianaut_attack_v1;
+	level._zombie_melee[ "ape_zombie" ][ 2 ] = %ai_semianaut_attack_v1;
+	level._zombie_melee[ "ape_zombie" ][ 3 ] = %ai_semianaut_attack_v1;
+	level._zombie_melee[ "ape_zombie" ][ 3 ] = %ai_semianaut_attack_v1;
+
+	if ( isDefined( level.ape_zombie_anim_override ) )
 	{
 		[[ level.ape_zombie_anim_override ]]();
 	}
 
 	//level._zombie_walk_melee["ape_zombie"][0]			= %ai_zombie_boss_walk_headhit;
-	
-	level._zombie_run_melee["ape_zombie"][0]				=	%ai_semianaut_attack_v1;
-	level._zombie_run_melee["ape_zombie"][1]				=	%ai_semianaut_attack_v1;
-	level._zombie_run_melee["ape_zombie"][2]				=	%ai_semianaut_attack_v1;
+
+	level._zombie_run_melee[ "ape_zombie" ][ 0 ] = %ai_semianaut_attack_v1;
+	level._zombie_run_melee[ "ape_zombie" ][ 1 ] = %ai_semianaut_attack_v1;
+	level._zombie_run_melee[ "ape_zombie" ][ 2 ] = %ai_semianaut_attack_v1;
 
 	// melee in crawl
-	if( !isDefined( level._zombie_melee_crawl ) )
+	if ( !isDefined( level._zombie_melee_crawl ) )
 	{
 		level._zombie_melee_crawl = [];
 	}
-	level._zombie_melee_crawl["ape_zombie"] = [];
-	level._zombie_melee_crawl["ape_zombie"][0] 		= %ai_zombie_attack_crawl; 
-	level._zombie_melee_crawl["ape_zombie"][1] 		= %ai_zombie_attack_crawl_lunge;
 
-	if( !isDefined( level._zombie_stumpy_melee ) )
+	level._zombie_melee_crawl[ "ape_zombie" ] = [];
+	level._zombie_melee_crawl[ "ape_zombie" ][ 0 ] = %ai_zombie_attack_crawl;
+	level._zombie_melee_crawl[ "ape_zombie" ][ 1 ] = %ai_zombie_attack_crawl_lunge;
+
+	if ( !isDefined( level._zombie_stumpy_melee ) )
 	{
 		level._zombie_stumpy_melee = [];
 	}
-	level._zombie_stumpy_melee["ape_zombie"] = [];
-	level._ape_zombie_stumpy_melee["ape_zombie"][0] = %ai_zombie_walk_on_hands_shot_a;
-	level._ape_zombie_stumpy_melee["ape_zombie"][1] = %ai_zombie_walk_on_hands_shot_b;
+
+	level._zombie_stumpy_melee[ "ape_zombie" ] = [];
+	level._ape_zombie_stumpy_melee[ "ape_zombie" ][ 0 ] = %ai_zombie_walk_on_hands_shot_a;
+	level._ape_zombie_stumpy_melee[ "ape_zombie" ][ 1 ] = %ai_zombie_walk_on_hands_shot_b;
 
 	// tesla deaths
-	if( !isDefined( level._zombie_tesla_deaths ) )
+	if ( !isDefined( level._zombie_tesla_deaths ) )
 	{
 		level._zombie_tesla_deaths = [];
 	}
-	level._zombie_tesla_death["ape_zombie"] = [];
-	level._zombie_tesla_death["ape_zombie"][0] = %ai_zombie_boss_tesla_death_a;
-	level._zombie_tesla_death["ape_zombie"][1] = %ai_zombie_boss_tesla_death_a;
-	level._zombie_tesla_death["ape_zombie"][2] = %ai_zombie_boss_tesla_death_a;
-	level._zombie_tesla_death["ape_zombie"][3] = %ai_zombie_boss_tesla_death_a;
-	level._zombie_tesla_death["ape_zombie"][4] = %ai_zombie_boss_tesla_death_a;
 
-	if( !isDefined( level._zombie_tesla_crawl_death ) )
+	level._zombie_tesla_death[ "ape_zombie" ] = [];
+	level._zombie_tesla_death[ "ape_zombie" ][ 0 ] = %ai_zombie_boss_tesla_death_a;
+	level._zombie_tesla_death[ "ape_zombie" ][ 1 ] = %ai_zombie_boss_tesla_death_a;
+	level._zombie_tesla_death[ "ape_zombie" ][ 2 ] = %ai_zombie_boss_tesla_death_a;
+	level._zombie_tesla_death[ "ape_zombie" ][ 3 ] = %ai_zombie_boss_tesla_death_a;
+	level._zombie_tesla_death[ "ape_zombie" ][ 4 ] = %ai_zombie_boss_tesla_death_a;
+
+	if ( !isDefined( level._zombie_tesla_crawl_death ) )
 	{
 		level._zombie_tesla_crawl_death = [];
 	}
-	level._zombie_tesla_crawl_death["ape_zombie"] = [];
-	level._zombie_tesla_crawl_death["ape_zombie"][0] = %ai_zombie_tesla_crawl_death_a;
-	level._zombie_tesla_crawl_death["ape_zombie"][1] = %ai_zombie_tesla_crawl_death_b;
+
+	level._zombie_tesla_crawl_death[ "ape_zombie" ] = [];
+	level._zombie_tesla_crawl_death[ "ape_zombie" ][ 0 ] = %ai_zombie_tesla_crawl_death_a;
+	level._zombie_tesla_crawl_death[ "ape_zombie" ][ 1 ] = %ai_zombie_tesla_crawl_death_b;
 
 	// deaths
-	if( !isDefined( level._zombie_deaths ) )
+	if ( !isDefined( level._zombie_deaths ) )
 	{
 		level._zombie_deaths = [];
 	}
-	level._zombie_deaths["ape_zombie"] = [];
-	level._zombie_deaths["ape_zombie"][0] = %ai_zombie_boss_death;
-	level._zombie_deaths["ape_zombie"][1] = %ai_zombie_boss_death_a;
-	level._zombie_deaths["ape_zombie"][2] = %ai_zombie_boss_death_explode;
-	level._zombie_deaths["ape_zombie"][3] = %ai_zombie_boss_death_mg;
+
+	level._zombie_deaths[ "ape_zombie" ] = [];
+	level._zombie_deaths[ "ape_zombie" ][ 0 ] = %ai_zombie_boss_death;
+	level._zombie_deaths[ "ape_zombie" ][ 1 ] = %ai_zombie_boss_death_a;
+	level._zombie_deaths[ "ape_zombie" ][ 2 ] = %ai_zombie_boss_death_explode;
+	level._zombie_deaths[ "ape_zombie" ][ 3 ] = %ai_zombie_boss_death_mg;
 
 	/*
 	ground crawl
 	*/
 
 	// set up the arrays
-	if( !isDefined( level._zombie_rise_anims ) )
+	if ( !isDefined( level._zombie_rise_anims ) )
 	{
 		level._zombie_rise_anims = [];
 	}
 
-	level._zombie_rise_anims["ape_zombie"] = [];
+	level._zombie_rise_anims[ "ape_zombie" ] = [];
 
-	level._zombie_rise_anims["ape_zombie"][1]["walk"][0]		= %ai_zombie_traverse_ground_v1_walk;
+	level._zombie_rise_anims[ "ape_zombie" ][ 1 ][ "walk" ][ 0 ] = %ai_zombie_traverse_ground_v1_walk;
 
-	level._zombie_rise_anims["ape_zombie"][1]["run"][0]		= %ai_zombie_traverse_ground_v1_run;
+	level._zombie_rise_anims[ "ape_zombie" ][ 1 ][ "run" ][ 0 ] = %ai_zombie_traverse_ground_v1_run;
 
-	level._zombie_rise_anims["ape_zombie"][1]["sprint"][0]	= %ai_zombie_traverse_ground_climbout_fast;
+	level._zombie_rise_anims[ "ape_zombie" ][ 1 ][ "sprint" ][ 0 ] = %ai_zombie_traverse_ground_climbout_fast;
 
-	level._zombie_rise_anims["ape_zombie"][2]["walk"][0]		= %ai_zombie_traverse_ground_v2_walk_altA;
+	level._zombie_rise_anims[ "ape_zombie" ][ 2 ][ "walk" ][ 0 ] = %ai_zombie_traverse_ground_v2_walk_altA;
 
 	// ground crawl death
-	if( !isDefined( level._zombie_rise_death_anims ) )
+	if ( !isDefined( level._zombie_rise_death_anims ) )
 	{
 		level._zombie_rise_death_anims = [];
 	}
-	level._zombie_rise_death_anims["ape_zombie"] = [];
 
-	level._zombie_rise_death_anims["ape_zombie"][1]["in"][0]		= %ai_zombie_traverse_ground_v1_deathinside;
-	level._zombie_rise_death_anims["ape_zombie"][1]["in"][1]		= %ai_zombie_traverse_ground_v1_deathinside_alt;
+	level._zombie_rise_death_anims[ "ape_zombie" ] = [];
 
-	level._zombie_rise_death_anims["ape_zombie"][1]["out"][0]		= %ai_zombie_traverse_ground_v1_deathoutside;
-	level._zombie_rise_death_anims["ape_zombie"][1]["out"][1]		= %ai_zombie_traverse_ground_v1_deathoutside_alt;
+	level._zombie_rise_death_anims[ "ape_zombie" ][ 1 ][ "in" ][ 0 ] = %ai_zombie_traverse_ground_v1_deathinside;
+	level._zombie_rise_death_anims[ "ape_zombie" ][ 1 ][ "in" ][ 1 ] = %ai_zombie_traverse_ground_v1_deathinside_alt;
 
-	level._zombie_rise_death_anims["ape_zombie"][2]["in"][0]		= %ai_zombie_traverse_ground_v2_death_low;
-	level._zombie_rise_death_anims["ape_zombie"][2]["in"][1]		= %ai_zombie_traverse_ground_v2_death_low_alt;
+	level._zombie_rise_death_anims[ "ape_zombie" ][ 1 ][ "out" ][ 0 ] = %ai_zombie_traverse_ground_v1_deathoutside;
+	level._zombie_rise_death_anims[ "ape_zombie" ][ 1 ][ "out" ][ 1 ] = %ai_zombie_traverse_ground_v1_deathoutside_alt;
 
-	level._zombie_rise_death_anims["ape_zombie"][2]["out"][0]		= %ai_zombie_traverse_ground_v2_death_high;
-	level._zombie_rise_death_anims["ape_zombie"][2]["out"][1]		= %ai_zombie_traverse_ground_v2_death_high_alt;
-	
+	level._zombie_rise_death_anims[ "ape_zombie" ][ 2 ][ "in" ][ 0 ] = %ai_zombie_traverse_ground_v2_death_low;
+	level._zombie_rise_death_anims[ "ape_zombie" ][ 2 ][ "in" ][ 1 ] = %ai_zombie_traverse_ground_v2_death_low_alt;
+
+	level._zombie_rise_death_anims[ "ape_zombie" ][ 2 ][ "out" ][ 0 ] = %ai_zombie_traverse_ground_v2_death_high;
+	level._zombie_rise_death_anims[ "ape_zombie" ][ 2 ][ "out" ][ 1 ] = %ai_zombie_traverse_ground_v2_death_high_alt;
+
 	//taunts
-	if( !isDefined( level._zombie_run_taunt ) )
+	if ( !isDefined( level._zombie_run_taunt ) )
 	{
 		level._zombie_run_taunt = [];
 	}
-	if( !isDefined( level._zombie_board_taunt ) )
+
+	if ( !isDefined( level._zombie_board_taunt ) )
 	{
 		level._zombie_board_taunt = [];
 	}
-	
-	level._zombie_run_taunt["ape_zombie"] = [];
-	level._zombie_board_taunt["ape_zombie"] = [];
-	
-	level._zombie_board_taunt["ape_zombie"][0] = %ai_zombie_taunts_4;
-	level._zombie_board_taunt["ape_zombie"][1] = %ai_zombie_taunts_7;
-	level._zombie_board_taunt["ape_zombie"][2] = %ai_zombie_taunts_9;
-	level._zombie_board_taunt["ape_zombie"][3] = %ai_zombie_taunts_5b;
-	level._zombie_board_taunt["ape_zombie"][4] = %ai_zombie_taunts_5c;
-	level._zombie_board_taunt["ape_zombie"][5] = %ai_zombie_taunts_5d;
-	level._zombie_board_taunt["ape_zombie"][6] = %ai_zombie_taunts_5e;
-	level._zombie_board_taunt["ape_zombie"][7] = %ai_zombie_taunts_5f;
+
+	level._zombie_run_taunt[ "ape_zombie" ] = [];
+	level._zombie_board_taunt[ "ape_zombie" ] = [];
+
+	level._zombie_board_taunt[ "ape_zombie" ][ 0 ] = %ai_zombie_taunts_4;
+	level._zombie_board_taunt[ "ape_zombie" ][ 1 ] = %ai_zombie_taunts_7;
+	level._zombie_board_taunt[ "ape_zombie" ][ 2 ] = %ai_zombie_taunts_9;
+	level._zombie_board_taunt[ "ape_zombie" ][ 3 ] = %ai_zombie_taunts_5b;
+	level._zombie_board_taunt[ "ape_zombie" ][ 4 ] = %ai_zombie_taunts_5c;
+	level._zombie_board_taunt[ "ape_zombie" ][ 5 ] = %ai_zombie_taunts_5d;
+	level._zombie_board_taunt[ "ape_zombie" ][ 6 ] = %ai_zombie_taunts_5e;
+	level._zombie_board_taunt[ "ape_zombie" ][ 7 ] = %ai_zombie_taunts_5f;
 }
 
 init_ape_powerup_drops()
 {
 	level.ape_powerup_array = [];
 
-	if( !isDefined(level.zombie_powerup_array) )
+	if ( !isDefined( level.zombie_powerup_array ) )
 	{
 		return;
 	}
 
 	for ( i = 0; i < level.zombie_powerup_array.size; i++ )
 	{
-		powerup = level.zombie_powerup_array[i];
-		if ( level.zombie_include_powerups[powerup] )
+		powerup = level.zombie_powerup_array[ i ];
+		if ( level.zombie_include_powerups[ powerup ] )
 		{
 			if ( powerup != "full_ammo" )
 			{
@@ -528,37 +555,38 @@ init_ape_powerup_drops()
 
 ape_zombie_spawn()
 {
-	self.script_moveoverride = true; 
-	
-	if( !isDefined( level.num_ape_zombies ) )
+	self.script_moveoverride = true;
+
+	if ( !isDefined( level.num_ape_zombies ) )
 	{
 		level.num_ape_zombies = 0;
 	}
+
 	level.num_ape_zombies++;
-	
+
 	ape_zombie = self maps\_zombiemode_net::network_safe_stalingrad_spawn( "boss_zombie_spawn", 1 );
-	
+
 	//Sound - Shawn J - adding boss spawn sound - note: sound is played in 2d so it doesn't matter what it's played off of.
 	//iprintlnbold( "Boss_Spawning!" );
 	//self playsound( "zmb_engineer_spawn" );
-	
-	self.count = 666; 
+
+	self.count = 666;
 
 	self.last_spawn_time = GetTime();
 
-	if( !spawn_failed( ape_zombie ) ) 
-	{ 
+	if ( !spawn_failed( ape_zombie ) )
+	{
 		ape_zombie.script_noteworthy = self.script_noteworthy;
 		ape_zombie.targetname = self.targetname;
 		ape_zombie.target = self.target;
 		ape_zombie.deathFunction = maps\_zombiemode_ai_ape::ape_zombie_die;
 		ape_zombie.animname = "ape_zombie";
-	
+
 		ape_zombie thread ape_zombie_think();
-		
-		if( isDefined( level.ape_zombie_death_pos ) && level.ape_zombie_death_pos.size > 0 )
+
+		if ( isDefined( level.ape_zombie_death_pos ) && level.ape_zombie_death_pos.size > 0 )
 		{
-			level.ape_zombie_death_pos = array_remove( level.ape_zombie_death_pos, level.ape_zombie_death_pos[0] );
+			level.ape_zombie_death_pos = array_remove( level.ape_zombie_death_pos, level.ape_zombie_death_pos[ 0 ] );
 		}
 	}
 	else
@@ -573,14 +601,14 @@ ape_round_spawning()
 	level endon( "end_of_round" );
 	level endon( "restart_round" );
 
-/# 
+	/#
 	level endon( "kill_round" );
 
-	if ( GetDvarInt( #"zombie_cheat" ) == 2 || GetDvarInt( #"zombie_cheat" ) >= 4 ) 
+	if ( GetDvarInt( #"zombie_cheat" ) == 2 || GetDvarInt( #"zombie_cheat" ) >= 4 )
 	{
 		return;
 	}
-#/
+	#/
 
 	if ( level.intermission )
 	{
@@ -593,7 +621,7 @@ ape_round_spawning()
 	level.zombie_total = max;
 
 	count = 0;
-	while( count < max )
+	while ( count < max )
 	{
 		spawner = ape_zombie_pick_best_spawner();
 		if ( isdefined( spawner ) )
@@ -609,12 +637,12 @@ ape_round_spawning()
 // Waits for the time and the ai to die
 ape_round_wait()
 {
-/#
+	/#
 	if ( GetDvarInt( #"zombie_cheat" ) == 2 || GetDvarInt( #"zombie_cheat" ) >= 4 )
 	{
-		level waittill("forever");
+		level waittill( "forever" );
 	}
-#/
+	#/
 
 	wait( 1 );
 
@@ -640,10 +668,10 @@ ape_round_aftermath()
 
 ape_stop_fog()
 {
- 	start_dist = 50;
-  half_dist = 1209;
-  half_height = 442;
-  base_height = -925;
+	start_dist = 50;
+	half_dist = 1209;
+	half_height = 442;
+	base_height = -925;
 	fog_r = 0.88;
 	fog_g = 0.92;
 	fog_b = 1.1;
@@ -659,13 +687,12 @@ ape_stop_fog()
 	time = 3;
 	max_fog_opacity = 1;
 
-
 	clear_fog_threads();
 
-	setVolFog(start_dist, half_dist, half_height, base_height, fog_r, fog_g, fog_b, fog_scale,
-		sun_col_r, sun_col_g, sun_col_b, sun_dir_x, sun_dir_y, sun_dir_z, sun_start_ang, 
-		sun_stop_ang, time, max_fog_opacity);    
-  
+	setVolFog( start_dist, half_dist, half_height, base_height, fog_r, fog_g, fog_b, fog_scale,
+		sun_col_r, sun_col_g, sun_col_b, sun_dir_x, sun_dir_y, sun_dir_z, sun_start_ang,
+		sun_stop_ang, time, max_fog_opacity );
+
 }
 
 ape_round_tracker()
@@ -687,8 +714,8 @@ ape_round_tracker()
 
 			ape_round_start();
 
-			level.round_spawn_func = ::ape_round_spawning;
-			level.round_wait_func = ::ape_round_wait;
+			level.round_spawn_func =::ape_round_spawning;
+			level.round_wait_func =::ape_round_wait;
 
 			level.prev_ape_round = level.next_ape_round;
 			level.next_ape_round = level.round_number + randomintrange( 5, 8 );
@@ -707,8 +734,8 @@ ape_round_tracker()
 ape_round_start()
 {
 	flag_set( "ape_round" );
-//	setVolFog(100, 400, 200, 175, 0.4566, 0.531, 0.625, 3); 
-//	SetVolFog( 229.0, 200.0, 380.0, 200.0, 0.16, 0.204, 0.274, 3 );
+	//	setVolFog(100, 400, 200, 175, 0.4566, 0.531, 0.625, 3);
+	//	SetVolFog( 229.0, 200.0, 380.0, 200.0, 0.16, 0.204, 0.274, 3 );
 
 	//players = getplayers();
 	//for ( i = 0; i < players.size; i++ )
@@ -726,7 +753,7 @@ ape_round_stop()
 {
 	flag_clear( "ape_round" );
 	flag_clear( "last_ape_down" );
-//	setVolFog(100, 1200, 200, 175, 0.4566, 0.531, 0.625, 45);
+	//	setVolFog(100, 1200, 200, 175, 0.4566, 0.531, 0.625, 45);
 
 	if ( isDefined( level.ape_round_stop ) )
 	{
@@ -747,22 +774,25 @@ ape_zombie_manager()
 				start_ape ape_zombie_spawn();
 				break;
 			}
+
 			wait( 0.5 );
 		}
 	}
 
-	while( true ) 
+	while ( true )
 	{
 		AssertEx( isDefined( level.num_ape_zombies ) && isDefined( level.max_ape_zombies ), "Either max_ape_zombies or num_ape_zombies not defined, this should never be the case!" );
-		while( level.num_ape_zombies < level.max_ape_zombies ) 
+		while ( level.num_ape_zombies < level.max_ape_zombies )
 		{
 			spawner = ape_zombie_pick_best_spawner();
-			if( isDefined( spawner ) )
+			if ( isDefined( spawner ) )
 			{
 				spawner ape_zombie_spawn();
 			}
+
 			wait( 10 );
 		}
+
 		wait( 10 );
 	}
 }
@@ -771,25 +801,26 @@ ape_zombie_pick_best_spawner()
 {
 	best_spawner = undefined;
 	best_score = -1;
-	for( i = 0; i < level.ape_zombie_spawners.size; i++ )
+	for ( i = 0; i < level.ape_zombie_spawners.size; i++ )
 	{
-		score = [[ level.ape_zombie_spawn_heuristic ]]( level.ape_zombie_spawners[i] );
-		if( score > best_score )
+		score = [[ level.ape_zombie_spawn_heuristic ]]( level.ape_zombie_spawners[ i ] );
+		if ( score > best_score )
 		{
-			best_spawner = level.ape_zombie_spawners[i];
+			best_spawner = level.ape_zombie_spawners[ i ];
 			best_score = score;
 		}
 	}
+
 	return best_spawner;
 }
 
 ape_zombie_think()
 {
 	self endon( "death" );
-	
+
 	self.is_activated = false;
 	self.run_index = -1;
-	
+
 	self thread ape_zombie_is_activated();
 	self thread ape_zombie_check_player_proximity();
 	self thread ape_zombie_choose_run();
@@ -803,7 +834,7 @@ ape_zombie_think()
 		self thread ape_zombie_wait_for_switch();
 	}
 
-	//self.goalradius = 128; 
+	//self.goalradius = 128;
 	self.ignoreall = false;
 	self.pathEnemyFightDist = 64;
 	self.meleeAttackDist = 64;
@@ -812,8 +843,8 @@ ape_zombie_think()
 	//self.health = level.zombie_health * level.ape_zombie_health_mult;
 
 	adjusted_health = level.ape_zombie_min_health;
-	
-	if( self.maxhealth < adjusted_health )
+
+	if ( self.maxhealth < adjusted_health )
 	{
 		self.maxhealth = level.ape_zombie_min_health;
 		self.health = level.ape_zombie_min_health;
@@ -846,18 +877,18 @@ ape_zombie_think()
 		self.maxhealth += bonus;
 		self.health += bonus;
 	}
-	
+
 	//try to prevent always turning towards the enemy
 	self.maxsightdistsqrd = 96 * 96;
-	
+
 	self.zombie_move_speed = "walk";
 
-/*	Z2 causing issues, won't leave start node.
+	/*	Z2 causing issues, won't leave start node.
 	while( !isDefined( self.name ) || !isDefined( level.zones ) || !isDefined( level.zones[self.name] ) || !level.zones[self.name].is_enabled )
 	{
 		wait( 0.05 );
 	}
-*/	
+*/
 
 	self thread [[ level.ape_zombie_enter_level ]]();
 
@@ -866,7 +897,7 @@ ape_zombie_think()
 		self thread [[ level.ape_zombie_custom_think ]]();
 	}
 
-	while( true )
+	while ( true )
 	{
 		if ( !self.entered_level )
 		{
@@ -878,7 +909,7 @@ ape_zombie_think()
 			wait_network_frame();
 			continue;
 		}
-		else if( isDefined( self.performing_activation ) && self.performing_activation ) 
+		else if ( isDefined( self.performing_activation ) && self.performing_activation )
 		{
 			wait_network_frame();
 			continue;
@@ -888,125 +919,129 @@ ape_zombie_think()
 			wait_network_frame();
 			continue;
 		}
-		else if( !isDefined( self.following_player ) || !self.following_player ) 
+		else if ( !isDefined( self.following_player ) || !self.following_player )
 		{
 			self thread maps\_zombiemode_ai_ape::ape_find_flesh();
 			self.following_player = true;
 		}
+
 		wait( 1 );
 	}
 }
-
 
 ape_zombie_pick_idle_point()
 {
 	best_score = -1;
 	best_node = undefined;
-	
-	for( i = 0; i < level.ape_idle_nodes.size; i++ )
+
+	for ( i = 0; i < level.ape_idle_nodes.size; i++ )
 	{
-		score = [[ level.ape_zombie_pathfind_heuristic ]]( level.ape_idle_nodes[i] );
-		
-		if( score > best_score )
+		score = [[ level.ape_zombie_pathfind_heuristic ]]( level.ape_idle_nodes[ i ] );
+
+		if ( score > best_score )
 		{
 			best_score = score;
-			best_node = level.ape_idle_nodes[i];
+			best_node = level.ape_idle_nodes[ i ];
 		}
 	}
-	
+
 	return best_node;
 }
 
-ape_zombie_default_pathfind_heuristic( node ) 
+ape_zombie_default_pathfind_heuristic( node )
 {
 	// Skip any nodes that don't have a zone or whose zones are not yet active
-	if( !isDefined( node.targetname ) || !isDefined( level.zones[node.targetname] ) )
+	if ( !isDefined( node.targetname ) || !isDefined( level.zones[ node.targetname ] ) )
 	{
 		return -1;
 	}
-	
+
 	// Skip any nodes that are already claimed by another ape
-	if( isDefined( node.is_claimed ) && node.is_claimed && ( !isDefined( self.curr_idle_node ) || self.curr_idle_node != node ) )
+	if ( isDefined( node.is_claimed ) && node.is_claimed && ( !isDefined( self.curr_idle_node ) || self.curr_idle_node != node ) )
 	{
 		return -1;
 	}
-	
+
 	players = get_players();
 	score = 0;
-	
-	for( i = 0; i < players.size; i++ )
+
+	for ( i = 0; i < players.size; i++ )
 	{
-		dist = distanceSquared( node.origin, players[i].origin );
-		if( dist > 10000*10000 )
+		dist = distanceSquared( node.origin, players[ i ].origin );
+		if ( dist > 10000 * 10000 )
 		{
-			dist = 10000*10000;
+			dist = 10000 * 10000;
 		}
-		if( dist <= 1 )
+
+		if ( dist <= 1 )
 		{
-			score += 10000*10000;
+			score += 10000 * 10000;
 			continue;
 		}
-		score += int( 10000*10000/dist );
+
+		score += int( 10000 * 10000 / dist );
 	}
-	
+
 	return score;
 }
 
 // Weight the spawner based on the position where a ape_zombie died
 ape_zombie_default_spawn_heuristic( spawner )
 {
-	if( isDefined( spawner.last_spawn_time ) && (GetTime() - spawner.last_spawn_time < 30000) )
-	{
-		return -1;
-	}
-	
-	if( !isDefined( spawner.script_noteworthy ) )
+	if ( isDefined( spawner.last_spawn_time ) && ( GetTime() - spawner.last_spawn_time < 30000 ) )
 	{
 		return -1;
 	}
 
-	if( spawner.script_noteworthy != "first_boss_spawner" && (!isDefined( level.zones ) || !isDefined( level.zones[ spawner.script_noteworthy ] ) || !level.zones[ spawner.script_noteworthy ].is_enabled ) )
+	if ( !isDefined( spawner.script_noteworthy ) )
 	{
 		return -1;
 	}
-	
+
+	if ( spawner.script_noteworthy != "first_boss_spawner" && ( !isDefined( level.zones ) || !isDefined( level.zones[ spawner.script_noteworthy ] ) || !level.zones[ spawner.script_noteworthy ].is_enabled ) )
+	{
+		return -1;
+	}
+
 	score = 0;
-	
+
 	// if we don't have a position, give score relative to player positions, farther is better
-	if( !isDefined( level.ape_zombie_death_pos ) || level.ape_zombie_death_pos.size == 0 )
+	if ( !isDefined( level.ape_zombie_death_pos ) || level.ape_zombie_death_pos.size == 0 )
 	{
 		players = get_players();
-		
-		for( i = 0; i < players.size; i++ )
+
+		for ( i = 0; i < players.size; i++ )
 		{
-			score = int( distanceSquared( spawner.origin, players[i].origin ) );
+			score = int( distanceSquared( spawner.origin, players[ i ].origin ) );
 		}
 	}
 	else
 	{
-		dist = int( distanceSquared( level.ape_zombie_death_pos[0], spawner.origin ) );
-		if( dist > 10000*10000 )
+		dist = int( distanceSquared( level.ape_zombie_death_pos[ 0 ], spawner.origin ) );
+		if ( dist > 10000 * 10000 )
 		{
-			dist = 10000*10000;
+			dist = 10000 * 10000;
 		}
-		if( dist <= 1 )
+
+		if ( dist <= 1 )
 		{
 			dist = 1;
-			
+
 		}
-		score = int( 10000*10000/dist );
+
+		score = int( 10000 * 10000 / dist );
 	}
-	
+
 	return score;
 }
 
 ape_zombie_choose_run()
 {
 	self endon( "death" );
-	
-	while( true ) 
+
+	while ( true )
 	{
-		if( self.is_activated )
+		if ( self.is_activated )
 		{
 			self.zombie_move_speed = "sprint";
 
@@ -1026,17 +1061,17 @@ ape_zombie_choose_run()
 			//{
 			//	self.moveplaybackrate = 0.75;
 			//}
-			//else 
+			//else
 			//{
 			//	self.moveplaybackrate = 0.7;
 			//}
 
-			if ( self.speed_up ) 
+			if ( self.speed_up )
 			{
 				self set_run_anim( "sprint4" );
-				self.run_combatanim = level.scr_anim["ape_zombie"]["sprint4"];
-				self.crouchRunAnim = level.scr_anim["ape_zombie"]["sprint4"];
-				self.crouchrun_combatanim = level.scr_anim["ape_zombie"]["sprint4"];
+				self.run_combatanim = level.scr_anim[ "ape_zombie" ][ "sprint4" ];
+				self.crouchRunAnim = level.scr_anim[ "ape_zombie" ][ "sprint4" ];
+				self.crouchrun_combatanim = level.scr_anim[ "ape_zombie" ][ "sprint4" ];
 			}
 			else
 			{
@@ -1049,11 +1084,12 @@ ape_zombie_choose_run()
 						rand = 1;
 					}
 				}
+
 				self.run_index = rand;
-				self set_run_anim( "sprint"+rand );
-				self.run_combatanim = level.scr_anim["ape_zombie"]["sprint"+rand];
-				self.crouchRunAnim = level.scr_anim["ape_zombie"]["sprint"+rand];
-				self.crouchrun_combatanim = level.scr_anim["ape_zombie"]["sprint"+rand];
+				self set_run_anim( "sprint" + rand );
+				self.run_combatanim = level.scr_anim[ "ape_zombie" ][ "sprint" + rand ];
+				self.crouchRunAnim = level.scr_anim[ "ape_zombie" ][ "sprint" + rand ];
+				self.crouchrun_combatanim = level.scr_anim[ "ape_zombie" ][ "sprint" + rand ];
 				rand_f = randomFloatRange( 2, 3 );
 				wait( rand_f );
 			}
@@ -1062,10 +1098,11 @@ ape_zombie_choose_run()
 		{
 			self.zombie_move_speed = "walk";
 			self set_run_anim( "walk1" );
-			self.run_combatanim = level.scr_anim["ape_zombie"]["walk1"];
-			self.crouchRunAnim = level.scr_anim["ape_zombie"]["walk1"];
-			self.crouchrun_combatanim = level.scr_anim["ape_zombie"]["walk1"];
+			self.run_combatanim = level.scr_anim[ "ape_zombie" ][ "walk1" ];
+			self.crouchRunAnim = level.scr_anim[ "ape_zombie" ][ "walk1" ];
+			self.crouchrun_combatanim = level.scr_anim[ "ape_zombie" ][ "walk1" ];
 		}
+
 		wait( 0.05 );
 	}
 }
@@ -1102,7 +1139,7 @@ ape_zombie_wait_for_switch()
 	{
 		wait_network_frame();
 	}
-	
+
 	//time = RandomFloatRange( 5, 10 );
 	time = RandomFloatRange( 15, 30 );
 	wait( time );
@@ -1123,13 +1160,13 @@ ape_zombie_switch_player( speed_up )
 		}
 	}
 
-	player = get_closest_valid_player( self.origin, self.ignore_player ); 
-	if( !isDefined( player ) )
+	player = get_closest_valid_player( self.origin, self.ignore_player );
+	if ( !isDefined( player ) )
 	{
 		self maps\_zombiemode_spawner::zombie_history( "ape find flesh -> can't find player, continue" );
 
 		// round is over, but still need an enemy
-		player = players[0];
+		player = players[ 0 ];
 	}
 
 	self.favoriteenemy = player;
@@ -1139,6 +1176,7 @@ ape_zombie_switch_player( speed_up )
 	{
 		self notify( "already_switched" );
 	}
+
 	//else
 	//{
 	//	self thread ape_zombie_wait_for_switch();
@@ -1148,13 +1186,13 @@ ape_zombie_switch_player( speed_up )
 //ape_zombie_health_manager()
 //{
 //	self endon( "death" );
-//	
+//
 //	self thread wait_for_round_over();
 //	self thread wait_for_activation();
-//	
+//
 //	while( true )
 //	{
-//		self waittill( "update_health" ); 
+//		self waittill( "update_health" );
 //		self.maxhealth = level.zombie_health * level.ape_zombie_health_mult;
 //		self.health = level.zombie_health * level.ape_zombie_health_mult;
 //		if( self.maxhealth < level.ape_zombie_min_health )
@@ -1173,8 +1211,8 @@ ape_zombie_switch_player( speed_up )
 wait_for_round_over()
 {
 	self endon( "stop_managing_health" );
-	
-	while( true )
+
+	while ( true )
 	{
 		level waittill( "between_round_over" );
 		self notify( "update_health" );
@@ -1209,6 +1247,7 @@ ape_zombie_check_player_proximity()
 				break;
 			}
 		}
+
 		wait_network_frame();
 	}
 }
@@ -1262,11 +1301,11 @@ ape_zombie_play_activate()
 	self thread ape_zombie_damage_during_activate();
 
 	time = getAnimLength( %ai_zombie_simianaut_chest_beat );
-//	self animscripted( "chestbeat_anim", self.origin, self.angles, %ai_zombie_simianaut_chest_beat, "normal", %body, 1 );
+	//	self animscripted( "chestbeat_anim", self.origin, self.angles, %ai_zombie_simianaut_chest_beat, "normal", %body, 1 );
 	self SetFlaggedAnimKnobAllRestart( "chestbeat_anim", %ai_zombie_simianaut_chest_beat, %body, 1, .1, 1 );
 	time = time / 1.0;
 	wait( time );
-	
+
 	self notify( "play_activate_done" );
 }
 
@@ -1274,23 +1313,24 @@ ape_zombie_check_for_activation()
 {
 	self endon( "death" );
 	self endon( "ape_activated" );
-	
-	if( self.is_activated == true )
+
+	if ( self.is_activated == true )
 	{
-		if( isDefined( self.curr_idle_node ) )
+		if ( isDefined( self.curr_idle_node ) )
 		{
 			self.curr_idle_node.is_claimed = false;
 		}
+
 		return;
 	}
 
-	while( !self.entered_level )
+	while ( !self.entered_level )
 	{
 		wait_network_frame();
 	}
-		
+
 	self waittill_either( "damage", "hit_player" );
-	
+
 	self notify( "stop_find_flesh" );
 	self.following_player = false;
 	self.performing_activation = true;
@@ -1299,20 +1339,20 @@ ape_zombie_check_for_activation()
 	self thread scream_a_watcher( "groundhit_anim" );
 	self thread groundhit_watcher( "groundhit_anim" );
 	//self thread scream_b_watcher( "groundhit_anim" );
-	
+
 	//Sound - Shawn J - adding eng hit exert
 	//iprintlnbold( "Boss_hit!" );
 	self playsound( "zmb_engineer_vocals_hit" );
 
 	self animcustom( ::ape_zombie_play_activate );
 	self waittill( "play_activate_done" );
-	
+
 	self.performing_activation = false;
 	self.ground_hit = false;
-	
+
 	self.is_activated = true;
-	
-	if( isDefined( self.curr_idle_node ) )
+
+	if ( isDefined( self.curr_idle_node ) )
 	{
 		self.curr_idle_node.is_claimed = false;
 	}
@@ -1337,21 +1377,21 @@ ape_zombie_ground_hit()
 	{
 		return;
 	}
-	
+
 	//self notify( "stop_finding_flesh" );
 	//self.following_player = false;
 	self.ground_hit = true;
 
 	self thread groundhit_watcher( "groundhit_anim" );
-	
+
 	//Sound - Shawn J - adding eng hit exert
 	//iprintlnbold( "Boss_hit!" );
-	
+
 	self animscripted( "groundhit_anim", self.origin, self.angles, %ai_zombie_simianaut_ground_pound );
 	//self SetFlaggedAnimKnobAllRestart( "groundhit_anim", %ai_zombie_simianaut_ground_pound, %body, 1, .1, 1 );
-	
-	animscripts\traverse\zombie_shared::wait_anim_length(%ai_zombie_simianaut_ground_pound, .02);
-	
+
+	animscripts\traverse\zombie_shared::wait_anim_length( %ai_zombie_simianaut_ground_pound, .02 );
+
 	self.ground_hit = false;
 
 	self.nextGroundHit = GetTime() + level.ape_ground_attack_delay;
@@ -1374,7 +1414,7 @@ ape_zombie_ground_hit_think()
 	self.ground_hit = false;
 	self.nextGroundHit = GetTime() + level.ape_ground_attack_delay;
 
-	while( 1 )
+	while ( 1 )
 	{
 		if ( !self.ground_hit && GetTime() >= self.nextGroundHit )
 		{
@@ -1384,12 +1424,12 @@ ape_zombie_ground_hit_think()
 
 			for ( i = 0; i < players.size; i++ )
 			{
-				if ( players[i] maps\_laststand::player_is_in_laststand() )
+				if ( players[ i ] maps\_laststand::player_is_in_laststand() )
 				{
 					continue;
 				}
 
-				test_origin = players[i] GetEye();
+				test_origin = players[ i ] GetEye();
 				d = DistanceSquared( origin, test_origin );
 
 				if ( d > level.ape_zombie_groundhit_trigger_radius * level.ape_zombie_groundhit_trigger_radius )
@@ -1421,25 +1461,26 @@ scream_a_watcher( animname )
 	self endon( "death" );
 
 	rand = RandomInt( 100 );
-	if( rand > level.ape_zombie_scream_a_chance )
+	if ( rand > level.ape_zombie_scream_a_chance )
 	{
-		return; 
+		return;
 	}
-	
+
 	self waittillmatch( animname, "scream_a" );
-	
+
 	players = get_players();
 	affected_players = [];
-	for( i = 0; i < players.size; i++ )
+	for ( i = 0; i < players.size; i++ )
 	{
-		if( distanceSquared( players[i].origin, self.origin ) < level.ape_zombie_scream_a_radius_sq )
+		if ( distanceSquared( players[ i ].origin, self.origin ) < level.ape_zombie_scream_a_radius_sq )
 		{
-			affected_players = array_add( affected_players, players[i] );
+			affected_players = array_add( affected_players, players[ i ] );
 		}
 	}
-	for( i = 0; i < affected_players.size; i++ )
+
+	for ( i = 0; i < affected_players.size; i++ )
 	{
-		affected_players[i] ShellShock( "electrocution", 1.5, true );
+		affected_players[ i ] ShellShock( "electrocution", 1.5, true );
 	}
 }
 
@@ -1448,9 +1489,9 @@ groundhit_watcher( animname )
 	self endon( "death" );
 
 	self waittillmatch( animname, "fire" );
-	
-//	PlayFx( level._effect["ape_groundhit"], self.origin );
-	playfxontag(level._effect["ape_groundhit"],self,"tag_origin");
+
+	//	PlayFx( level._effect["ape_groundhit"], self.origin );
+	playfxontag( level._effect[ "ape_groundhit" ], self, "tag_origin" );
 	//self RadiusDamage( self.origin, level.ape_zombie_groundhit_trigger_radius, level.ape_zombie_groundhit_damage, level.ape_zombie_groundhit_damage, self );
 
 	//origin = self GetEye();
@@ -1466,74 +1507,76 @@ groundhit_watcher( animname )
 	{
 		for ( i = 0; i < zombies.size; i++ )
 		{
-			if ( !IsDefined( zombies[i] ) )
+			if ( !IsDefined( zombies[ i ] ) )
 			{
 				continue;
 			}
 
-			if ( is_magic_bullet_shield_enabled( zombies[i] ) )
+			if ( is_magic_bullet_shield_enabled( zombies[ i ] ) )
 			{
 				continue;
 			}
 
-			test_origin = zombies[i] GetEye();
+			test_origin = zombies[ i ] GetEye();
 
 			if ( !BulletTracePassed( origin, test_origin, false, undefined ) )
 			{
 				continue;
 			}
 
-			if ( zombies[i] == self )
+			if ( zombies[ i ] == self )
 			{
 				continue;
 			}
 
-			if ( zombies[i].animname == "ape_zombie" )
+			if ( zombies[ i ].animname == "ape_zombie" )
 			{
 				continue;
 			}
 
-			refs = []; 
-			refs[refs.size] = "guts"; 
-			refs[refs.size] = "right_arm"; 
-			refs[refs.size] = "left_arm"; 
-			refs[refs.size] = "right_leg"; 
-			refs[refs.size] = "left_leg"; 
-			refs[refs.size] = "no_legs"; 
-			refs[refs.size] = "head"; 
+			refs = [];
+			refs[ refs.size ] = "guts";
+			refs[ refs.size ] = "right_arm";
+			refs[ refs.size ] = "left_arm";
+			refs[ refs.size ] = "right_leg";
+			refs[ refs.size ] = "left_leg";
+			refs[ refs.size ] = "no_legs";
+			refs[ refs.size ] = "head";
 
-			if( refs.size )
+			if ( refs.size )
 			{
-				zombies[i].a.gib_ref = random( refs ); 
+				zombies[ i ].a.gib_ref = random( refs );
 			}
 
-			zombies[i] DoDamage( zombies[i].health + 666, self.origin, self );
+			zombies[ i ] DoDamage( zombies[ i ].health + 666, self.origin, self );
 		}
 	}
 
 	players = get_players();
 	affected_players = [];
-	for( i = 0; i < players.size; i++ )
+	for ( i = 0; i < players.size; i++ )
 	{
-		if ( !is_player_valid( players[i] ) )
+		if ( !is_player_valid( players[ i ] ) )
 		{
 			continue;
 		}
 
-		test_origin = players[i] GetEye();
-		if( distanceSquared( origin, test_origin ) > level.ape_zombie_groundhit_damage_radius * level.ape_zombie_groundhit_damage_radius )
+		test_origin = players[ i ] GetEye();
+		if ( distanceSquared( origin, test_origin ) > level.ape_zombie_groundhit_damage_radius * level.ape_zombie_groundhit_damage_radius )
 		{
 			continue;
 		}
+
 		if ( !BulletTracePassed( origin, test_origin, false, undefined ) )
 		{
 			continue;
 		}
 
-		affected_players = array_add( affected_players, players[i] );
+		affected_players = array_add( affected_players, players[ i ] );
 	}
+
 	self.chest_beat = false;
-	for( i = 0; i < affected_players.size; i++ )
+	for ( i = 0; i < affected_players.size; i++ )
 	{
 		//affected_players[i] DoDamage( level.ape_zombie_groundhit_damage, self.origin, self );
 		self.chest_beat = true;
@@ -1542,7 +1585,7 @@ groundhit_watcher( animname )
 		{
 			if ( i == 0 )
 			{
-				player = affected_players[i];
+				player = affected_players[ i ];
 				if ( player IsOnGround() )
 				{
 					player DoDamage( player.health, player.origin, self );
@@ -1554,14 +1597,14 @@ groundhit_watcher( animname )
 			}
 			else
 			{
-				affected_players[i] ShellShock( "electrocution", 1.5, true );
+				affected_players[ i ] ShellShock( "electrocution", 1.5, true );
 			}
 		}
 		else
 		{
-			if ( affected_players[i] IsOnGround() )
+			if ( affected_players[ i ] IsOnGround() )
 			{
-				affected_players[i] ShellShock( "electrocution", 1.5, true );
+				affected_players[ i ] ShellShock( "electrocution", 1.5, true );
 			}
 		}
 	}
@@ -1572,25 +1615,26 @@ scream_b_watcher( animname )
 	self endon( "death" );
 
 	rand = RandomInt( 100 );
-	if( rand > level.ape_zombie_scream_b_chance )
+	if ( rand > level.ape_zombie_scream_b_chance )
 	{
-		return; 
+		return;
 	}
-	
+
 	self waittillmatch( animname, "scream_b" );
-	
+
 	players = get_players();
 	affected_players = [];
-	for( i = 0; i < players.size; i++ )
+	for ( i = 0; i < players.size; i++ )
 	{
-		if( distanceSquared( players[i].origin, self.origin ) < level.ape_zombie_scream_b_radius_sq )
+		if ( distanceSquared( players[ i ].origin, self.origin ) < level.ape_zombie_scream_b_radius_sq )
 		{
-			affected_players = array_add( affected_players, players[i] );
+			affected_players = array_add( affected_players, players[ i ] );
 		}
 	}
-	for( i = 0; i < affected_players.size; i++ )
+
+	for ( i = 0; i < affected_players.size; i++ )
 	{
-		affected_players[i] ShellShock( "electrocution", 1.5, true );
+		affected_players[ i ] ShellShock( "electrocution", 1.5, true );
 	}
 }
 
@@ -1600,30 +1644,30 @@ ape_zombie_die()
 
 	self.grenadeAmmo = 0;
 
-	if( isDefined( self.curr_idle_node ) )
+	if ( isDefined( self.curr_idle_node ) )
 	{
 		self.curr_idle_node.is_claimed = false;
 	}
-	
+
 	//Sound - Shawn J - adding boss death sound - note: sound is played in 2d so it doesn't matter what it's played off of.
 	//iprintlnbold( "Boss_Death!" );
 	self playsound( "zmb_engineer_death_bells" );
 
 	// Give attacker points
-	
-	//ChrisP - 12/8/08 - added additional 'self' argument
-	level maps\_zombiemode_spawner::zombie_death_points( self.origin, self.damagemod, self.damagelocation, self.attacker,self );
 
-	if( self.damagemod == "MOD_BURNED" )
+	//ChrisP - 12/8/08 - added additional 'self' argument
+	level maps\_zombiemode_spawner::zombie_death_points( self.origin, self.damagemod, self.damagelocation, self.attacker, self );
+
+	if ( self.damagemod == "MOD_BURNED" )
 	{
 		self thread animscripts\zombie_death::flame_death_fx();
 	}
 
-	if( !isDefined( level.ape_zombie_death_pos ) )
+	if ( !isDefined( level.ape_zombie_death_pos ) )
 	{
 		level.ape_zombie_death_pos = [];
-	}	
-	
+	}
+
 	level.ape_zombie_death_pos = array_add( level.ape_zombie_death_pos, self.origin );
 
 	//self thread ape_zombie_wait_for_respawn();
@@ -1645,6 +1689,7 @@ ape_zombie_die()
 		level.ammo_spawn = true;
 		level.ape_death = 0;
 	}
+
 	if ( level.ape_death_total == 1 )
 	{
 		level.ape_zombie_groundhit_damage_radius = 300;
@@ -1667,7 +1712,7 @@ ape_zombie_die()
 
 ape_zombie_powerup_drop()
 {
-	if( !level.ape_powerup_array.size )
+	if ( !level.ape_powerup_array.size )
 	{
 		return;
 	}
@@ -1688,7 +1733,7 @@ ape_zombie_powerup_drop()
 		}
 	}
 
-	level.zombie_vars["zombie_drop_item"] = 1;
+	level.zombie_vars[ "zombie_drop_item" ] = 1;
 	level.powerup_drop_count--;
 	level thread maps\_zombiemode_powerups::powerup_drop( self.origin );
 }
@@ -1719,11 +1764,11 @@ ape_zombie_wait_for_respawn()
 wait_for_round()
 {
 	level endon( "respawn_now" );
-	level waittill( "between_round_over" );	// wait for this round and the next before respawn
+	level waittill( "between_round_over" ); // wait for this round and the next before respawn
 	wait( 1 );
 	level waittill( "between_round_over" );
 
-	if ( RandomInt(100) < 50 )
+	if ( RandomInt( 100 ) < 50 )
 	{
 		wait( 1 );
 		level waittill( "between_round_over" );
@@ -1757,7 +1802,7 @@ ape_fire_damage( trap )
 	self endon( "death" );
 
 	// guarantee to damage at least once
-	self DoDamage( level.ape_fire_damage, self.origin );			
+	self DoDamage( level.ape_fire_damage, self.origin );
 
 	while ( 1 )
 	{
@@ -1765,7 +1810,7 @@ ape_fire_damage( trap )
 
 		if ( self IsTouching( trap ) )
 		{
-			self DoDamage( level.ape_fire_damage, self.origin, trap );			
+			self DoDamage( level.ape_fire_damage, self.origin, trap );
 		}
 		else
 		{
@@ -1801,38 +1846,38 @@ ape_actor_damage( weapon, damage, attacker )
 {
 	self endon( "death" );
 
-	switch( weapon )
+	switch ( weapon )
 	{
-	case "spas_zm":
-	case "spas_upgraded_zm":
-	case "ithaca_zm":
-	case "ithaca_upgraded_zm":
-	case "minigun_zm":
-	case "minigun_upgraded_zm":
-		damage *= 0.5;
-		break;
+		case "spas_zm":
+		case "spas_upgraded_zm":
+		case "ithaca_zm":
+		case "ithaca_upgraded_zm":
+		case "minigun_zm":
+		case "minigun_upgraded_zm":
+			damage *= 0.5;
+			break;
 
-	case "python_zm":
-	case "python_upgraded_zm":
-		damage *= 0.3;
-		break;
+		case "python_zm":
+		case "python_upgraded_zm":
+			damage *= 0.3;
+			break;
 
-	case "ray_gun_zm":
-	case "ray_gun_upgraded_zm":
-		damage *= 0.25;
-		break;
+		case "ray_gun_zm":
+		case "ray_gun_upgraded_zm":
+			damage *= 0.25;
+			break;
 
-	case "bowie_knife_zm":
-		damage *= 0.1;
-		break;
+		case "bowie_knife_zm":
+			damage *= 0.1;
+			break;
 	}
 
-	if ( level.zombie_vars["zombie_insta_kill"] )
+	if ( level.zombie_vars[ "zombie_insta_kill" ] )
 	{
 		damage *= 2;
 	}
-	
-	if ( (float(self.health - damage) / self.maxhealth) < 0.7 )
+
+	if ( ( float( self.health - damage ) / self.maxhealth ) < 0.7 )
 	{
 		self animscripts\zombie_death::helmetPop();
 	}
@@ -1853,7 +1898,7 @@ ape_nuke_damage( location )
 	if ( DistanceSquared( self.origin, location ) < nuke_dist_sq )
 	{
 		damage = self.maxhealth * 0.5;
-		self DoDamage( damage, self.origin );			
+		self DoDamage( damage, self.origin );
 
 		if ( self.is_activated && self.health > 0 )
 		{
@@ -1884,7 +1929,7 @@ ape_dog_damage()
 
 ape_zombie_damage_fx( mod, hit_location, hit_origin, player )
 {
-	Playfx( level._effect["ape_impact"], hit_origin );
+	Playfx( level._effect[ "ape_impact" ], hit_origin );
 }
 
 ape_non_attacker( damage, weapon )
@@ -1901,9 +1946,9 @@ ape_non_attacker( damage, weapon )
 
 ape_zombie_default_enter_level()
 {
-	Playfx( level._effect["ape_spawn"], self.origin );
+	Playfx( level._effect[ "ape_spawn" ], self.origin );
 	playsoundatposition( "zmb_bolt", self.origin );
-	PlayRumbleOnPosition("explosion_generic", self.origin);
+	PlayRumbleOnPosition( "explosion_generic", self.origin );
 
 	self.entered_level = true;
 }
@@ -1934,14 +1979,14 @@ ape_zombie_push_zombies()
 
 		for ( i = 0; i < zombies.size; i++ )
 		{
-			if ( zombies[i].animname == "zombie" )
+			if ( zombies[ i ].animname == "zombie" )
 			{
-				if ( !isdefined( zombies[i].ape_knockdown_time ) || zombies[i].ape_knockdown_time < GetTime() )
+				if ( !isdefined( zombies[ i ].ape_knockdown_time ) || zombies[ i ].ape_knockdown_time < GetTime() )
 				{
 					if ( pushed <= 3 )
 					{
-						zombies[i].ape_knockdown_time = GetTime() + 30000;
-						zombies[i] thread ape_zombie_knockdown();
+						zombies[ i ].ape_knockdown_time = GetTime() + 30000;
+						zombies[ i ] thread ape_zombie_knockdown();
 						pushed++;
 					}
 				}
@@ -1960,7 +2005,7 @@ ape_pathing()
 
 	while ( 1 )
 	{
-		if( IsDefined( self.favoriteenemy ) )
+		if ( IsDefined( self.favoriteenemy ) )
 		{
 			self.ignoreall = false;
 			self OrientMode( "face default" );
@@ -1973,15 +2018,15 @@ ape_pathing()
 
 ape_find_flesh()
 {
-	self endon( "death" ); 
+	self endon( "death" );
 	level endon( "intermission" );
 	self endon( "stop_find_flesh" );
 
-	if( level.intermission )
+	if ( level.intermission )
 	{
 		return;
 	}
-	
+
 	self.helitarget = true;
 
 	self maps\_zombiemode_spawner::zombie_history( "ape find flesh -> start" );
@@ -1991,17 +2036,17 @@ ape_find_flesh()
 	players = getplayers();
 	self.ignore_player = [];
 
-	player = get_closest_valid_player( self.origin, self.ignore_player ); 
-	if( !isDefined( player ) )
+	player = get_closest_valid_player( self.origin, self.ignore_player );
+	if ( !isDefined( player ) )
 	{
 		self maps\_zombiemode_spawner::zombie_history( "ape find flesh -> can't find player, continue" );
-		//wait( 1 ); 
-		//continue; 
+		//wait( 1 );
+		//continue;
 	}
-	
+
 	self.favoriteenemy = player;
 
-	while( 1 )
+	while ( 1 )
 	{
 		if ( isdefined( level.user_ryan_ape_pathing ) )
 		{
@@ -2013,7 +2058,7 @@ ape_find_flesh()
 		}
 
 		self.zombie_path_timer = GetTime() + ( RandomFloatRange( 1, 3 ) * 1000 );
-		while( GetTime() < self.zombie_path_timer ) 
+		while ( GetTime() < self.zombie_path_timer )
 		{
 			wait( 0.1 );
 		}
@@ -2024,4 +2069,3 @@ ape_find_flesh()
 		self notify( "zombie_acquire_enemy" );
 	}
 }
-

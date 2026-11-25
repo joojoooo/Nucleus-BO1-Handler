@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="GSCode.Core" HintPath="$(GSCodeService)/GSCode.Core.dll" />
+    <Reference Include="GSCode.Parser" HintPath="$(GSCodeService)/GSCode.Parser.dll" />
+    <Reference Include="GSCode.Server" HintPath="$(GSCodeService)/GSCode.Server.dll" />
+  </ItemGroup>
+  <Target Name="CheckGSCodeService" BeforeTargets="ResolveAssemblyReferences"
+          Condition="!Exists('$(GSCodeService)/GSCode.Server.dll')">
+    <Error Text="Set GSCodeService to the extension/service folder from the GSCode 2.2.2 VSIX." />
+  </Target>
+</Project>

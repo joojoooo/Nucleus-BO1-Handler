@@ -17,6 +17,41 @@ python dev_tools/t5/extract-fastfile.py "patch.ff" --out "extracted-patch" --com
 in the source checkout. Exit status 1 indicates differing or missing scripts.
 Exit status 2 indicates a parsing or I/O error.
 
+## Format and build EncoreV8
+
+Format edited `.gsc` files under `dev_tools/t5/encorev8` with the repository's
+command-line wrapper for [GSCode 2.2.2](https://github.com/Blakintosh/gscode/releases/tag/v2.2.2).
+It selects the Black Ops (`bo1`) dialect and uses tab indentation, Allman
+braces, padded parentheses and brackets, and CRLF line endings. It keeps
+directive order, token spelling, and comment text except for trailing spaces.
+Keep the surrounding line wrapping and blank lines when editing.
+
+With the .NET 10 SDK and Python installed, download and extract the pinned
+formatter once. The command uses temporary directories for the formatter and
+its build output.
+
+```powershell
+$gscTools = Join-Path $env:TEMP 'nucleus-t5-gscode-2.2.2'
+New-Item -ItemType Directory -Path $gscTools -Force | Out-Null
+$vsix = Join-Path $gscTools 'gscode-2.2.2.vsix'
+Invoke-WebRequest 'https://github.com/Blakintosh/gscode/releases/download/v2.2.2/gscode-2.2.2.vsix' -OutFile $vsix
+python -m zipfile -e $vsix $gscTools
+```
+
+Run this from the handler repo after editing a script. Pass multiple file paths
+to format them together, or pass the EncoreV8 source directory to check every
+GSC. Put `--check` before the paths to report formatting changes without writing.
+
+```powershell
+dotnet run --project dev_tools/t5/gsc-format/GscFormat.csproj `
+    --artifacts-path "$gscTools/build" "-p:GSCodeService=$gscTools/extension/service" -- `
+    dev_tools/t5/encorev8/maps/mod_cabcon/_load_functions.gsc
+
+$patch = 'Call of Duty Black Ops/zombies-cheats/common_zombie_patch.ff'
+python -B dev_tools/t5/pack-fastfile.py dev_tools/t5/encorev8 $patch
+python -B dev_tools/t5/extract-fastfile.py $patch --compare dev_tools/t5/encorev8
+```
+
 ## Run the game fixtures
 
 Run these scripts from the handler repo in Windows PowerShell on an interactive
