@@ -16,6 +16,7 @@ Game.AddOption("Game Mode", "Play Zombies with up to 4 players or Multiplayer wi
 
 addOptionHeading("VIDEO", "heading_video");
 Game.AddOption("Graphics Preset", "Default keeps your current graphics settings. Med also keeps them in Multiplayer.", "Graphics", ["Default", "Low", "Med", "High", "Extra"]);
+Game.AddOption("Pre-warm Shaders", "Enable the game's shader warming setting.", "ShaderWarming", ["On", "Off"]);
 Game.AddOption("FPS Limit", "Set the maximum frame rate. Choose 0 for no limit.", "FPS", ["60", "30", "90", "120", "144", "240", "0"]);
 Game.AddOption("FPS Counter", "Show the current frame rate in game.", "cg_drawfps", ["Disabled", "Enabled"]);
 Game.AddOption("VSync", "Sync the frame rate with your display to reduce screen tearing.", "VSync", offOn);
@@ -508,6 +509,7 @@ function readLaunchSettings(options, usesController) {
   return {
     fps: options["FPS"] || "60",
     vsync: optionIsOn(vsync) ? "1" : "0",
+    shaderWarming: options["ShaderWarming"] == "Off" ? "0" : "1",
     rumble: optionIsOn(rumble) ? "1" : "0",
     drawFps: (optionIsOn(drawFps) || drawFps == "Enabled" || drawFps == "Simple") ? "Simple" : "Off",
     gamepad: usesController ? "1" : "0",
@@ -534,6 +536,7 @@ function setLaunchArguments(gameType, modeArgs, instance, settings) {
   var portArgs = parallelSetup ? " +set net_port " + (28960 + Context.PlayerID) : "";
   Context.StartArguments = gameType + ' "' + gamePath + '" -name "' + nickname + '" -nocurses -lan -offline' +
     modeArgs + portArgs + " +set com_startupIntroPlayed 1 +set com_introPlayed 1" +
+    " +set r_shaderWarming " + settings.shaderWarming +
     " +set gpad_enabled " + settings.gamepad + " +set in_mouse " + settings.mouse + audioArgs +
     ' +set com_maxfps "' + settings.fps + '" +set r_vsync "' + settings.vsync +
     '" +set gpad_rumble "' + settings.rumble + '" +set cg_drawfps "' + settings.drawFps + '"';
@@ -736,6 +739,7 @@ function setPlayerConfig(path, settings, modeDvars) {
     vid_ypos: Context.PosY,
     gpad_enabled: settings.gamepad,
     in_mouse: settings.mouse,
+    r_shaderwarming: settings.shaderWarming,
     snd_menu_music: settings.muteAudio ? "0" : "1",
     snd_menu_voice: settings.muteAudio ? "0" : "1",
   };
