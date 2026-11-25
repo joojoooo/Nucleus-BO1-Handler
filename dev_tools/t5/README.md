@@ -1,5 +1,24 @@
 # Black Ops T5 test tools
 
+## Inspect a script fastfile
+
+`extract-fastfile.py` uses Python's standard library to inspect unsigned PC T5
+fastfiles containing only inline rawfiles. It lists each asset's size and SHA-256,
+and extracts assets only if you supply a new output directory. It reads scripts
+as data without launching Black Ops. Mixed-asset fastfiles and other formats
+require a different parser.
+
+```powershell
+python dev_tools/t5/extract-fastfile.py "Call of Duty Black Ops/zombies-cheats/common_zombie_patch.ff"
+python dev_tools/t5/extract-fastfile.py "patch.ff" --out "extracted-patch" --compare "source-checkout"
+```
+
+`--compare` checks embedded GSC and CSC files byte for byte against their paths
+in the source checkout. Exit status 1 indicates differing or missing scripts.
+Exit status 2 indicates a parsing or I/O error.
+
+## Run the game fixtures
+
 Run these scripts from the handler repo in Windows PowerShell on an interactive
 desktop. `Test-T5.ps1` uses the installed Nucleus Co-op 2.4.2 runtime and a local
 Black Ops installation. The fixture calls the real Nucleus handler and uses
