@@ -25,7 +25,7 @@ Game.AddOption("Field of View", "Higher values widen your view. Choose - to keep
 addOptionHeading("ZOMBIES", "heading_zombies");
 Game.AddOption("Zombies Players", "Auto uses your Nucleus layout. For a LAN match, the host can select the total across both PCs.", "Players", ["Auto", "1", "2", "3", "4"]);
 Game.AddOption("Zombies Mods", "Enable custom mods for Zombies.", "mods", noYes);
-Game.AddOption("Zombies Cheats", "Enable the EnCoRe V8 cheat menu in Zombies. Open it with Aim + Melee during a match.", "ZombiesCheats", offOn);
+Game.AddOption("Zombies Cheats", "Enable the EnCoRe V8 cheat menu for the Zombies host. Open with Aim + Melee. Use Up/Down and F/V on keyboard, or D-pad and A/B on controller.", "ZombiesCheats", offOn);
 Game.AddOption("Nazi Zombies", "Unlock Nazi Zombies and campaign completion rewards in Zombies mode.", "UnlockNaziZombies", noYes);
 
 addOptionHeading("MULTIPLAYER", "heading_multiplayer");
@@ -453,6 +453,8 @@ function preparePlutoniumInstance(enableZombiesCheats) {
     "storage\\t5\\main\\iw_42.iwd",
     "storage\\t5\\scripts\\sp\\zom\\zm_spawn_fix.gsc",
     "storage\\t5\\zone\\frontend_patch.ff",
+    "storage\\t5\\raw\\maps\\mod_cabcon\\_load_functions.gsc",
+    "storage\\t5\\raw\\maps\\mod_cabcon\\_load_menubase.gsc",
   ];
   for (var i = 0; i < obsoleteFiles.length; i++) {
     var obsoleteFile = System.IO.Path.Combine(plutoniumPath, obsoleteFiles[i]);

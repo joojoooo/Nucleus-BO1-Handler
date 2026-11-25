@@ -866,10 +866,9 @@ func_spawnEntityModelView()
 	self endon( "disconnect" );
 	self.menu[ "isLocked" ] = true;
 	self controlMenu( "close" );
-	wait 0.5;
-	self S( "Press ^3[{+attack}]^7/^3[{+speed_throw}]^7 to Change Model" );
-	self S( "Press ^3F ^7to select Model" );
-	self S( "Press ^3[{+melee}]^7 to close." );
+	self.menu[ "isLocked" ] = true;
+	self S( "Change model  ^3Up/Down Arrows or D-pad" );
+	self S( "Select  ^3F / A       ^7Cancel  ^3V / B" );
 	entity_models = GetArrayKeys( level._objectModels );
 	if ( !isDefined( self.curser ) )
 		self.curser = 0;
@@ -877,45 +876,37 @@ func_spawnEntityModelView()
 	self func_entitySelection( entity_models[ self.curser ] );
 	for ( ;; )
 	{
-		if ( self attackButtonPressed() || self adsButtonPressed() )
+		button = self encoreMenuButton();
+		if ( button == "up" || button == "down" )
 		{
-			self.curser -= self adsButtonPressed();
-			self.curser += self attackButtonPressed();
-			if ( self.curser < 0 )
-				self.curser = entity_models.size - 1;
+			offset = 1;
+			if ( button == "up" )
+				offset = -1;
 
-			if ( self.curser > entity_models.size - 1 )
-				self.curser = 0;
-
-			L( "model key: " + self.curser );
+			self.curser = ( self.curser + offset + entity_models.size ) % entity_models.size;
 			self func_entitySelection( entity_models[ self.curser ] );
-			wait 0.5;
 		}
 
-		if ( self useButtonPressed() )
+		if ( button == "back" )
+		{
+			func_deleteentity();
+			break;
+		}
+
+		if ( button == "select" )
 		{
 			if ( !isDefined( self.selectedModel ) )
 				S( "^1You need to select a model!" );
 			else
-				S( "Selceted Model is ^2" + self.selectedModel );
-
-			wait 0.5;
-			self.menu[ "isLocked" ] = false;
-			self controlMenu( "open_withoutanimation", "main_entity" );
+				S( "Selected Model is ^2" + self.selectedModel.model );
 			break;
 		}
 
-		if ( self meleeButtonPressed() )
-		{
-			func_deleteentity();
-			wait 0.5;
-			self.menu[ "isLocked" ] = false;
-			self controlMenu( "open_withoutanimation", "main_entity" );
-			break;
-		}
-
-		wait 0.05;
+		wait .05;
 	}
+
+	self controlMenu( "open_withoutanimation", "main_entity" );
+	self.menu[ "isLocked" ] = false;
 }
 
 func_entitySelection( model )
@@ -1881,6 +1872,38 @@ SlidingText( text_one, text_two )
 	self.var[ "ui" ][ "text_two" ] destroy();
 }
 
+encoreMenuButton()
+{
+	// EncoreV8 runs on the local host. Read physical menu keys independently
+	// of the player's gameplay bindings.
+	button = "";
+	if ( self buttonPressed( "v" ) || self buttonPressed( "BUTTON_B" ) )
+		button = "back";
+	else if ( self buttonPressed( "f" ) || self buttonPressed( "BUTTON_A" ) )
+		button = "select";
+	else if ( self buttonPressed( "UPARROW" ) || self buttonPressed( "DPAD_UP" ) )
+		button = "up";
+	else if ( self buttonPressed( "DOWNARROW" ) || self buttonPressed( "DPAD_DOWN" ) )
+		button = "down";
+	else if ( self buttonPressed( "RIGHTARROW" ) || self buttonPressed( "DPAD_RIGHT" ) )
+		button = "reset";
+
+	previous = self.encore_menu_held;
+	self.encore_menu_held = button;
+	now = getTime();
+	if ( !isDefined( previous ) || button != previous )
+	{
+		self.encore_menu_repeat = now + 350;
+		return button;
+	}
+
+	if ( ( button != "up" && button != "down" ) || now < self.encore_menu_repeat )
+		return "";
+
+	self.encore_menu_repeat = now + 150;
+	return button;
+}
+
 func_popupMenu( title, string_1, string_2, string_3, icon, icon_w, icon_h )
 {
 	if ( !isDefined( icon ) )
@@ -1921,13 +1944,15 @@ func_popupMenu( title, string_1, string_2, string_3, icon, icon_w, icon_h )
 		wait .1;
 	}
 
-	self.menu[ "ui" ][ "text" ][ 4 ] = self createText( getMenuSetting( "font_options" ), 1.2, 10, "Press ^3F^7 to countine", "CENTER", "CENTER", 45, 0 - 20 + ( 4 * 20 ) + 30, 0, getMenuSetting( "color_text" ) );
+	self.menu[ "ui" ][ "text" ][ 4 ] = self createText( getMenuSetting( "font_options" ), 1.2, 10, "Press ^3F / A^7 to continue", "CENTER", "CENTER", 45, 0 - 20 + ( 4 * 20 ) + 30, 0, getMenuSetting( "color_text" ) );
 	self.menu[ "ui" ][ "text" ][ 4 ] affectElement( "alpha", .1, 1 );
 	self.menu[ "ui" ][ "text" ][ 4 ] pulse( true );
 
+	// A press used in the previous screen should not dismiss this popup.
+	self encoreMenuButton();
 	while ( true )
 	{
-		if ( self useButtonPressed() )
+		if ( self encoreMenuButton() == "select" )
 		{
 			self func_sound_no_print( "evt_perk_deny" );
 			self.menu[ "ui" ][ "text" ][ 4 ] pulse( false );

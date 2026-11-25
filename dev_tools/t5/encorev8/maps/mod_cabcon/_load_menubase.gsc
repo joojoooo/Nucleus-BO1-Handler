@@ -77,9 +77,10 @@ _gamemodeselect( gamemode )
 			self func_popupMenu( "EnCoReV8 Zombie Edition", "Welcome User, this is the Zombie Edition",
 				"of EnCoReV8. Thanks for useing it! Be sure",
 				"to check out cabconmodding.com for updates" );
-			self func_popupMenu( "EnCoReV8 Zombie Edition Controls", "Open                        ^3[{+toggleads_throw}]^7+^3[{+melee}]",
-				"Navigate ^3[{+attack}]^7/^3[{+toggleads_throw}]",
-				"Select ^3F                                  ^7Close ^3[{+melee}]" );
+			self func_popupMenu( "EnCoReV8 Zombie Edition Controls",
+				"Open   ^3Aim + Melee",
+				"Move   ^3Up/Down Arrows or D-pad",
+				"Select   ^3F / A       ^7Back   ^3V / B" );
 			self.menu[ "isLocked" ] = false;
 			break;
 		case "gamemode_normal":
@@ -144,76 +145,68 @@ defineVariables()
 
 menuBase()
 {
+	self endon( "disconnect" );
+	was_opening = false;
 	while ( true )
 	{
-		if ( !self getLocked() || self getVerfication() > 0 )
+		opening = self adsButtonPressed() && self meleeButtonPressed();
+		if ( !self getLocked() && !self.var[ "popup_active" ] )
 		{
+			button = self encoreMenuButton();
 			if ( !self getUserIn() )
 			{
-				if ( self adsButtonPressed() && self meleeButtonPressed() && !self getLocked() )
+				if ( opening && !was_opening )
 				{
+					menu = "main";
 					if ( self.playerSetting[ "first_time_to_open" ] )
 					{
 						self.playerSetting[ "first_time_to_open" ] = false;
-						self controlMenu( "open", "main_welcome" );
+						menu = "main_welcome";
 					}
-					else
-						self controlMenu( "open", "main" );
 
-					self func_sound_no_print( "zmb_cha_ching" );
-					wait 0.2;
+					if ( isDefined( self.menu[ "items" ][ menu ] ) && self.menu[ "items" ][ menu ].name.size > 0 )
+					{
+						self controlMenu( "open", menu );
+						self func_sound_no_print( "zmb_cha_ching" );
+					}
 				}
 			}
-			else
+			else if ( button == "up" || button == "down" )
 			{
-				if ( self attackButtonPressed() || self adsButtonPressed() && !self getLocked() )
+				menu = self getCurrent();
+				count = self.menu[ "items" ][ menu ].name.size;
+				offset = 1;
+				if ( button == "up" )
+					offset = -1;
+
+				self.menu[ "curs" ][ menu ] = ( self getCursor() + offset + count ) % count;
+				self thread scrollMenu();
+				self func_sound_no_print( "zmb_perks_packa_ticktock" );
+			}
+			else if ( button == "select" )
+			{
+				items = self.menu[ "items" ][ self getCurrent() ];
+				cursor = self getCursor();
+				if ( items.func[ cursor ] !=::headline )
 				{
-					if ( !self getLocked() )
-						self.menu[ "curs" ][ getCurrent() ] += self attackButtonPressed();
-
-					if ( !self getLocked() )
-						self.menu[ "curs" ][ getCurrent() ] -= self adsButtonPressed();
-
-					if ( self.menu[ "curs" ][ getCurrent() ] > self.menu[ "items" ][ self getCurrent() ].name.size - 1 )
-						self.menu[ "curs" ][ getCurrent() ] = 0;
-
-					if ( self.menu[ "curs" ][ getCurrent() ] < 0 )
-						self.menu[ "curs" ][ getCurrent() ] = self.menu[ "items" ][ self getCurrent() ].name.size - 1;
-
-					self thread scrollMenu();
-					self func_sound_no_print( "zmb_perks_packa_ticktock" );
-					wait 0.2;
-				}
-
-				if ( self useButtonPressed() && !self getLocked() && self.menu[ "items" ][ self getCurrent() ].func[ self getCursor() ] !=::headline )
-				{
-					self.menu[ "ui" ][ "scroller" ] scaleOverTime( .1, 105, 10 );
-					self thread [[ self.menu[ "items" ][ self getCurrent() ].func[ self getCursor() ] ]](
-						self.menu[ "items" ][ self getCurrent() ].input1[ self getCursor() ],
-						self.menu[ "items" ][ self getCurrent() ].input2[ self getCursor() ],
-						self.menu[ "items" ][ self getCurrent() ].input3[ self getCursor() ],
-						self.menu[ "items" ][ self getCurrent() ].input4[ self getCursor() ],
-						self.menu[ "items" ][ self getCurrent() ].input5[ self getCursor() ]
-					);
+					self thread [[ items.func[ cursor ] ]]( items.input1[ cursor ], items.input2[ cursor ],
+						items.input3[ cursor ], items.input4[ cursor ], items.input5[ cursor ] );
 					self func_sound_no_print( "evt_perk_deny" );
-					wait 0.1;
-					self.menu[ "ui" ][ "scroller" ] scaleOverTime( .1, 210, 20 );
-					wait 0.1;
 				}
+			}
+			else if ( button == "back" )
+			{
+				parent = self.menu[ "items" ][ self getCurrent() ].parent;
+				if ( isDefined( parent ) )
+					self controlMenu( "newMenu", parent );
+				else
+					self controlMenu( "close" );
 
-				if ( self meleeButtonPressed() && !self getLocked() )
-				{
-					if ( isDefined( self.menu[ "items" ][ self getCurrent() ].parent ) )
-						self controlMenu( "newMenu", self.menu[ "items" ][ self getCurrent() ].parent );
-					else
-						self controlMenu( "close" );
-
-					self func_sound_no_print( "uin_lobby_leave" );
-					wait 0.2;
-				}
+				self func_sound_no_print( "uin_lobby_leave" );
 			}
 		}
 
+		was_opening = opening;
 		wait .05;
 	}
 }
@@ -655,7 +648,7 @@ getCursor()
 //UI utilities
 createText( font, fontSize, sorts, text, align, relative, x, y, alpha, color )
 {
-	uiElement = self createfontstring( font, fontSize );
+	uiElement = createfontstring( font, fontSize, self );
 	uiElement setPoint( align, relative, x, y );
 	uiElement settext( text );
 	uiElement.sort = sorts;
@@ -671,7 +664,7 @@ createText( font, fontSize, sorts, text, align, relative, x, y, alpha, color )
 
 createValueElement( font, fontSize, sorts, value, align, relative, x, y, alpha, color )
 {
-	uiElement = self createfontstring( font, fontSize );
+	uiElement = createfontstring( font, fontSize, self );
 	uiElement setPoint( align, relative, x, y );
 	uiElement setvalue( value );
 	uiElement.sort = sorts;
@@ -765,9 +758,9 @@ EditorDvarCabCon( max, min, dvar, value_add, value_default )
 	self.dvareditormax = max;
 	self.menu[ "isLocked" ] = true;
 	self controlMenu( "close_animation" );
-	self S( "Press ^3[{+frag}]^7 to set Dvar default" );
-	self S( "Press ^3[{+melee}] ^7to close Dvar Editor" );
-	self S( "Press ^3[{+attack}]^7/^3[{+speed_throw}]^7 to Change Dvar" );
+	self S( "Reset  ^3Right Arrow / D-pad Right" );
+	self S( "Back  ^3V / B" );
+	self S( "Change value  ^3Up/Down Arrows or D-pad" );
 	self.dvareditor = GetDvarInt( dvar );
 	self.menu[ "ui" ][ "scroller" ] scaleOverTime( .1, 210, 10 );
 	self.menu[ "ui" ][ "scroller" ] affectElement( "y", .5, 220 );
@@ -777,38 +770,34 @@ EditorDvarCabCon( max, min, dvar, value_add, value_default )
 	self.menu[ "ui" ][ "title_value" ] affectElement( "alpha", .5, 1 );
 	for ( ;; )
 	{
-		if ( self AttackButtonPressed() )
+		button = self encoreMenuButton();
+		if ( button == "back" )
 		{
-			self.dvareditor += value_add;
+			self thread selectedit();
+			return;
 		}
 
-		if ( self AdsButtonPressed() )
-		{
+		if ( button == "up" )
 			self.dvareditor -= value_add;
-		}
+
+		if ( button == "down" )
+			self.dvareditor += value_add;
+
+		if ( button == "reset" )
+			self.dvareditor = value_default;
 
 		if ( self.dvareditor < min )
-		{
 			self.dvareditor = self.dvareditormax;
-		}
 
 		if ( self.dvareditor > self.dvareditormax )
-		{
 			self.dvareditor = min;
-		}
 
-		wait 0.001;
-		height = ( self.dvareditor / self.dvareditormax ) * 350;
-		height = int( max( height, 1 ) );
+		height = int( max( ( self.dvareditor / self.dvareditormax ) * 350, 1 ) );
 		self.menu[ "ui" ][ "scroller" ] affectElement( "y", .0001, 220 - height );
-		self.menu[ "ui" ][ "title_value" ] affectElement( "y", .0001, 220 - height );
+		self.menu[ "ui" ][ "title_value" ] affectElement( "y", .0001, 220 );
 		self.menu[ "ui" ][ "title_value" ] setValue( self.dvareditor );
-		//self.menu["ui"]["scroller"] scaleOverTime(.1, 210, height);
-		//self.hud_cabcon_string setvalue( self.dvareditor );
 		self setClientDvar( dvar, self.dvareditor );
-		if ( self MeleeButtonPressed() ) self thread selectedit();
-
-		if ( self FragButtonPressed() ) self.dvareditor = value_default;
+		wait .05;
 	}
 }
 
