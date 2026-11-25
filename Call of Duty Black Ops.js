@@ -25,6 +25,7 @@ Game.AddOption("Field of View", "Higher values widen your view. Choose - to keep
 addOptionHeading("ZOMBIES", "heading_zombies");
 Game.AddOption("Zombies Players", "Auto uses your Nucleus layout. For a LAN match, the host can select the total across both PCs.", "Players", ["Auto", "1", "2", "3", "4"]);
 Game.AddOption("Zombies Mods", "Enable custom mods for Zombies.", "mods", noYes);
+Game.AddOption("Zombies Cheats", "Enable the EnCoRe V8 cheat menu in Zombies. Open it with Aim + Melee during a match.", "ZombiesCheats", offOn);
 Game.AddOption("Nazi Zombies", "Unlock Nazi Zombies and campaign completion rewards in Zombies mode.", "UnlockNaziZombies", noYes);
 
 addOptionHeading("MULTIPLAYER", "heading_multiplayer");
@@ -149,7 +150,7 @@ Game.Play = function() {
   Context.RunAdditionalFiles([automationFolder + "\\hotkeys\\F4-swap-bumpers-and-triggers.bat"], false, 10);
   Context.RunAdditionalFiles([automationFolder + "\\hotkeys\\F3-restart-match.bat"], false, 10);
 
-  var instance = preparePlutoniumInstance();
+  var instance = preparePlutoniumInstance(mode == "Zombies" && options["ZombiesCheats"] == "On");
   Game.ExecutableName = bootstrapperExe;
 
   var settings = readLaunchSettings(options, usesController);
@@ -413,7 +414,7 @@ function configurePlayerInput(player) {
 }
 
 // Bundled Plutonium runtime and first-run files
-function preparePlutoniumInstance() {
+function preparePlutoniumInstance(enableZombiesCheats) {
   var plutoniumSource = System.IO.Path.Combine(Game.Folder, "Plutonium");
   var gameFolder = Context.GetFolder(Nucleus.Folder.InstancedGameFolder);
   var plutoniumPath = System.IO.Path.Combine(gameFolder, "Plutonium");
@@ -458,6 +459,15 @@ function preparePlutoniumInstance() {
     if (System.IO.File.Exists(obsoleteFile)) {
       System.IO.File.Delete(obsoleteFile);
     }
+  }
+
+  var zombiesCheatPatch = plutoniumPath + "\\storage\\t5\\zone\\common_zombie_patch.ff";
+  if (enableZombiesCheats) {
+    var bundledCheatPatch = System.IO.Path.Combine(Game.Folder, "zombies-cheats\\common_zombie_patch.ff");
+    System.IO.File.Copy(bundledCheatPatch, zombiesCheatPatch, true);
+  } else if (System.IO.File.Exists(zombiesCheatPatch)) {
+    // Retained instances can still have the patch from a previous session.
+    System.IO.File.Delete(zombiesCheatPatch);
   }
 
   var revisionFile = System.IO.Path.Combine(plutoniumPath, "info.json");
